@@ -1,0 +1,21 @@
+openapi: 3.0.0
+info:
+  title: Sample API
+  version: 1.0.0
+  description: An example OpenAPI Specification
+
+paths:
+  /greet:
+    get:
+      summary: Get a greeting
+      operationId: getGreeting
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string

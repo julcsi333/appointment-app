@@ -1,0 +1,39 @@
+@startuml
+
+class ProviderController <<REST>> {}
+class UserController <<REST>> {}
+class AppointmentController <<REST>> {}
+class AuthController <<REST>> {}
+
+
+interface IProviderService {}
+interface IUserService {}
+interface IAppointmentService {}
+interface IAuthService {}
+
+class ProviderService {}
+class UserService {}
+class AppointmentService {}
+class AuthService {}
+
+interface ProviderRepository <<JPA>> {}
+interface UserRepository <<JPA>> {}
+interface AppointmentRepository <<JPA>> {}
+interface AuthRepository <<JPA>> {}
+
+IProviderService <-- ProviderController
+IProviderService <|.. ProviderService
+IUserService <-- UserController
+IUserService <|.. UserService
+IAppointmentService <-- AppointmentController
+IAppointmentService <|.. AppointmentService
+IAuthService <-- AuthController
+IAuthService <|.. AuthService
+
+ProviderRepository <-- ProviderService
+UserRepository <-- UserService
+AppointmentRepository <-- AppointmentService
+AuthRepository <-- AuthService
+
+
+@enduml

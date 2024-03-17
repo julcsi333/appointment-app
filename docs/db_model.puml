@@ -1,0 +1,46 @@
+@startuml
+
+entity User {
+  * id: String
+  --
+  * name: String
+  * phoneNumber: String
+}
+
+entity Provider {
+  * picture: String
+  * businessAddress: String
+}
+
+entity Service {
+  * id: String
+  --
+  * picture: String
+  * businessAddress: String
+}
+
+entity Credentials {
+  * user_id: String
+  --
+  * role: String
+  * email: String
+  * hash: String
+}
+
+entity Appointment {
+  * id
+  --
+  * user_id: String
+  * provider_id: String
+  * service_id: String
+  * address: String
+  * date: Date
+}
+
+User ||..o{ Appointment
+Provider ||..o{ Appointment
+Service ||..o{ Appointment
+User <|-- Provider
+User ||..|| Credentials
+
+@enduml

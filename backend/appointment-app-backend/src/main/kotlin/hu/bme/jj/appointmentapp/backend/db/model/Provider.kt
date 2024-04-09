@@ -4,13 +4,10 @@ import jakarta.persistence.*
 
 @Entity
 class Provider (
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long?=null,
+    name: String,
+    phoneNumber: String,
     @Column(nullable=false)
-    val name: String,
-    @Column(nullable=false)
-    val address: String,
+    val businessAddress: String,
 
     @ManyToMany
     @JoinTable(
@@ -19,7 +16,7 @@ class Provider (
         inverseJoinColumns = [JoinColumn(name = "service_id")]
     )
     val services: MutableSet<Service> = mutableSetOf()
-) {
+) : User(null, name, phoneNumber) {
 
 
 

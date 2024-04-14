@@ -7,8 +7,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" Component={MainPage} />
-        <Route path="/home" Component={HomePage} />
+        <Route path="/" Component={HomePage} />
       </Routes>
     </BrowserRouter>
   );

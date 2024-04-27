@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import '../App.css';
-import ProviderComponent from '../components/provider-list';
+import ProviderComponent from '../components/ProviderComponent';
 
 export const MainPage: React.FC = () => {
   return (

@@ -16,7 +16,7 @@ class Provider (
         inverseJoinColumns = [JoinColumn(name = "service_id")]
     )
     val services: MutableSet<Service> = mutableSetOf()
-) : User(null, name, phoneNumber) {
+) : UserData(null, name, phoneNumber) {
 
 
 

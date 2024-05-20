@@ -1,40 +1,35 @@
 package hu.bme.jj.appointmentapp.backend.api
 
 import hu.bme.jj.appointmentapp.backend.db.model.Provider
-import hu.bme.jj.appointmentapp.backend.db.repository.ProviderRepository
-import jakarta.persistence.EntityNotFoundException
+import hu.bme.jj.appointmentapp.backend.db.service.ProviderService
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/providers")
-class ProviderController(private val repository: ProviderRepository) {
+class ProviderController(private val providerService: ProviderService) {
 
     @GetMapping
-    fun getAllEntities(): List<Provider> {
-        return repository.findAll()
+    fun getAllProviders(): List<Provider> {
+        return providerService.getAllProviders()
     }
 
     @GetMapping("/{id}")
-    fun getEntityById(@PathVariable id: Long): Provider {
-        return repository.findById(id).orElseThrow { EntityNotFoundException("Entity not found with id $id") }
+    fun getProviderById(@PathVariable id: Long): Provider {
+        return providerService.getProviderById(id)
     }
 
     @PostMapping
-    fun createEntity(@RequestBody entity: Provider): Provider {
-        return repository.save(entity)
+    fun createProvider(@RequestBody entity: Provider): Provider {
+        return providerService.createProvider(entity)
     }
 
     @PutMapping("/{id}")
-    fun updateEntity(@PathVariable id: Long, @RequestBody updatedEntity: Provider): Provider {
-        if (!repository.existsById(id)) {
-            throw EntityNotFoundException("Entity not found with id $id")
-        }
-        updatedEntity.id = id
-        return repository.save(updatedEntity)
+    fun updateProvider(@PathVariable id: Long, @RequestBody updatedEntity: Provider): Provider {
+        return providerService.updateProvider(id, updatedEntity)
     }
 
     @DeleteMapping("/{id}")
-    fun deleteEntity(@PathVariable id: Long) {
-        repository.deleteById(id)
+    fun deleteProvider(@PathVariable id: Long) {
+        providerService.deleteProvider(id)
     }
 }

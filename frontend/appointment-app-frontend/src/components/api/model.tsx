@@ -5,3 +5,10 @@ export interface Provider {
     phoneNumber: string;
     imageUrl: string;
 }
+
+export interface User {
+    id: string;
+    name: string;
+    phoneNumber: string;
+}
+

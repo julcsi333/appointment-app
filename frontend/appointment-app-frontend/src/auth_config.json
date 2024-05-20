@@ -1,4 +1,6 @@
 {
     "domain": "dev-54v4le2yb316jprk.eu.auth0.com",
-    "clientId": "NM2ck8L7xr3L0uokyAIejJ0vpAidm7G6"
+    "clientId": "NM2ck8L7xr3L0uokyAIejJ0vpAidm7G6",
+    "audience": "http://localhost:8080/",
+    "scope": "read:appointments"
   }

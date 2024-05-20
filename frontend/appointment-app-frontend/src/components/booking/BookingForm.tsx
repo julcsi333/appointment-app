@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
-import { Typography, Button } from '@mui/material';
+import { Typography } from '@mui/material';
 import ServiceSelector from './ServiceSelector';
 import DatePicker from './DatePicker';
 import StepperProgressBar from './StepperProgressBar';
 import StepperButtons from './StepperButtons';
 import { Dayjs } from 'dayjs';
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface BookingFormProps {
     id: string;
+    enableSubmit: boolean;
 }
 
-const BookingForm: React.FC<BookingFormProps> = ({ id }) => {
+const BookingForm: React.FC<BookingFormProps> = ({ id, enableSubmit }) => {
     const [activeStep, setActiveStep] = useState<number>(0);
     const [selectedService, setSelectedService] = useState<string>('');
     const [selectedTime, setSelectedTime] = useState<Dayjs | null>(null);
+    const {
+        getAccessTokenSilently
+      } = useAuth0();
 
     const handleServiceSelect = (service: string) => {
         setSelectedService(service);
@@ -30,17 +35,17 @@ const BookingForm: React.FC<BookingFormProps> = ({ id }) => {
     };
 
     const handleNext = () => {
-        console.log(activeStep);
         setActiveStep(activeStep + 1);
-        console.log("Handle next finished");
     };
-
-    const handleSubmit = () => {
+    
+    const handleSubmit = async () => {
+        const token = await getAccessTokenSilently();
         // Send booking information to backend
         console.log('Booking submitted:', {
             providerId: id,
             selectedService,
             selectedTime,
+            accessToken: token,
         });
     };
 
@@ -61,14 +66,11 @@ const BookingForm: React.FC<BookingFormProps> = ({ id }) => {
                     <Typography variant="body1">Service: {selectedService}</Typography>
                     <Typography variant="body1">Date: {selectedTime?.toDate().toLocaleDateString()}</Typography>
                     <Typography variant="body1">Time: {selectedTime?.toDate().toLocaleTimeString()}</Typography>
-                    <Button variant="contained" color="primary" onClick={handleSubmit}>
-                        Book Appointment
-                    </Button>
                 </div>
             )}
 
             {/* Back, forward and submit buttons */}
-            <StepperButtons activeStep={activeStep} onBack={handleBack} onNext={handleNext} onSubmit={handleSubmit} />
+            <StepperButtons activeStep={activeStep} onBack={handleBack} onNext={handleNext} onSubmit={handleSubmit} enableSubmitButton={enableSubmit}/>
         </div>
     );
 };

@@ -12,42 +12,55 @@ interface DatePickerProps {
     onTimeSelect: (date: Dayjs | null) => void;
 }
 
+function isSameDate(date1: dayjs.Dayjs | null, date2: Dayjs | null): boolean {
+    if (date1 === null || date2 === null) {
+        return false;
+    }
+    return date1.date() === date2.date() && date1.month() === date2.month() && date1.year() === date2.year()
+}
+
+function isSameTime(date1: dayjs.Dayjs | null, date2: Dayjs | null): boolean {
+    if (date1 === null || date2 === null) {
+        return false;
+    }
+    return date1.hour() === date2.hour() && date1.minute() === date2.minute()
+}
+
 const DatePicker: React.FC<DatePickerProps> = ({ id, selectedService, onTimeSelect }) => {
     const dates: Dayjs[] = generateRandomDates();
     const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
     const [timePickerEnabled, setTimePickerEnabled] = useState<boolean>(false);
 
     const handleDateSelect = (time: Dayjs | null) => {
-        console.log(`Date select: ${time}`)
+        console.log(`Date select: ${time?.year()}.${time?.month()}.${time?.date()}`)
+        setSelectedDate(time);
         if (time === null) {
             setTimePickerEnabled(false);
         } else {
             setTimePickerEnabled(true);
         }
-        setSelectedDate(time);
         // Picked a different day, must pick a time for that day
         onTimeSelect(null);
     };
 
     const handleTimeSelect = (time: Dayjs | null) => {
-        console.log(`Time select: ${time}`)
+        console.log(`Time select: ${time?.hour()}:${time?.minute()}`)
         if (time === null) {
             onTimeSelect(time);
             if (selectedDate !== null) {
-                const timeReset = selectedDate.set('hour', 0);
-                timeReset.set('minute', 0);
+                const timeReset = selectedDate.set('hour', 0).set('minute', 0);
                 setSelectedDate(timeReset)
             }
         } else {
-            setSelectedDate(time);
-            onTimeSelect(time);
+            const dateAndTime = selectedDate!.set('hour', time.hour()).set('minute', time.minute());
+            onTimeSelect(dateAndTime);
         }
     };
     
     const shouldDisableDate = (value: Dayjs) => {
         let shouldDisable = true;
         dates.forEach((date, index) => {
-            if (date.date() === value.date() && date.month() === value.month() && date.year() === value.year()) {
+            if (isSameDate(date, value)) {
                 shouldDisable = false;
             }
         });
@@ -57,8 +70,13 @@ const DatePicker: React.FC<DatePickerProps> = ({ id, selectedService, onTimeSele
     const shouldDisableTime = (value: Dayjs, view: TimeView) => {
         let shouldDisable = true;
         dates.forEach((date, index) => {
-            if (date === value) {
-                shouldDisable = false;
+            if (isSameDate(date, selectedDate)) {
+                if (isSameTime(date, value)) {
+                    shouldDisable = false;
+                    //console.log(`Right: ${date} - ${value}`)
+                } else {
+                    //console.log(`Wrong: ${date} - ${value}`)
+                }
             }
         });
         return shouldDisable;
@@ -68,11 +86,11 @@ const DatePicker: React.FC<DatePickerProps> = ({ id, selectedService, onTimeSele
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <MuiDatePicker
                 value={selectedDate}
-                onChange={(newValue) => handleDateSelect(newValue)}
+                onChange={handleDateSelect}
                 shouldDisableDate={shouldDisableDate}
                 views={['year', 'month', 'day']}
             />
-            <DigitalClock disabled={timePickerEnabled} value={selectedDate} onChange={(newValue) => handleTimeSelect(newValue)} ampm={false} timeStep={30} shouldDisableTime={shouldDisableTime}/>
+            <DigitalClock disabled={!timePickerEnabled} onChange={(newValue) => handleTimeSelect(newValue)} ampm={false} timeStep={30} shouldDisableTime={shouldDisableTime}/>
         </LocalizationProvider>
     );
 };
@@ -82,31 +100,31 @@ export default DatePicker;
 
 const generateRandomDates = (): Dayjs[] => {
     const dates: Dayjs[] = [];
-    let date = dayjs("2024-04-28");
-    date.hour(15);
+    let date = dayjs("2024-05-28");
+    date = date.hour(15);
     dates.push(date);
 
-    date = dayjs("2024-04-28");
-    date.hour(16);
-    date.minute(30);
+    date = dayjs("2024-05-28");
+    date = date.hour(16);
+    date = date.minute(30);
     dates.push(date);
 
-    date = dayjs("2024-04-29");
-    date.hour(15);
+    date = dayjs("2024-05-29");
+    date = date.hour(15);
     dates.push(date);
 
-    date = dayjs("2024-04-29");
-    date.hour(16);
-    date.minute(30);
+    date = date = dayjs("2024-05-29");
+    date = date.hour(16);
+    date = date.minute(30);
     dates.push(date);
 
-    date = dayjs("2024-04-30");
-    date.hour(15);
+    date = dayjs("2024-05-30");
+    date = date.hour(15);
     dates.push(date);
 
-    date = dayjs("2024-04-30");
-    date.hour(16);
-    date.minute(30);
+    date = dayjs("2024-05-30");
+    date = date.hour(16);
+    date = date.minute(30);
     dates.push(date);
 
     //dayjs({ year :2010, month :3, day :5, hour :15, minute :10, second :3, millisecond :123});

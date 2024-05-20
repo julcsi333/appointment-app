@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { getConfig } from "./config";
+import { Auth0Config, getConfig } from "./config";
 import { Auth0Provider } from '@auth0/auth0-react';
 
-const config = getConfig();
+const config : Auth0Config = getConfig();
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -18,7 +18,9 @@ root.render(
         domain={config.domain}
         clientId={config.clientId}
         authorizationParams={{
-          redirect_uri: window.location.origin
+          redirect_uri: window.location.origin,
+          audience: config.audience,
+          scope: config.scope
         }}
       >
         <App />

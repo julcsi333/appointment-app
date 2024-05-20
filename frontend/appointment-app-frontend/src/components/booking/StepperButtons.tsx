@@ -6,10 +6,10 @@ interface StepperButtonsProps {
     onBack: () => void;
     onNext: () => void;
     onSubmit: () => void;
-
+    enableSubmitButton: boolean
 }
 
-const StepperButtons : React.FC<StepperButtonsProps> = ({ activeStep, onBack, onNext, onSubmit }) => {
+const StepperButtons : React.FC<StepperButtonsProps> = ({ activeStep, onBack, onNext, onSubmit, enableSubmitButton }) => {
     return (
         <div>
             {activeStep !== 0 && (
@@ -23,7 +23,7 @@ const StepperButtons : React.FC<StepperButtonsProps> = ({ activeStep, onBack, on
             </Button>
             )}
             {activeStep === 2 && (
-            <Button variant="contained" onClick={onSubmit}>
+            <Button variant="contained" onClick={onSubmit} disabled={!enableSubmitButton}>
                 Submit
             </Button>
             )}

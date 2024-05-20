@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*
 class AppointmentController(private val appointmentService: AppointmentService) {
 
     @PostMapping("/{id}")
-    fun bookAppointment(@PathVariable id: Long, @RequestBody appointment: Appointment): Appointment {
+    fun bookAppointment(@PathVariable id: Long, @RequestBody appointment: Appointment): hu.bme.jj.appointmentapp.backend.db.model.Appointment {
         return appointmentService.bookAppointment(id, appointment)
     }
 }

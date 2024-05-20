@@ -14,13 +14,14 @@ class AppointmentService(
     private val serviceRepository: ServiceRepository
 ) {
 
-    fun bookAppointment(providerId: String, appointment: Appointment) {
-        hu.bme.jj.appointmentapp.backend.db.model.Appointment(
+    fun bookAppointment(providerId: Long, appointment: Appointment): hu.bme.jj.appointmentapp.backend.db.model.Appointment {
+        val appointment = hu.bme.jj.appointmentapp.backend.db.model.Appointment(
             id = null,
             date = appointment.date,
             customer = userService.getUserById(appointment.customerId),
-            provider = providerService.getProviderById(providerId.toLong()),
+            provider = providerService.getProviderById(providerId),
             service = serviceRepository.findById(appointment.serviceId).orElseThrow { EntityNotFoundException("Service not found with id ${appointment.serviceId}") }
         )
+        return appointmentRepository.save(appointment)
     }
 }

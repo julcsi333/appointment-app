@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 
 @Entity
+@Table(name = "services")
 class Service (
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0,

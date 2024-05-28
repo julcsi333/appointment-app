@@ -3,6 +3,7 @@ package hu.bme.jj.appointmentapp.backend.db.model
 import jakarta.persistence.*
 
 @Entity
+@Table(name = "appointments")
 class Appointment(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

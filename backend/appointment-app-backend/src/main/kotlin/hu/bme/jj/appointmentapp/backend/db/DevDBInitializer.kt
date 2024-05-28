@@ -1,18 +1,6 @@
 package hu.bme.jj.appointmentapp.backend.db
 
-import hu.bme.jj.appointmentapp.backend.db.model.Auth0UserMapping
-import hu.bme.jj.appointmentapp.backend.db.model.Provider
-import hu.bme.jj.appointmentapp.backend.db.model.Service
-import hu.bme.jj.appointmentapp.backend.db.model.UserData
-import hu.bme.jj.appointmentapp.backend.db.repository.Auth0UserMappingRepository
-import hu.bme.jj.appointmentapp.backend.db.repository.ProviderRepository
-import hu.bme.jj.appointmentapp.backend.db.repository.ServiceRepository
-import hu.bme.jj.appointmentapp.backend.db.repository.UserRepository
-import jakarta.annotation.PostConstruct
-import org.springframework.stereotype.Component
-import kotlin.random.Random
-
-
+/*
 @Component
 class DevDBInitializer(
     private val providerRepository: ProviderRepository,
@@ -73,4 +61,4 @@ class DevDBInitializer(
             auth0UserMappingRepository.save(Auth0UserMapping(null, auth0Id, it))
         }
     }
-}
+}*/

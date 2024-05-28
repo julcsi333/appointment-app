@@ -4,6 +4,7 @@ import jakarta.persistence.*
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "user_data")
 open class UserData (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

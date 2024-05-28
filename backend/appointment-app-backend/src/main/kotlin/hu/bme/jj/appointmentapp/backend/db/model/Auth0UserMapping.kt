@@ -3,6 +3,7 @@ package hu.bme.jj.appointmentapp.backend.db.model
 import jakarta.persistence.*
 
 @Entity
+@Table(name = "auth0_user_mappings")
 class Auth0UserMapping(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long?=null,

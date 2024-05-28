@@ -3,6 +3,7 @@ package hu.bme.jj.appointmentapp.backend.db.model
 import jakarta.persistence.*
 
 @Entity
+@Table(name = "providers")
 class Provider (
     name: String,
     phoneNumber: String,

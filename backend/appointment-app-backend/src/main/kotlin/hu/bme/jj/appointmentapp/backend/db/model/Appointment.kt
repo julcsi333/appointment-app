@@ -10,7 +10,7 @@ class Appointment(
     var id: Long? = null,
 
     @Column(nullable = false)
-    var date: java.sql.Date, // Assuming you are using java.sql.Date for date
+    var date: java.sql.Date,
 
     @ManyToOne
     @JoinColumn(name = "provider_id")

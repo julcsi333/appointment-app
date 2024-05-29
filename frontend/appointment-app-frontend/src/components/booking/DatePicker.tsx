@@ -5,6 +5,7 @@ import { TimeView } from '@mui/x-date-pickers/models';
 import { DatePicker as MuiDatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { Grid } from '@mui/material';
 
 interface DatePickerProps {
     id: string;
@@ -84,13 +85,24 @@ const DatePicker: React.FC<DatePickerProps> = ({ id, selectedService, onTimeSele
 
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <MuiDatePicker
-                value={selectedDate}
-                onChange={handleDateSelect}
-                shouldDisableDate={shouldDisableDate}
-                views={['year', 'month', 'day']}
-            />
-            <DigitalClock disabled={!timePickerEnabled} onChange={(newValue) => handleTimeSelect(newValue)} ampm={false} timeStep={30} shouldDisableTime={shouldDisableTime}/>
+            <Grid
+                container
+                spacing={2}
+                justifyContent="center"
+                alignItems="center"
+            >
+                <Grid item xs={3}>
+                    <MuiDatePicker
+                        value={selectedDate}
+                        onChange={handleDateSelect}
+                        shouldDisableDate={shouldDisableDate}
+                        views={['year', 'month', 'day']}
+                    />
+                </Grid>
+                <Grid item xs={3}>
+                    <DigitalClock disabled={!timePickerEnabled} onChange={(newValue) => handleTimeSelect(newValue)} ampm={false} timeStep={30} shouldDisableTime={shouldDisableTime}/>
+                </Grid>
+            </Grid>
         </LocalizationProvider>
     );
 };

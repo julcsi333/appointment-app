@@ -1,3 +1,5 @@
+import dayjs, { Dayjs } from 'dayjs';
+
 export interface Provider {
     id: string;
     name: string;
@@ -12,3 +14,9 @@ export interface User {
     phoneNumber: string;
 }
 
+
+export interface Appointment {
+    date: Dayjs;
+    serviceId: string;
+    customerId: string;
+}

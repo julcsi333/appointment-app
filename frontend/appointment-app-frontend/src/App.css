@@ -24,6 +24,10 @@
   color: black;
 }
 
+.margin {
+  margin:20px;
+}
+
 .Home-page {
   display: flex;
   flex-direction: column;

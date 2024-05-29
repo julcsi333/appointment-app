@@ -11,7 +11,7 @@ interface StepperButtonsProps {
 
 const StepperButtons : React.FC<StepperButtonsProps> = ({ activeStep, onBack, onNext, onSubmit, enableSubmitButton }) => {
     return (
-        <div>
+        <div className="margin">
             {activeStep !== 0 && (
             <Button variant="contained" onClick={onBack}>
                 Back

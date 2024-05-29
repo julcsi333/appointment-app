@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 
-export const apiCall = async (url: string): Promise<AxiosResponse<any, any>> => {
+export const apiGetCall = async (url: string): Promise<AxiosResponse<any, any>> => {
     try {
         return await axios.get(
             url,
@@ -11,13 +11,32 @@ export const apiCall = async (url: string): Promise<AxiosResponse<any, any>> => 
     }
 };
 
-export const secureApiCall = async (url: string, token: string): Promise<AxiosResponse<any, any>> => {
+
+export const secureApiGetCall = async (url: string, token: string): Promise<AxiosResponse<any, any>> => {
     try {
         return await axios.get(
             url, 
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
+                }
+            }
+        );
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        throw error;
+    }
+};
+
+export const secureApiPostCall = async (url: string, body: string, token: string): Promise<AxiosResponse<any, any>> => {
+    try {
+        return await axios.post(
+            url,
+            body,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
                 }
             }
         );

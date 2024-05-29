@@ -50,9 +50,9 @@ const BookingPage: React.FC = () => {
         {provider === null && <ProviderNotFound />}
         {provider !== null && (
             <div>
-                <Typography variant="h4">Book Appointment</Typography>
+                <center className='margin'><Typography variant="h4">Book Appointment</Typography></center>
                 <ProviderInformation provider={provider} showBookbutton={false} />
-                <BookingForm id={provider.id} enableSubmit={currentUserData?.name !== null && currentUserData?.phoneNumber !== null}/>
+                <BookingForm id={provider.id} user_id={currentUserData === null ? null : currentUserData.id} enableSubmit={currentUserData?.name !== null && currentUserData?.phoneNumber !== null}/>
             </div>
         )}
       </div>

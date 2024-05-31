@@ -1,0 +1,13 @@
+Becsillagozni a kedvenc szolgáltatókat
+(esetleg a szolgáltató mellé írni, hogy hányan csillagozták be)
+
+Portfólió a szolgáltatóknak (egy közös porfólió blob, meg talán meg lehet külön-külön szolgáltatásonként is nézni a portfóliót pl csak körmöket)
+Portfólió képekre komment
+
+chat funkció? (chat üziről esetleg e-mail, ha nem nézte meg az ember 1 órán belül)
+
+értékelés fül.
+A provider saját profiljában értékelés fül. Itt válaszolhatna kommentben az őt ért értékelésekre
+
+
+

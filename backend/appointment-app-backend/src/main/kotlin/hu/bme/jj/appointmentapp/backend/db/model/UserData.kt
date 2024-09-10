@@ -13,4 +13,8 @@ open class UserData (
     open val name: String? = null,
     @Column(nullable=true)
     open val phoneNumber: String? = null,
+    @Column(nullable=true)
+    open val email: String? = null,
+    @Column(nullable=true)
+    open val bio: String? = null,
 )

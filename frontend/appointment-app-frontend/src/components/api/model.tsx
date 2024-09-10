@@ -12,6 +12,9 @@ export interface User {
     id: string;
     name: string;
     phoneNumber: string;
+    email: string;
+    profilePicture: string;
+    bio: string;
 }
 
 

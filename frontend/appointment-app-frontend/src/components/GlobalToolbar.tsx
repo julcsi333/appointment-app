@@ -3,17 +3,14 @@ import {AppBar, Toolbar, Button, IconButton, Menu, MenuItem} from '@mui/material
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { styled } from '@mui/system';
 import { useAuth0 } from "@auth0/auth0-react";
+import { useNavigate } from "react-router-dom";
 
 const ToolbarLeft = styled('div')({
   flexGrow: 1,
 });
 
-const ProfileIcon = styled(IconButton)({
-  marginRight: '10px',
-  cursor: 'pointer',
-});
-
 export const GlobalToolbar: React.FC = () => {
+	const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const {
     user,
@@ -40,6 +37,10 @@ export const GlobalToolbar: React.FC = () => {
 
   const handleMenuClose = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(null);
+  };
+
+  const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
+    navigate(`/profile`);
   };
 
   const handleProvidersClick = () => {
@@ -76,7 +77,7 @@ export const GlobalToolbar: React.FC = () => {
                   open={Boolean(anchorEl)}
                   onClose={handleMenuClose}
                 >
-                  <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+                  <MenuItem onClick={handleProfileClick}>Profile</MenuItem>
                   <MenuItem onClick={() => logoutWithRedirect()}>Logout</MenuItem>
                 </Menu>
               </div>

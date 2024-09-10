@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 
 interface AppointmentButtonProps {
-    providerId: string | number; // Adjust the type according to your application's needs
+    providerId: string | number;
   }
 
 const AppointmentButton : React.FC<AppointmentButtonProps> = ({ providerId }) => {

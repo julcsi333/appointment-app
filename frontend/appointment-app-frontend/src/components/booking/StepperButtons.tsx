@@ -5,11 +5,12 @@ interface StepperButtonsProps {
     activeStep: number;
     onBack: () => void;
     onNext: () => void;
+    enableNextButton: boolean;
     onSubmit: () => void;
     enableSubmitButton: boolean
 }
 
-const StepperButtons : React.FC<StepperButtonsProps> = ({ activeStep, onBack, onNext, onSubmit, enableSubmitButton }) => {
+const StepperButtons : React.FC<StepperButtonsProps> = ({ activeStep, onBack, onNext, enableNextButton, onSubmit, enableSubmitButton }) => {
     return (
         <div className="margin">
             {activeStep !== 0 && (
@@ -18,7 +19,7 @@ const StepperButtons : React.FC<StepperButtonsProps> = ({ activeStep, onBack, on
             </Button>
             )}
             {activeStep !== 2 && (
-            <Button variant="contained" onClick={onNext}>
+            <Button variant="contained" onClick={onNext} disabled={!enableNextButton}>
                 Next
             </Button>
             )}

@@ -18,17 +18,20 @@ const BookingForm: React.FC<BookingFormProps> = ({ id, user_id, enableSubmit }) 
     const [activeStep, setActiveStep] = useState<number>(0);
     const [selectedService, setSelectedService] = useState<string>('');
     const [selectedTime, setSelectedTime] = useState<Dayjs | null>(null);
+    const [enableNextButton, setEnableNextButton] = useState<boolean>(false);
     const {
         getAccessTokenSilently
       } = useAuth0();
 
     const handleServiceSelect = (service: string) => {
         setSelectedService(service);
+        setEnableNextButton(true);
         //setActiveStep(1);
       };
 
     const handleTimeSelect = (time: Dayjs | null) => {
         setSelectedTime(time);
+        setEnableNextButton(true);
         //setActiveStep(3);
     };
 
@@ -38,6 +41,9 @@ const BookingForm: React.FC<BookingFormProps> = ({ id, user_id, enableSubmit }) 
 
     const handleNext = () => {
         setActiveStep(activeStep + 1);
+        if(activeStep !== 2) {
+            setEnableNextButton(false)
+        }
     };
     
     const handleSubmit = async () => {
@@ -72,7 +78,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ id, user_id, enableSubmit }) 
                     </div>
                 )}
                 {/* Back, forward and submit buttons */}
-                <StepperButtons activeStep={activeStep} onBack={handleBack} onNext={handleNext} onSubmit={handleSubmit} enableSubmitButton={enableSubmit}/>
+                <StepperButtons activeStep={activeStep} onBack={handleBack} onNext={handleNext} enableNextButton={enableNextButton} onSubmit={handleSubmit} enableSubmitButton={enableSubmit}/>
             </center>
 
         </>

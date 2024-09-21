@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {AppBar, Toolbar, Button, IconButton, Menu, MenuItem} from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { styled } from '@mui/system';
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
+import { getUserByExternalId } from "./api/user-api-call";
+import { User } from "./api/model";
 
 const ToolbarLeft = styled('div')({
   flexGrow: 1,
@@ -17,9 +19,31 @@ export const GlobalToolbar: React.FC = () => {
     isLoading,
     isAuthenticated,
     loginWithRedirect,
+    getAccessTokenSilently,
     logout,
   } = useAuth0();
+	const [currentUserData, setCurrentUserData] = useState<User | null>(null);
 
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+        if (isAuthenticated) {
+          const token = await getAccessTokenSilently();
+          const userData = await getUserByExternalId(user!.sub!, token);
+          setCurrentUserData(userData);
+        }
+
+			} catch (error) {
+				console.error('Error:', error);
+			}
+		};
+
+		fetchData();
+
+		return () => {
+
+		};
+	}, [getAccessTokenSilently, user]);
   if (isLoading) {
     return <div>Loading ...</div>;
   }
@@ -42,18 +66,28 @@ export const GlobalToolbar: React.FC = () => {
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     navigate(`/profile`);
   };
+  const handleAppointmentsClick = (event: React.MouseEvent<HTMLElement>) => {
+    navigate(`/appointments`);
+  };
 
-  const handleProvidersClick = () => {
-    // Add logic to handle login button click
-    console.log('Login clicked');
+  const handleBookClick = () => {
+    navigate(`/`);
+  };
+
+  const handleMyServicesClick = () => {
+    if (currentUserData != null) {
+      navigate(`/services/providers/`+currentUserData.id);
+    }
   };
 
   return (
     <AppBar position="static">
       <Toolbar>
         <ToolbarLeft>
-          <Button color="inherit" onClick={handleProvidersClick}>Providers</Button>
-          <Button color="inherit" onClick={handleProvidersClick}>Services</Button>
+          <Button color="inherit" onClick={handleBookClick}>Book</Button>
+          {isAuthenticated && (
+            <Button color="inherit" onClick={handleMyServicesClick}>My services</Button>
+          )}
         </ToolbarLeft>
         <div>
           {!isAuthenticated && (
@@ -78,6 +112,7 @@ export const GlobalToolbar: React.FC = () => {
                   onClose={handleMenuClose}
                 >
                   <MenuItem onClick={handleProfileClick}>Profile</MenuItem>
+                  <MenuItem onClick={handleAppointmentsClick}>Appointments</MenuItem>
                   <MenuItem onClick={() => logoutWithRedirect()}>Logout</MenuItem>
                 </Menu>
               </div>

@@ -41,6 +41,7 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'com.microsoft.sqlserver:mssql-jdbc'
 	implementation 'com.okta.spring:okta-spring-boot-starter:3.0.5'
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 }
 
 tasks.withType(KotlinCompile) {

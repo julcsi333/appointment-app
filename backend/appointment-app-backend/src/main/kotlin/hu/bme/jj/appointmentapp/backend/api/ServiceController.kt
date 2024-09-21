@@ -1,7 +1,7 @@
 package hu.bme.jj.appointmentapp.backend.api
 
-import hu.bme.jj.appointmentapp.backend.db.model.Service
-import hu.bme.jj.appointmentapp.backend.db.repository.ServiceRepository
+import hu.bme.jj.appointmentapp.backend.db.sql.model.MainService
+import hu.bme.jj.appointmentapp.backend.db.sql.repository.ServiceRepository
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.web.bind.annotation.*
 
@@ -10,22 +10,22 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/services")
 class ServiceController(private val repository: ServiceRepository) {
     @GetMapping
-    fun getAllEntities(): List<Service> {
+    fun getAllEntities(): List<MainService> {
         return repository.findAll()
     }
 
     @GetMapping("/{id}")
-    fun getEntityById(@PathVariable id: Long): Service {
+    fun getEntityById(@PathVariable id: Long): MainService {
         return repository.findById(id).orElseThrow { EntityNotFoundException("Entity not found with id $id") }
     }
 
     @PostMapping
-    fun createEntity(@RequestBody entity: Service): Service {
+    fun createEntity(@RequestBody entity: MainService): MainService {
         return repository.save(entity)
     }
 
     @PutMapping("/{id}")
-    fun updateEntity(@PathVariable id: Long, @RequestBody updatedEntity: Service): Service {
+    fun updateEntity(@PathVariable id: Long, @RequestBody updatedEntity: MainService): MainService {
         if (!repository.existsById(id)) {
             throw EntityNotFoundException("Entity not found with id $id")
         }

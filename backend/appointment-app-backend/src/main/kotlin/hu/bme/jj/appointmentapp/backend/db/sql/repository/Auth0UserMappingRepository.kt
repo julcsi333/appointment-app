@@ -1,6 +1,6 @@
-package hu.bme.jj.appointmentapp.backend.db.repository
+package hu.bme.jj.appointmentapp.backend.db.sql.repository
 
-import hu.bme.jj.appointmentapp.backend.db.model.Auth0UserMapping
+import hu.bme.jj.appointmentapp.backend.db.sql.model.Auth0UserMapping
 import org.springframework.data.jpa.repository.JpaRepository
 
 

@@ -1,4 +1,4 @@
-package hu.bme.jj.appointmentapp.backend.db.model
+package hu.bme.jj.appointmentapp.backend.db.sql.model
 
 import jakarta.persistence.*
 
@@ -9,14 +9,6 @@ class Provider (
     phoneNumber: String,
     @Column(nullable=false)
     val businessAddress: String,
-
-    @ManyToMany
-    @JoinTable(
-        name = "provider_service",
-        joinColumns = [JoinColumn(name = "provider_id")],
-        inverseJoinColumns = [JoinColumn(name = "service_id")]
-    )
-    val services: MutableSet<Service> = mutableSetOf()
 ) : UserData(null, name, phoneNumber) {
 
 

@@ -1,11 +1,23 @@
 import dayjs, { Dayjs } from 'dayjs';
 
-export interface Provider {
-    id: string;
+export interface MainService {
+    id: number;
     name: string;
+    subServices: SubService[];
+}
+
+
+export interface SubService {
+    id: number;
+    name: string;
+    duration: string;
+    price: string;
+    portfolioImageUrls: string[];
+}
+
+export interface Provider extends User{
     businessAddress: string;
-    phoneNumber: string;
-    imageUrl: string;
+    services: MainService[]
 }
 
 export interface User {
@@ -13,7 +25,7 @@ export interface User {
     name: string;
     phoneNumber: string;
     email: string;
-    profilePicture: string;
+    profileImageUrl: string;
     bio: string;
 }
 

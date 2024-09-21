@@ -1,16 +1,5 @@
-package hu.bme.jj.appointmentapp.backend.db
+package hu.bme.jj.appointmentapp.backend.db.sql
 
-import hu.bme.jj.appointmentapp.backend.db.model.Auth0UserMapping
-import hu.bme.jj.appointmentapp.backend.db.model.Provider
-import hu.bme.jj.appointmentapp.backend.db.model.Service
-import hu.bme.jj.appointmentapp.backend.db.model.UserData
-import hu.bme.jj.appointmentapp.backend.db.repository.Auth0UserMappingRepository
-import hu.bme.jj.appointmentapp.backend.db.repository.ProviderRepository
-import hu.bme.jj.appointmentapp.backend.db.repository.ServiceRepository
-import hu.bme.jj.appointmentapp.backend.db.repository.UserRepository
-import jakarta.annotation.PostConstruct
-import org.springframework.stereotype.Component
-import kotlin.random.Random
 /*
 @Component
 class DevDBInitializer(
@@ -24,9 +13,9 @@ class DevDBInitializer(
     fun init() {
         // Add sample data to ServiceRepository
         val services = listOf(
-            Service(name = "Hair dressing"),
-            Service(name = "Manicure"),
-            Service(name = "Massage")
+            MainService(name = "Hair dressing"),
+            MainService(name = "Manicure"),
+            MainService(name = "Massage")
         )
         services.forEach {
             serviceRepository.save(it)

@@ -1,4 +1,4 @@
-package hu.bme.jj.appointmentapp.backend.db.model
+package hu.bme.jj.appointmentapp.backend.db.sql.model
 
 import jakarta.persistence.*
 

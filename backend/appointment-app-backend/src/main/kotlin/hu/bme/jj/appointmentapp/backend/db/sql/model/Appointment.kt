@@ -1,4 +1,4 @@
-package hu.bme.jj.appointmentapp.backend.db.model
+package hu.bme.jj.appointmentapp.backend.db.sql.model
 
 import jakarta.persistence.*
 
@@ -22,5 +22,5 @@ class Appointment(
 
     @ManyToOne
     @JoinColumn(name = "service_id")
-    var service: Service
+    var mainService: MainService
 )

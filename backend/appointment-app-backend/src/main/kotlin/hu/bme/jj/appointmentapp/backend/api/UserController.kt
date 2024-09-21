@@ -1,7 +1,7 @@
 package hu.bme.jj.appointmentapp.backend.api
 
-import hu.bme.jj.appointmentapp.backend.db.model.UserData
-import hu.bme.jj.appointmentapp.backend.db.service.UserService
+import hu.bme.jj.appointmentapp.backend.db.sql.model.UserData
+import hu.bme.jj.appointmentapp.backend.service.UserService
 import org.springframework.web.bind.annotation.*
 
 @RestController

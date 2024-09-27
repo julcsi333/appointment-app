@@ -16,5 +16,5 @@ open class UserData (
     @Column(nullable=true)
     open val email: String? = null,
     @Column(nullable=true)
-    open val bio: String? = null,
+    open val bio: String = "",
 )

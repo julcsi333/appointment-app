@@ -6,6 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface SubServiceRepository : JpaRepository<SubService, Long> {
-    fun findByProviderId(providerId: Long): List<SubService>
     fun findByServiceId(serviceId: Long): List<SubService>
 }

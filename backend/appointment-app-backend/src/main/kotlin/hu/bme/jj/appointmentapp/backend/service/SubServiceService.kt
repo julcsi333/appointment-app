@@ -3,66 +3,75 @@ package hu.bme.jj.appointmentapp.backend.service
 import hu.bme.jj.appointmentapp.backend.api.model.ProviderDTO
 import hu.bme.jj.appointmentapp.backend.api.model.SubServiceDTO
 import hu.bme.jj.appointmentapp.backend.db.mongo.ImageService
+import hu.bme.jj.appointmentapp.backend.db.sql.model.MainService
 import hu.bme.jj.appointmentapp.backend.db.sql.model.Provider
 import hu.bme.jj.appointmentapp.backend.db.sql.model.SubService
+import hu.bme.jj.appointmentapp.backend.db.sql.repository.ServiceRepository
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.SubServiceRepository
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 
 @Service
-class SubServiceService(private val repository: SubServiceRepository, private val imageService: ImageService) {
-    fun findAllSubServices(): List<SubService> = repository.findAll()
-    fun saveService(service: SubService): SubService = repository.save(service)
+class SubServiceService(
+    private val repository: SubServiceRepository,
+    private val mainServiceRepository: ServiceRepository,
+    private val imageService: ImageService
+) : ISubServiceService {
 
-    fun getServiceById(id: Long): SubService {
-        return repository.findById(id).orElseThrow { EntityNotFoundException("Sub service not found with id $id") }
+    @Throws(EntityNotFoundException::class)
+    private fun getServiceByIdFromRepositoryOrThrow(id: Long): SubService {
+        return getServiceByIdFromRepository(id) ?: throw EntityNotFoundException("Sub service not found with id $id")
     }
 
-    fun getServicesByMainServiceId(id: Long): List<SubService> {
-        return repository.findByServiceId(id)
+    private fun getServiceByIdFromRepository(id: Long): SubService? {
+        return repository.findById(id).orElse(null)
     }
 
-    fun getServicesByProviderId(id: Long): List<SubService> {
-        return repository.findByProviderId(id)
+    override fun getServiceById(id: Long): SubServiceDTO {
+        return mapToDTO(
+            getServiceByIdFromRepositoryOrThrow(id)
+        )
     }
 
-    fun updateService(id: Long, updatedService: SubService): SubService {
-        if (!repository.existsById(id)) {
-            throw EntityNotFoundException("Sub service not found with id $id")
+    override fun getServicesByMainServiceId(id: Long): List<SubServiceDTO> {
+        return repository.findByServiceId(id).map { mapToDTO(it) }
+    }
+
+    override fun updateService(updatedService: SubServiceDTO): SubServiceDTO {
+        if (updatedService.id == null) {
+            throw NullPointerException("Sub service id null when updating")
         }
-        updatedService.id = id
-        return repository.save(updatedService)
+        val oldService = getServiceByIdFromRepositoryOrThrow(updatedService.id)
+        val updatedServiceEntity = mapToEntity(
+            updatedService,
+            oldService.mainService.id!! // Main service in DB is not optional. This field cannot be null
+        )
+        return mapToDTO(repository.save(updatedServiceEntity))
     }
 
-    fun deleteServiceByMainServiceId(id: Long) {
-        val servicesToDelete = getServicesByMainServiceId(id)
+    override fun deleteServiceByMainServiceId(id: Long) {
+        val servicesToDelete = repository.findByServiceId(id)
         servicesToDelete.forEach {
-            deleteService(it.id)
+            deleteService(it.id!!) // SubService id from DB cannot be null.
         }
     }
 
-    fun deleteServiceByProviderId(id: Long) {
-        val servicesToDelete = getServicesByProviderId(id)
-        servicesToDelete.forEach {
-            deleteService(it.id)
-        }
-    }
-
-    fun deleteServiceByMainServiceIdAndProviderId(mainServiceId: Long, providerId: Long) {
-        val servicesToDelete = getServicesByProviderId(providerId)
-        servicesToDelete.forEach {
-            if(it.mainService.id == mainServiceId) {
-                deleteService(it.id)
-            }
-        }
-    }
-
-    fun deleteService(id: Long) {
+    override fun deleteService(id: Long) {
         repository.deleteById(id)
-        // TODO: call mongodb to delete related pictures
     }
 
     fun mapToDTO(subService: SubService): SubServiceDTO {
-        return SubServiceDTO(subService.id, subService.name, subService.duration, subService.price, listOf("subService" + subService.id.toString()))
+        return SubServiceDTO(subService.id, subService.name, subService.duration, subService.price)
+    }
+
+    fun mapToEntity(subService: SubServiceDTO, mainServiceId: Long): SubService {
+        return SubService(
+            subService.id,
+            subService.name,
+            subService.duration,
+            subService.price,
+            mainServiceRepository.findById(mainServiceId)
+                .orElseThrow {EntityNotFoundException("Main service #$mainServiceId for subservice #${subService.id} not found!")},
+        )
     }
 }

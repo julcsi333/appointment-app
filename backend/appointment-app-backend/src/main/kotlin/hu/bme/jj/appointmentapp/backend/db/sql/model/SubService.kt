@@ -15,7 +15,7 @@ import jakarta.persistence.Table
 class SubService (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0,
+    var id: Long? = null,
 
     @Column(nullable = false)
     var name: String,
@@ -23,11 +23,6 @@ class SubService (
     var duration: Int,
     @Column(nullable = false)
     var price: Float,
-
-    // Many-to-One relationship with Provider
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "provider_id", nullable = false)
-    var provider: Provider,
 
     // Many-to-One relationship with MainService
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

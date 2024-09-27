@@ -5,11 +5,14 @@ import jakarta.persistence.*
 @Entity
 @Table(name = "providers")
 class Provider (
-    name: String,
-    phoneNumber: String,
+    id: Long? = null,
+    name: String? = null,
+    phoneNumber: String? = null,
+    email: String? = null,
+    bio: String = "",
     @Column(nullable=false)
     val businessAddress: String,
-) : UserData(null, name, phoneNumber) {
+) : UserData(id, name, phoneNumber, email, bio) {
 
 
 

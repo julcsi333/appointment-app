@@ -1,9 +1,10 @@
 package hu.bme.jj.appointmentapp.backend.api.model
 
-import hu.bme.jj.appointmentapp.backend.db.sql.model.SubService
 
 data class ServiceDTO(
-    val id: Long,
+    val id: Long?,
     val name: String,
-    val subServices: List<SubService> = listOf()
+    val description: String,
+    val subServices: List<SubServiceDTO> = listOf(),
+    val globalService: GlobalServiceDTO,
 )

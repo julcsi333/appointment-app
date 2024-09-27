@@ -1,46 +1,85 @@
 package hu.bme.jj.appointmentapp.backend.service
 
 import hu.bme.jj.appointmentapp.backend.api.model.ProviderDTO
+import hu.bme.jj.appointmentapp.backend.api.model.ServiceDTO
 import hu.bme.jj.appointmentapp.backend.db.sql.model.Provider
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.ProviderRepository
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 
 @Service
-class ProviderService(private val repository: ProviderRepository, private val subServiceService: SubServiceService) {
-    fun getAllProviders(): List<Provider> {
-        return repository.findAll()
-    }
+class ProviderService(
+    private val repository: ProviderRepository,
+    private val mainServiceService: IMainServiceService
+) : IProviderService {
 
-    fun existsById(id: Long): Boolean {
+    private fun existsById(id: Long): Boolean {
         return repository.existsById(id)
     }
-    fun getProviderById(id: Long): Provider {
+
+    private fun getProviderByIdFromRepositoryOrThrow(id: Long): Provider {
         return repository.findById(id).orElseThrow { EntityNotFoundException("Provider not found with id $id") }
     }
 
-    fun createProvider(provider: Provider): Provider {
-        return repository.save(provider)
+    private fun getProviderByIdFromRepository(id: Long): Provider? {
+        return repository.findById(id).orElse(null)
     }
 
-    fun updateProvider(id: Long, updatedProvider: Provider): Provider {
-        if (!repository.existsById(id)) {
-            throw EntityNotFoundException("Provider not found with id $id")
+    private fun mapToDTOOptional(provider: Provider?): ProviderDTO? = if (provider != null) {
+        mapToDTO(provider)
+    } else {
+        null
+    }
+
+    private fun mapToDTO(provider: Provider): ProviderDTO = ProviderDTO(
+        provider.id,
+        provider.name,
+        provider.phoneNumber,
+        provider.email,
+        provider.bio ?: "",
+        provider.businessAddress,
+        mainServiceService.getServicesByProviderId(
+            provider.id ?: throw NullPointerException("Provider id null when mapping to UI representation")
+        )
+    )
+
+    private fun mapToEntity(provider: ProviderDTO): Provider = Provider(
+        provider.id,
+        provider.name,
+        provider.phoneNumber,
+        provider.email,
+        provider.bio ?: "",
+        provider.businessAddress
+    )
+
+    override fun getAllProviders(): List<ProviderDTO> {
+        return repository.findAll().map { mapToDTO(it) }
+    }
+
+    override fun getProviderById(id: Long): ProviderDTO {
+        return mapToDTO(getProviderByIdFromRepositoryOrThrow(id))
+    }
+
+    override fun tryGetProviderById(id: Long): ProviderDTO? {
+        return mapToDTOOptional(getProviderByIdFromRepository(id))
+    }
+
+    override fun updateProvider(updatedProvider: ProviderDTO): ProviderDTO {
+        if (updatedProvider.id == null || !repository.existsById(updatedProvider.id)) {
+            throw EntityNotFoundException("Provider not found with id ${updatedProvider.id}")
         }
-        updatedProvider.id = id
-        return repository.save(updatedProvider)
+        var updatedProviderEntity = mapToEntity(updatedProvider)
+        updatedProviderEntity = repository.save(updatedProviderEntity)
+
+        return mapToDTO(updatedProviderEntity)
     }
 
-    fun deleteMainService(mainServiceId: Long, providerId: Long) {
-        subServiceService.deleteServiceByMainServiceIdAndProviderId(mainServiceId, providerId)
+    override fun createProvider(provider: ProviderDTO): ProviderDTO {
+        return mapToDTO(repository.save(mapToEntity(provider)))
     }
 
-    fun deleteProvider(id: Long) {
-        subServiceService.deleteServiceByProviderId(id)
+    override fun deleteProvider(id: Long) {
+        mainServiceService.deleteServicesByProviderId(id)
         repository.deleteById(id)
-    }
-
-    fun mapToDTO(provider: Provider): ProviderDTO {
-
     }
 }

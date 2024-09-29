@@ -17,6 +17,10 @@ class GlobalServiceService(private val repository: GlobalServiceRepository) : IG
     }
 
     fun mapToDTO(globalService: GlobalService) : GlobalServiceDTO {
-        return GlobalServiceDTO(globalService.id, globalService.name, globalService.description)
+        return GlobalServiceDTO(
+            globalService.id!!, // Not nullable field in database. Cannot be null
+            globalService.name,
+            globalService.description
+        )
     }
 }

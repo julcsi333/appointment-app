@@ -21,7 +21,7 @@ const StyledCard = styled(Card)({
   });
 
 const ProviderInformation: React.FC<ProviderInformationProps>  = ({ provider, showBookbutton }) => {
-    console.log(provider.profileImageUrl)
+    const profileImageUrl = '/images/profile/'+provider.id
     return (
       <center className='margin'>
         <Box display="inline-block">
@@ -30,7 +30,7 @@ const ProviderInformation: React.FC<ProviderInformationProps>  = ({ provider, sh
               <CardMedia
                 component="img"
                 sx={{ width: 150 }}
-                image={provider.profileImageUrl === undefined ? "https://idea7.co.uk/wp-content/uploads/2021/02/placeholder-250x250-1.png" : provider.profileImageUrl}
+                image={profileImageUrl === undefined ? "https://idea7.co.uk/wp-content/uploads/2021/02/placeholder-250x250-1.png" : profileImageUrl}
                 alt={provider.name}
                 
               />

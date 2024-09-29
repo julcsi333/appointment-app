@@ -2,11 +2,12 @@ package hu.bme.jj.appointmentapp.backend.service
 
 import hu.bme.jj.appointmentapp.backend.api.model.ServiceDTO
 import hu.bme.jj.appointmentapp.backend.db.sql.model.MainService
-import hu.bme.jj.appointmentapp.backend.db.sql.model.Provider
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.GlobalServiceRepository
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.ProviderRepository
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.ServiceRepository
+import jakarta.persistence.EntityExistsException
 import jakarta.persistence.EntityNotFoundException
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 
 @Service
@@ -34,27 +35,52 @@ class MainServiceService(
         )
     }
 
-    override fun createService(service: ServiceDTO, providerId: Long): ServiceDTO {
-        return saveService(service, providerId)
+    override fun getAllMainServices(): List<ServiceDTO> {
+        return repository.findAll().map { mapToDTO(it) }
     }
 
-    private fun saveService(service: ServiceDTO, providerId: Long): ServiceDTO {
+    @Transactional
+    @Throws(EntityExistsException::class)
+    override fun createService(service: ServiceDTO): ServiceDTO {
+        if (service.id != null && getServiceByIdFromRepository(service.id) != null)
+            throw EntityExistsException("Main service with id #${service.id} already exists")
+
+        val newService = saveService(service)
+        service.subServices.forEach {
+            subServiceService.createService(it, newService.id!!) // ID of main service from database cannot be null
+        }
+        return mapToDTO(getServiceByIdFromRepositoryOrThrow(newService.id!!)) // ID of main service from database cannot be null
+    }
+
+    private fun saveService(service: ServiceDTO): ServiceDTO {
         return mapToDTO(
             repository.save(
-                mapToEntity(service, providerId)
+                mapToEntity(service)
             )
         )
     }
 
+    @Transactional
     override fun updateService(updatedService: ServiceDTO): ServiceDTO {
         if (updatedService.id == null) {
             throw NullPointerException("Main service id null when updating")
         }
-        val oldService = getServiceByIdFromRepositoryOrThrow(updatedService.id)
-        return saveService(
-            updatedService,
-            oldService.provider.id!! // Provider in DB is not optional. This field cannot be null
-        )
+        val savedSubServiceIds = subServiceService.getServicesByMainServiceId(updatedService.id)
+            .map {it.id!!}.toMutableList() // Services from database cannot have null id
+        updatedService.subServices.forEach {
+            if (it.id == null) {
+                subServiceService.createService(it, updatedService.id)
+            } else if (savedSubServiceIds.contains(it.id)) {
+                subServiceService.updateService(it)
+                savedSubServiceIds.remove(it.id)
+            } else {
+                throw IllegalArgumentException("New sub service cannot be added with non-null id")
+            }
+        }
+        savedSubServiceIds.forEach {
+            subServiceService.deleteService(it)
+        }
+        return saveService(updatedService)
     }
 
     override fun deleteService(id: Long) {
@@ -77,21 +103,21 @@ class MainServiceService(
     fun mapToDTO(mainService: MainService): ServiceDTO {
         return ServiceDTO(
             mainService.id,
-            mainService.globalService.name,
             mainService.description,
             subServiceService.getServicesByMainServiceId(
                 mainService.id ?: throw NullPointerException("Main service id null when mapping to UI representation")
             ),
-            globalServiceService.getGlobalServiceById(mainService.globalService.id!!) // Global service id is not optional in DB. This cannot be null
+            globalServiceService.getGlobalServiceById(mainService.globalService.id!!), // Global service id is not optional in DB. This cannot be null
+            mainService.provider.id!! // Provider id is not optional in DB. This cannot be null
         )
     }
 
-    fun mapToEntity(mainService: ServiceDTO, providerId: Long): MainService {
+    fun mapToEntity(mainService: ServiceDTO): MainService {
         return MainService(
             mainService.id,
             mainService.description,
-            providerRepository.findById(providerId)
-                .orElseThrow {EntityNotFoundException("Provider #$providerId for main service #${mainService.id} not found!")},
+            providerRepository.findByUserId(mainService.providerId)
+                .orElseThrow {EntityNotFoundException("Provider #${mainService.providerId} for main service #${mainService.id} not found!")},
             globalServiceRepository.findById(mainService.globalService.id)
                 .orElseThrow {EntityNotFoundException("Global service #${mainService.globalService.id} for main service #${mainService.id} not found!")},
         )

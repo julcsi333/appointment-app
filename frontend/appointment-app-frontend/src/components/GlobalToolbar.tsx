@@ -43,7 +43,7 @@ export const GlobalToolbar: React.FC = () => {
 		return () => {
 
 		};
-	}, [getAccessTokenSilently, user]);
+	}, [getAccessTokenSilently, isAuthenticated, user]);
   if (isLoading) {
     return <div>Loading ...</div>;
   }

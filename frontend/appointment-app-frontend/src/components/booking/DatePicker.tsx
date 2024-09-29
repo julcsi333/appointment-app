@@ -6,10 +6,11 @@ import { DatePicker as MuiDatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { Grid } from '@mui/material';
+import { SubService } from '../api/model';
 
 interface DatePickerProps {
-    id: string;
-    selectedService: string;
+    id: number;
+    selectedService: SubService;
     onTimeSelect: (date: Dayjs | null) => void;
 }
 

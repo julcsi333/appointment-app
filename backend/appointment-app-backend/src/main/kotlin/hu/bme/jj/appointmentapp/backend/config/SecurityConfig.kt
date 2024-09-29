@@ -13,7 +13,7 @@ class SecurityConfig {
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http {
-            securityMatcher("/book/**")
+            securityMatcher("book/**", "user/**")
             authorizeHttpRequests {
 
                 authorize(anyRequest, authenticated)

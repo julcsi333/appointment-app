@@ -1,37 +1,51 @@
 import dayjs, { Dayjs } from 'dayjs';
 
-export interface MainService {
+export interface GlobalService {
     id: number;
     name: string;
-    subServices: SubService[];
+    description: String;
 }
 
+export interface MainService {
+    id: number;
+    description: string;
+    subServices: SubService[];
+    globalService: GlobalService;
+    providerId: number;
+}
+
+export interface NewMainService {
+    id: number | null;
+    description: string;
+    subServices: SubService[];
+    globalService: GlobalService;
+    providerId: number;
+}
 
 export interface SubService {
     id: number;
     name: string;
     duration: string;
     price: string;
-    portfolioImageUrls: string[];
 }
 
 export interface Provider extends User{
     businessAddress: string;
-    services: MainService[]
 }
 
 export interface User {
-    id: string;
+    id: number;
     name: string;
     phoneNumber: string;
     email: string;
-    profileImageUrl: string;
     bio: string;
 }
 
 
 export interface Appointment {
+    id: number | null;
     date: Dayjs;
-    serviceId: string;
-    customerId: string;
+    customerId: number;
+    providerId: number;
+    subServiceId: number;
 }

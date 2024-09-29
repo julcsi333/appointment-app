@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface SubServiceRepository : JpaRepository<SubService, Long> {
-    fun findByServiceId(serviceId: Long): List<SubService>
+    fun findByMainServiceId(mainServiceId: Long): List<SubService>
 }

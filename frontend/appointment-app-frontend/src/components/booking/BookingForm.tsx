@@ -7,24 +7,26 @@ import StepperButtons from './StepperButtons';
 import { Dayjs } from 'dayjs';
 import { useAuth0 } from "@auth0/auth0-react";
 import { bookAppointment } from '../api/appointment-api-call';
+import { SubService } from '../api/model';
 
 interface BookingFormProps {
-    id: string;
-    user_id: string | null;
+    id: number;
+    user_id: number | null;
     enableSubmit: boolean;
 }
 
 const BookingForm: React.FC<BookingFormProps> = ({ id, user_id, enableSubmit }) => {
     const [activeStep, setActiveStep] = useState<number>(0);
-    const [selectedService, setSelectedService] = useState<string>('');
+    const [selectedService, setSelectedService] = useState<SubService | null>(null);
     const [selectedTime, setSelectedTime] = useState<Dayjs | null>(null);
     const [enableNextButton, setEnableNextButton] = useState<boolean>(false);
     const {
         getAccessTokenSilently
       } = useAuth0();
 
-    const handleServiceSelect = (service: string) => {
-        setSelectedService(service);
+    const handleServiceSelect = (service: number) => {
+        //TODO: search selectable services
+        //setSelectedService(service);
         setEnableNextButton(true);
         //setActiveStep(1);
       };
@@ -48,7 +50,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ id, user_id, enableSubmit }) 
     
     const handleSubmit = async () => {
         const token = await getAccessTokenSilently();
-        bookAppointment(id, {customerId: user_id!, date: selectedTime!, serviceId: selectedService}, token)
+        bookAppointment(id, {id: null, providerId: id, customerId: user_id!, date: selectedTime!, subServiceId: selectedService!.id}, token)
         // Send booking information to backend
         console.log('Booking submitted:', {
             providerId: id,
@@ -67,12 +69,12 @@ const BookingForm: React.FC<BookingFormProps> = ({ id, user_id, enableSubmit }) 
                     <ServiceSelector onServiceSelect={handleServiceSelect} selectedService={selectedService}/>
                 )}
                 {activeStep === 1 && (
-                    <DatePicker onTimeSelect={handleTimeSelect} selectedService={selectedService} id={id} />
+                    <DatePicker onTimeSelect={handleTimeSelect} selectedService={selectedService!} id={id} />
                 )}
                 {activeStep === 2 && (
                     <div>
                         <Typography variant="h6">Confirm Booking</Typography>
-                        <Typography variant="body1">Service: {selectedService}</Typography>
+                        <Typography variant="body1">Service: {selectedService!.name}</Typography>
                         <Typography variant="body1">Date: {selectedTime?.toDate().toLocaleDateString()}</Typography>
                         <Typography variant="body1">Time: {selectedTime?.toDate().toLocaleTimeString()}</Typography>
                     </div>

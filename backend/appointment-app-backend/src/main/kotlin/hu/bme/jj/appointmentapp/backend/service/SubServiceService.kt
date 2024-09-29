@@ -1,6 +1,7 @@
 package hu.bme.jj.appointmentapp.backend.service
 
 import hu.bme.jj.appointmentapp.backend.api.model.ProviderDTO
+import hu.bme.jj.appointmentapp.backend.api.model.ServiceDTO
 import hu.bme.jj.appointmentapp.backend.api.model.SubServiceDTO
 import hu.bme.jj.appointmentapp.backend.db.mongo.ImageService
 import hu.bme.jj.appointmentapp.backend.db.sql.model.MainService
@@ -34,7 +35,15 @@ class SubServiceService(
     }
 
     override fun getServicesByMainServiceId(id: Long): List<SubServiceDTO> {
-        return repository.findByServiceId(id).map { mapToDTO(it) }
+        return repository.findByMainServiceId(id).map { mapToDTO(it) }
+    }
+
+    override fun createService(service: SubServiceDTO, mainServiceId: Long): SubServiceDTO {
+        return mapToDTO(
+            repository.save(
+                mapToEntity(service, mainServiceId)
+            )
+        )
     }
 
     override fun updateService(updatedService: SubServiceDTO): SubServiceDTO {
@@ -50,7 +59,7 @@ class SubServiceService(
     }
 
     override fun deleteServiceByMainServiceId(id: Long) {
-        val servicesToDelete = repository.findByServiceId(id)
+        val servicesToDelete = repository.findByMainServiceId(id)
         servicesToDelete.forEach {
             deleteService(it.id!!) // SubService id from DB cannot be null.
         }

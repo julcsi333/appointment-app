@@ -6,6 +6,5 @@ class ProviderDTO(
     phoneNumber: String?,
     email: String?,
     bio: String = "",
-    val businessAddress: String = "",
-    val services: List<ServiceDTO> = listOf()
+    val businessAddress: String = ""
 ) : UserDTO(id, name, phoneNumber, email, bio)

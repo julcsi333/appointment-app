@@ -21,6 +21,6 @@ class Appointment(
     var customer: UserData,
 
     @ManyToOne
-    @JoinColumn(name = "service_id")
-    var mainService: MainService
+    @JoinColumn(name = "sub_service_id")
+    var subService: SubService
 )

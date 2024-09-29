@@ -1,41 +1,44 @@
 package hu.bme.jj.appointmentapp.backend.api
 
+import hu.bme.jj.appointmentapp.backend.api.model.ServiceDTO
 import hu.bme.jj.appointmentapp.backend.db.sql.model.MainService
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.ServiceRepository
+import hu.bme.jj.appointmentapp.backend.service.IMainServiceService
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.web.bind.annotation.*
 
 
 @RestController
 @RequestMapping("/services")
-class ServiceController(private val repository: ServiceRepository) {
+class ServiceController(private val mainServiceService: IMainServiceService) {
     @GetMapping
-    fun getAllEntities(): List<MainService> {
-        return repository.findAll()
+    fun getAllServices(): List<ServiceDTO> {
+        return mainServiceService.getAllMainServices()
     }
 
     @GetMapping("/{id}")
-    fun getEntityById(@PathVariable id: Long): MainService {
-        return repository.findById(id).orElseThrow { EntityNotFoundException("Entity not found with id $id") }
+    fun getServiceById(@PathVariable id: Long): ServiceDTO {
+        return mainServiceService.getServiceById(id)
+    }
+
+    @GetMapping("/provider/{id}")
+    fun getServiceByProviderId(@PathVariable id: Long): List<ServiceDTO> {
+        return mainServiceService.getServicesByProviderId(id)
     }
 
     @PostMapping
-    fun createEntity(@RequestBody entity: MainService): MainService {
-        return repository.save(entity)
+    fun createService(@RequestBody service: ServiceDTO): ServiceDTO {
+        return mainServiceService.createService(service)
     }
 
     @PutMapping("/{id}")
-    fun updateEntity(@PathVariable id: Long, @RequestBody updatedEntity: MainService): MainService {
-        if (!repository.existsById(id)) {
-            throw EntityNotFoundException("Entity not found with id $id")
-        }
-        updatedEntity.id = id
-        return repository.save(updatedEntity)
+    fun updateService(@PathVariable id: Long, @RequestBody updatedService: ServiceDTO): ServiceDTO {
+        return mainServiceService.updateService(updatedService)
     }
 
     @DeleteMapping("/{id}")
-    fun deleteEntity(@PathVariable id: Long) {
-        repository.deleteById(id)
+    fun deleteService(@PathVariable id: Long) {
+        mainServiceService.deleteService(id)
     }
 
 }

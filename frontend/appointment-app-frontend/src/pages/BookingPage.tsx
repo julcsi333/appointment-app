@@ -27,10 +27,7 @@ const BookingPage: React.FC = () => {
                 setProvider(providerData);
                 
                 const token = await getAccessTokenSilently();
-                console.log(`User: ${user}`)
-                console.log(`User sub: ${user?.sub}`)
                 const userData = await getUserByExternalId(user!.sub!, token);
-                console.log(`User data: ${userData}`)
                 setCurrentUserData(userData);
             } catch (error) {
                 console.error('Error:', error);

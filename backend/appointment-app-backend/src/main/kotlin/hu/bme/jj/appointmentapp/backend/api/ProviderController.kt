@@ -39,6 +39,6 @@ class ProviderController(private val providerService: IProviderService) {
     @DeleteMapping("/{id}")
     fun deleteProvider(@PathVariable id: Long): ResponseEntity<String> {
         providerService.deleteProvider(id)
-        return ResponseEntity.ok("Provider $id deleted.")
+        return ResponseEntity.ok("Provider #$id deleted.")
     }
 }

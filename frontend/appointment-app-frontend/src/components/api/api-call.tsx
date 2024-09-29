@@ -45,3 +45,21 @@ export const secureApiPostCall = async (url: string, body: string, token: string
         throw error;
     }
 };
+
+export const secureApiPutCall = async (url: string, body: string, token: string): Promise<AxiosResponse<any, any>> => {
+    try {
+        return await axios.put(
+            url,
+            body,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            }
+        );
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        throw error;
+    }
+};

@@ -3,7 +3,9 @@ package hu.bme.jj.appointmentapp.backend.service
 import hu.bme.jj.appointmentapp.backend.api.model.ServiceDTO
 
 interface IMainServiceService {
-    fun createService(service: ServiceDTO, providerId: Long): ServiceDTO
+    fun getAllMainServices(): List<ServiceDTO>
+
+    fun createService(service: ServiceDTO): ServiceDTO
 
     fun updateService(updatedService: ServiceDTO): ServiceDTO
 

@@ -65,7 +65,7 @@ class MainServiceService(
         if (updatedService.id == null) {
             throw NullPointerException("Main service id null when updating")
         }
-        val savedSubServiceIds = subServiceService.getServicesByMainServiceId(updatedService.id)
+        /*val savedSubServiceIds = subServiceService.getServicesByMainServiceId(updatedService.id)
             .map {it.id!!}.toMutableList() // Services from database cannot have null id
         updatedService.subServices.forEach {
             if (it.id == null) {
@@ -79,7 +79,7 @@ class MainServiceService(
         }
         savedSubServiceIds.forEach {
             subServiceService.deleteService(it)
-        }
+        }*/
         return saveService(updatedService)
     }
 
@@ -90,7 +90,12 @@ class MainServiceService(
     }
 
     override fun getServicesByProviderId(id: Long): List<ServiceDTO> {
-        return repository.findByProviderId(id).map { mapToDTO(it) }
+        val provider = providerRepository.findByUserId(id).orElseThrow {
+            EntityNotFoundException("No provider found with userid #$id")
+        }
+        return repository.findByProviderId(
+            provider.id!!   // Id is not an optional field in database. This must not be null
+        ).map { mapToDTO(it) }
     }
 
     override fun deleteServicesByProviderId(id: Long) {

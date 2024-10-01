@@ -1,10 +1,7 @@
 package hu.bme.jj.appointmentapp.backend.api
 
 import hu.bme.jj.appointmentapp.backend.api.model.ServiceDTO
-import hu.bme.jj.appointmentapp.backend.db.sql.model.MainService
-import hu.bme.jj.appointmentapp.backend.db.sql.repository.ServiceRepository
 import hu.bme.jj.appointmentapp.backend.service.IMainServiceService
-import jakarta.persistence.EntityNotFoundException
 import org.springframework.web.bind.annotation.*
 
 
@@ -22,7 +19,7 @@ class ServiceController(private val mainServiceService: IMainServiceService) {
     }
 
     @GetMapping("/provider/{id}")
-    fun getServiceByProviderId(@PathVariable id: Long): List<ServiceDTO> {
+    fun getServicesByProviderId(@PathVariable id: Long): List<ServiceDTO> {
         return mainServiceService.getServicesByProviderId(id)
     }
 

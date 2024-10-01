@@ -56,7 +56,7 @@ const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user
 		let tempErrors = { name: '', businessAddress: '', phoneNumber: '', email: '' };
 	
 		// Name validation (required)
-		if (!editedProvider!.name.trim()) {
+		if (editedProvider!.name.trim() === "") {
 			tempErrors.name = 'Name is required';
 			isValid = false;
 		}
@@ -190,36 +190,41 @@ const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user
 				)}
 			</CardContent>
 			{/* Edit/Save/Cancel buttons */}
-			<Box sx={{ position: 'absolute', right: 16, top: 90 }}>
-				{!editing ? (
-					<IconButton onClick={() => setEditing(true)}>
-					<EditIcon />
-					</IconButton>
-				) : (
-					<>
-					<Button
-						variant="contained"
-						color="primary"
-						startIcon={<SaveIcon />}
-						onClick={handleSave}
-						sx={{ mr: 1 }}
-					>
-						Save
-					</Button>
-					{!creatingProfile && (
-						<Button
-							variant="outlined"
-							color="secondary"
-							startIcon={<CancelIcon />}
-							onClick={handleCancel}
-						>
-							Cancel
-						</Button>
-					)}
+			
+			{ownPage && (
+				<Box sx={{ position: 'absolute', right: 16, top: 90 }}>
+					{!editing ? (
+						<IconButton onClick={() => setEditing(true)}>
+							<EditIcon />
+						</IconButton>
+					) : (
+						
+						<>
+							<Button
+								variant="contained"
+								color="primary"
+								startIcon={<SaveIcon />}
+								onClick={handleSave}
+								sx={{ mr: 1 }}
+							>
+								Save
+							</Button>
+							{!creatingProfile && (
+								<Button
+									variant="outlined"
+									color="secondary"
+									startIcon={<CancelIcon />}
+									onClick={handleCancel}
+								>
+									Cancel
+								</Button>
+							)}
 
-					</>
-				)}
-			</Box>
+
+						</>
+					)}
+				</Box>
+			)}
 		</Card>
 	);
 };

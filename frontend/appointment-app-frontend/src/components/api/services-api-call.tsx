@@ -1,5 +1,5 @@
-import { apiGetCall, secureApiPostCall, secureApiPutCall } from "./api-call";
-import { GlobalService, MainService, NewMainService } from "./model";
+import { apiGetCall, secureApiDeleteCall, secureApiPostCall, secureApiPutCall } from "./api-call";
+import { GlobalService, MainService, NewMainService, SubService } from "./model";
 
 export const getAllGlobalServices = async (): Promise<Array<GlobalService>> => {
 	const response = await apiGetCall('http://localhost:8080/globalServices');
@@ -29,5 +29,14 @@ export const createService = async (mainService: NewMainService, token: string):
 
 export const updateProvider = async (mainService: MainService, token: string): Promise<MainService> => {
 	const response = await secureApiPutCall('http://localhost:8080/services/'+mainService.id.toString(), JSON.stringify(mainService), token);
+	return response.data;
+};
+
+export const deleteService = async (mainServiceId: number, token: string) => {
+	await secureApiDeleteCall('http://localhost:8080/services/'+mainServiceId.toString(), token);
+};
+
+export const getSubServicesByMainServiceId = async (mainServiceId: number): Promise<Array<SubService>> => {
+	const response = await apiGetCall(`http://localhost:8080/subServices/mainService/${mainServiceId.toString()}`);
 	return response.data;
 };

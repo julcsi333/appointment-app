@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Card, Typography, Tabs, Tab, IconButton, Menu, MenuItem } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { GlobalService, MainService, Provider, SubService } from '../api/model';
-import { createService, getAllGlobalServices, getServicesByProviderId } from '../api/services-api-call';
+import { GlobalService, MainService, Provider } from '../api/model';
+import { createService, deleteService, getAllGlobalServices, getServicesByProviderId } from '../api/services-api-call';
+import DeleteDialog from '../DeleteDialog';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ServiceDetails from './ServiceDetails';
 
 interface ServicesInformationProps {
 	provider: Provider | null;
@@ -13,16 +16,11 @@ interface ServicesInformationProps {
 
 const ServicesInformation: React.FC<ServicesInformationProps> = ({provider, ownPage, creatingProfile, token}) => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-	
-	// State for managing the service tabs
-	/*const [serviceTabs, setServiceTabs] = useState<ServiceTab[]>([
-		{ id: 0, label: 'Manicure', content: 'Manicure services description...' },
-		{ id: 1, label: 'Hairdressing', content: 'Hairdressing services description...' }
-	]);*/
-
-	const [currentService, setCurrentService] = useState<MainService>();
+	const [currentTab, setCurrentTab] = useState<number>(0);
+	const [currentService, setCurrentService] = useState<MainService | null>(null);
 	const [services, setServices] = useState<MainService[]>([]);
 	const [globalServices, setGlobalServices] = useState<GlobalService[]>([]);
+	const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
 
 
 	useEffect(() => {
@@ -48,12 +46,14 @@ const ServicesInformation: React.FC<ServicesInformationProps> = ({provider, ownP
 
 	// Handle tab change
 	const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-		for (var service of services) {
+		setCurrentTab(newValue)
+		setCurrentService(services[newValue])
+		/*for (var service of services) {
 			if (service.id === newValue) {
 				setCurrentService(service)
 				break;
 			}
-		}
+		}*/
 	};
 
 	// Add a new service tab when the + icon is clicked
@@ -69,6 +69,7 @@ const ServicesInformation: React.FC<ServicesInformationProps> = ({provider, ownP
 			subServices: []
 		}, token)
 		setServices([...services, newService])
+		setCurrentTab(services.length)
 		
 		setCurrentService(newService)
 		console.log(newService)
@@ -80,13 +81,46 @@ const ServicesInformation: React.FC<ServicesInformationProps> = ({provider, ownP
 		setAnchorEl(null);
 	};
 
+	const handleDeleteService = async () => {
+		setDeleteDialogOpen(false)
+		await deleteService(currentService!.id, token);
+		services.splice(currentTab, 1)
+		setServices(services)
+		if (services.length === 0) {
+			setCurrentService(null)
+			setCurrentTab(0)
+		} else if (currentTab >= services.length) {
+			setCurrentTab(services.length-1)
+			setCurrentService(services[currentTab])
+		} else {
+			setCurrentService(services[currentTab])
+		}
+	};
+
 	return (
 		<Card sx={{ p: 2, height: '70vh', display: 'flex', flexDirection: 'column' }}>
 			{/* Tabs */}
 			<Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center' }}>
-				<Tabs value={currentService?.id} onChange={handleTabChange} aria-label="service tabs">
-					{services.map((service) => (
-					<Tab key={service.id} label={service.globalService.name} />
+				<Tabs value={currentTab} onChange={handleTabChange} aria-label="service tabs">
+					{services.map((service, idx) => (
+					<Tab
+						key={service.id} 
+						label={
+							<Box sx={{ display: 'flex', alignItems: 'center' }}>
+								<Typography>{service.globalService.name}</Typography>
+								{ownPage && idx === currentTab && (
+									<IconButton
+										size="small"
+										onClick={() => setDeleteDialogOpen(true)}
+										sx={{ ml: 1 }}
+										aria-label="delete-service"
+									>
+										<DeleteIcon fontSize="small" />
+									</IconButton>
+								)}
+							</Box>
+						}
+					/>
 					))}
 				</Tabs>
 				{ownPage && !creatingProfile && (
@@ -114,13 +148,9 @@ const ServicesInformation: React.FC<ServicesInformationProps> = ({provider, ownP
 				)}
 
 			</Box>
-
+			<DeleteDialog deleteDialogOpen={deleteDialogOpen} dialogDescription={'Are you sure you want to delete this service? This action cannot be undone.'} confirmDelete={handleDeleteService} cancelDelete={() => setDeleteDialogOpen(false)} />
 			{/* Tab Content */}
-			<Box sx={{ flexGrow: 1, p: 3 }}>
-				<Typography variant="body1">
-					{currentService?.description ?? "Select a service to view details."}
-				</Typography>
-			</Box>
+			<ServiceDetails mainService={currentService} ownPage={ownPage} token={token} />
 		</Card>
 	);
 };

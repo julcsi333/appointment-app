@@ -28,18 +28,36 @@ export interface SubService {
     duration: number;
     price: number;
 }
-export interface Provider extends User{
-    businessAddress: string;
+
+export interface NewSubService {
+    id: number | null;
+    name: string;
+    duration: number;
+    price: number;
 }
 
-export interface User {
+export class User {
     id: number;
     name: string;
     phoneNumber: string;
     email: string;
     bio: string;
+    constructor(id: number, name: string, phoneNumber: string, email: string, bio: string) {
+        this.id = id;
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.bio = bio;
+    }
 }
 
+export class Provider extends User{
+    businessAddress: string;
+    constructor(id: number, name: string, phoneNumber: string, email: string, bio: string, businessAddress: string) {
+        super(id, name, phoneNumber, email, bio)
+        this.businessAddress = businessAddress;
+    }
+}
 
 export interface Appointment {
     id: number | null;
@@ -91,10 +109,11 @@ export class EditedSubService {
         return false
     }
     private validatePrice(): boolean {
-        if (this.name.trim()  === "") {
+        if (this.price === null || this.price === undefined || this.price.trim()  === "") {
             this.errors.name = "Price is required"
             return false
         }
+        parseFloat(this.price.trim())
         return true
     }
 }

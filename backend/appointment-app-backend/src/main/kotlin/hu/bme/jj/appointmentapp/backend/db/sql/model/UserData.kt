@@ -15,7 +15,7 @@ open class UserData (
     @Column(nullable=true)
     open var email: String? = null,
     @Column(nullable=true)
-    open var bio: String = "",
+    open var bio: String? = "",
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
     open var provider: Provider? = null  // Nullable
 )

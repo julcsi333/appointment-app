@@ -26,6 +26,8 @@ export const createProvider = async (provider: Provider, token: string): Promise
 };
 
 export const updateProvider = async (provider: Provider, token: string): Promise<Provider> => {
+  console.log("Provider update call:")
+  console.log(provider)
   const response = await secureApiPutCall('http://localhost:8080/providers/'+provider.id.toString(), JSON.stringify(provider), token);
   return response.data;
 };

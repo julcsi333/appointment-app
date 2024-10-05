@@ -28,14 +28,14 @@ const ServicesPage: React.FC = () => {
 
 	const saveProfile = async (provider: Provider) => {
 		if (creatingBusinessProfile) {
+			console.log(provider)
 			setProvider(await createProvider(provider, token));
 			setCreatingBusinessProfile(false);
 		} else {
+			console.log(provider)
 			setProvider(await updateProvider(provider, token))
 			setCurrentUser(await getUser(currentUser!.id.toString(), token!))
 		}
-		
-		
 	}
 
 	useEffect(() => {
@@ -43,26 +43,32 @@ const ServicesPage: React.FC = () => {
 			try {
 				const currentProvider = await getProvider(id!);
 				var isOwnPage = false;
+				console.log("Queried current provider: ")
+				console.log(currentProvider)
 				setProvider(currentProvider);
 				if (isAuthenticated) {
 					const token = await getAccessTokenSilently();
 					setToken(token)
 					const userData = await getUserByExternalId(user!.sub!, token);
+					if (currentProvider === null) {
+						setProvider({...userData, businessAddress: ""})
+					}
 					setCurrentUser(userData)
 					if (userData.id.toString() === id) {
 						setOwnPage(true)
 						isOwnPage = true
 					}
 				}
-				if (currentProvider === null && !isOwnPage) {
-					navigate(`/error`, {
-						state: {
-							errorType: ErrorType.PROVIDER_NOT_FOUND,
-							providerId: id
-						}
-					});
+				if (currentProvider === null) {
+					if (!isOwnPage) {
+						navigate(`/error`, {
+							state: {
+								errorType: ErrorType.PROVIDER_NOT_FOUND,
+								providerId: id
+							}
+						});
+					}
 				}
-
 			} catch (error) {
 				console.error('Error:', error);
 			}
@@ -71,7 +77,7 @@ const ServicesPage: React.FC = () => {
 		return () => {
 
 		};
-	}, [getAccessTokenSilently, id, isAuthenticated, navigate, ownPage, user, setProvider]);
+	}, [getAccessTokenSilently, id, isAuthenticated, navigate, user, setProvider]);
 	return (
 		<div>
 			<GlobalToolbar />

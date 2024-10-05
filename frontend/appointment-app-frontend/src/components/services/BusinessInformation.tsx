@@ -16,17 +16,30 @@ interface BusinessInformationProps {
 	saveProfile: (provider: Provider) => void
 }
 
+function createProviderFromUser(user: User, businessAddress: string): Provider {
+	return new Provider(user.id, user.name, user.phoneNumber, user.email, user.bio, businessAddress)
+}
+
+function createProvider(provider: Provider): Provider | null {
+	console.log("Create provider")
+	console.log(provider)
+	if (provider === null) {
+		return null
+	}
+	return new Provider(provider.id, provider.name, provider.phoneNumber, provider.email, provider.bio, provider.businessAddress)
+}
+
 const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user, ownPage, creatingProfile, saveProfile}) => {
-    const [editedProvider, setEditedProvider] = useState<Provider | null>(provider === null && creatingProfile && user !== null ? {...user, businessAddress: ""} : provider);
+    const [editedProvider, setEditedProvider] = useState<Provider | null>(null);
     const [editing, setEditing] = useState<boolean>(creatingProfile);
 	//const [formValues, setFormValues] = useState(editedProvider);
-	useEffect(() => {
+	/*useEffect(() => {
 		const fetchData = async () => {
-			setEditedProvider(provider);
+			setEditedProvider(ownPage ? {...user!, businessAddress: provider?.businessAddress ?? ""} : {...provider!});
 		};
 		fetchData();
 		return () => {};
-	}, [provider]);
+	}, [ownPage, provider, user]);*/
 
 	const handleSave = () => {
 		if(validateFields()) {
@@ -34,8 +47,14 @@ const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user
 			setEditing(false);
 		}
 	}
+
+	const handleEditing = () => {
+		setEditedProvider(ownPage && creatingProfile ? createProviderFromUser(user!, provider?.businessAddress ?? "") : createProvider(provider!));
+		setEditing(true);
+	}
+
 	const handleCancel = () => {
-		setEditedProvider(provider);
+		setEditedProvider(ownPage && creatingProfile ? createProviderFromUser(user!, provider?.businessAddress ?? "") : createProvider(provider!));
 		setEditing(false);
 	}
 
@@ -54,22 +73,22 @@ const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user
 	const validateFields = () => {
 		let isValid = true;
 		let tempErrors = { name: '', businessAddress: '', phoneNumber: '', email: '' };
-	
+		console.log(editedProvider!.name)
 		// Name validation (required)
-		if (editedProvider!.name.trim() === "") {
+		if (editedProvider!.name === null || editedProvider!.name === undefined || editedProvider!.name.trim() === "") {
 			tempErrors.name = 'Name is required';
 			isValid = false;
 		}
 	
 		// Address validation (required)
-		if (editedProvider!.businessAddress.trim() === "") {
+		if (editedProvider!.businessAddress === null || editedProvider!.businessAddress === undefined || editedProvider!.businessAddress.trim() === "") {
 			tempErrors.businessAddress = 'Business address is required';
 			isValid = false;
 		}
 	
 		// Phone number validation (required, simple pattern check)
 		const phonePattern = /^[\d\s()-]+$/;
-		if (editedProvider!.phoneNumber.trim() === "") {
+		if (editedProvider!.phoneNumber === null || editedProvider!.phoneNumber === undefined || editedProvider!.phoneNumber.trim() === "") {
 			tempErrors.phoneNumber = 'Phone number is required';
 			isValid = false;
 		} else if (!phonePattern.test(editedProvider!.phoneNumber)) {
@@ -79,7 +98,7 @@ const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user
 	
 		// Email validation (required, simple email pattern check)
 		const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		if (editedProvider!.email.trim() === "") {
+		if (editedProvider!.email === null || editedProvider!.email === undefined || editedProvider!.email.trim() === "") {
 			tempErrors.email = 'Email is required';
 			isValid = false;
 		} else if (!emailPattern.test(editedProvider!.email)) {
@@ -106,7 +125,7 @@ const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user
 						fullWidth
 						label="Name"
 						name="name"
-						value={editedProvider?.name}
+						value={editedProvider?.name ?? ""}
 						onChange={handleInputChange}
 						error={!!errors.name}
 						helperText={errors.name}
@@ -114,7 +133,7 @@ const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user
 						/>
 					</Box>
 				) : (
-					<Typography variant="h5">{editedProvider?.name}</Typography>
+					<Typography variant="h5">{provider?.name}</Typography>
 				)}
 
 				{/* Address with Icon */}
@@ -125,13 +144,13 @@ const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user
 							fullWidth
 							label="Business Address"
 							name="businessAddress"
-							value={editedProvider?.businessAddress}
+							value={editedProvider?.businessAddress ?? ""}
 							error={!!errors.businessAddress}
 							helperText={errors.businessAddress}
 							onChange={handleInputChange}
 						/>
 					) : (
-						<Typography variant="body1">{editedProvider?.businessAddress}</Typography>
+						<Typography variant="body1">{provider?.businessAddress}</Typography>
 					)}
 				</Box>
 
@@ -143,13 +162,13 @@ const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user
 							fullWidth
 							label="Phone Number"
 							name="phoneNumber"
-							value={editedProvider?.phoneNumber}
+							value={editedProvider?.phoneNumber ?? ""}
 							error={!!errors.phoneNumber}
 							helperText={errors.phoneNumber}
 							onChange={handleInputChange}
 					/>
 					) : (
-						<Typography variant="body1">{editedProvider?.phoneNumber}</Typography>
+						<Typography variant="body1">{provider?.phoneNumber}</Typography>
 					)}
 				</Box>
 
@@ -161,13 +180,13 @@ const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user
 							fullWidth
 							label="Email"
 							name="email"
-							value={editedProvider?.email}
+							value={editedProvider?.email ?? ""}
 							error={!!errors.email}
 							helperText={errors.email}
 							onChange={handleInputChange}
 						/>
 					) : (
-						<Typography variant="body1">{editedProvider?.email}</Typography>
+						<Typography variant="body1">{provider?.email}</Typography>
 					)}
 				</Box>
 				
@@ -179,13 +198,13 @@ const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user
 						rows={4}
 						label="Bio"
 						name="bio"
-						value={editedProvider?.bio}
+						value={editedProvider?.bio ?? ""}
 						onChange={handleInputChange}
 						/>
 					</Box>
 				) : (
 					<Typography variant="body2" sx={{ mt: 1 }}>
-					{editedProvider?.bio}
+					{provider?.bio}
 					</Typography>
 				)}
 			</CardContent>
@@ -194,7 +213,7 @@ const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user
 			{ownPage && (
 				<Box sx={{ position: 'absolute', right: 16, top: 90 }}>
 					{!editing ? (
-						<IconButton onClick={() => setEditing(true)}>
+						<IconButton onClick={handleEditing}>
 							<EditIcon />
 						</IconButton>
 					) : (

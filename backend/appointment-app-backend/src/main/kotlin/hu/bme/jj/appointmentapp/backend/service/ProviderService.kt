@@ -1,13 +1,11 @@
 package hu.bme.jj.appointmentapp.backend.service
 
 import hu.bme.jj.appointmentapp.backend.api.model.ProviderDTO
-import hu.bme.jj.appointmentapp.backend.api.model.ServiceDTO
-import hu.bme.jj.appointmentapp.backend.api.model.UserDTO
 import hu.bme.jj.appointmentapp.backend.db.sql.model.Provider
-import hu.bme.jj.appointmentapp.backend.db.sql.model.UserData
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.ProviderRepository
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.UserRepository
 import jakarta.persistence.EntityNotFoundException
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 
 @Service
@@ -70,7 +68,9 @@ class ProviderService(
         return mapToDTO(repository.save(mapToEntity(updatedProvider)))
     }
 
+    @Transactional
     override fun createProvider(provider: ProviderDTO): ProviderDTO {
+        userService.updateUser(provider)
         return mapToDTO(repository.save(mapToEntity(provider)))
     }
 

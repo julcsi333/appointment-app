@@ -1,13 +1,7 @@
 package hu.bme.jj.appointmentapp.backend.db.sql
 
-import hu.bme.jj.appointmentapp.backend.db.sql.model.GlobalService
-import hu.bme.jj.appointmentapp.backend.db.sql.repository.Auth0UserMappingRepository
-import hu.bme.jj.appointmentapp.backend.db.sql.repository.GlobalServiceRepository
-import hu.bme.jj.appointmentapp.backend.db.sql.repository.ProviderRepository
-import hu.bme.jj.appointmentapp.backend.db.sql.repository.ServiceRepository
-import hu.bme.jj.appointmentapp.backend.db.sql.repository.UserRepository
+import hu.bme.jj.appointmentapp.backend.db.sql.repository.*
 import jakarta.annotation.PostConstruct
-import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Component
 
 
@@ -22,17 +16,17 @@ class DevDBInitializer(
 
     @PostConstruct
     fun init() {
-        /*// Add sample data to GlobalServiceRepository
-        val globalServices = listOf(
+        // Add sample data to GlobalServiceRepository
+        /*val globalServices = listOf(
             GlobalService(name = "Hairdresser", description = "Cut or style hair in order to change or maintain a person's image"),
             GlobalService(name = "Manicure", description = "Cosmetic beauty treatment for the fingernails and hands"),
             GlobalService(name = "Cosmetics", description = "Skin care and appearance enhancement.")
         )
         globalServices.forEach {
             globalServiceRepository.save(it)
-        }
+        }*/
 
-
+        /*
         // Add sample data to ProviderRepository
         val providers = listOf(
             Provider(name = "Jaime Duffy", phoneNumber = "0611123456", businessAddress = "Pécs, Széchenyi tér"),

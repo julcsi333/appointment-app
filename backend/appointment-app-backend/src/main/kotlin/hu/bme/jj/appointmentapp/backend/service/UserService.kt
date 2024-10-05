@@ -47,7 +47,7 @@ class UserService (
             user.name,
             user.phoneNumber,
             user.email,
-            user.bio
+            user.bio ?: ""
         )
     }
 
@@ -62,7 +62,7 @@ class UserService (
     }
 
     override fun updateUser(updatedUser: UserDTO): UserDTO {
-        if (updatedUser.id == null || repository.existsById(updatedUser.id)) {
+        if (updatedUser.id == null || !repository.existsById(updatedUser.id)) {
             throw NullPointerException("User id null when updating")
         }
         return mapToDTO(

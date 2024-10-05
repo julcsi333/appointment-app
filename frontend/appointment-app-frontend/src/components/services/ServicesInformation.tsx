@@ -150,7 +150,15 @@ const ServicesInformation: React.FC<ServicesInformationProps> = ({provider, ownP
 			</Box>
 			<DeleteDialog deleteDialogOpen={deleteDialogOpen} dialogDescription={'Are you sure you want to delete this service? This action cannot be undone.'} confirmDelete={handleDeleteService} cancelDelete={() => setDeleteDialogOpen(false)} />
 			{/* Tab Content */}
-			<ServiceDetails mainService={currentService} ownPage={ownPage} token={token} />
+			{services.length !== 0 ? (
+				<ServiceDetails mainService={currentService} ownPage={ownPage} token={token} />
+			) : (
+				<center>
+					<Typography sx={{ mt: 2, pl: 2 }} variant="h6">You have no services</Typography>
+				</center>
+				
+			)}
+			
 		</Card>
 	);
 };

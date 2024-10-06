@@ -1,7 +1,6 @@
 package hu.bme.jj.appointmentapp.backend.service
 
 import hu.bme.jj.appointmentapp.backend.api.model.UserDTO
-import hu.bme.jj.appointmentapp.backend.db.mongo.ImageService
 import hu.bme.jj.appointmentapp.backend.db.sql.model.Auth0UserMapping
 import hu.bme.jj.appointmentapp.backend.db.sql.model.UserData
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.Auth0UserMappingRepository
@@ -16,8 +15,7 @@ import org.springframework.stereotype.Service
 class UserService (
     private val repository: UserRepository,
     private val auth0UserMappingRepository: Auth0UserMappingRepository,
-    private val providerRepository: ProviderRepository,
-    private val imageService: ImageService
+    private val providerRepository: ProviderRepository
 ): IUserService {
 
     @Transactional

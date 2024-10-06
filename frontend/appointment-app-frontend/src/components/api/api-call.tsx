@@ -95,7 +95,6 @@ export const secureApiFileUploadCall = async (url: string, file: File, token: st
                 }
             }
         );
-        alert('File uploaded successfully!');
         console.log('Response:', response.data);
     } catch (error) {
         console.error('Error uploading file:', error);

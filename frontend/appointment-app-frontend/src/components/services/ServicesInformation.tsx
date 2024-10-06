@@ -107,7 +107,7 @@ const ServicesInformation: React.FC<ServicesInformationProps> = ({provider, ownP
 	}
 
 	return (
-		<Card sx={{ p: 2, minHeight:'70vh', display: 'flex', flexDirection: 'column' }}>
+		<Card sx={{ minHeight:'70vh', display: 'flex', flexDirection: 'column' }}>
 			{/* Tabs */}
 			<Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center' }}>
 				<Tabs value={currentTab} onChange={handleTabChange} aria-label="service tabs">

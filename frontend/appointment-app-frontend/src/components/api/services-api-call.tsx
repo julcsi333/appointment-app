@@ -1,5 +1,5 @@
 import { getBaseUrl } from "../../config";
-import { apiGetCall, secureApiDeleteCall, secureApiPostCall, secureApiPutCall } from "./api-call";
+import { apiGetCall, secureApiDeleteCall, secureApiFileUploadCall, secureApiPostCall, secureApiPutCall } from "./api-call";
 import { GlobalService, MainService, NewMainService, NewSubService, SubService } from "./model";
 
 export const getAllGlobalServices = async (): Promise<Array<GlobalService>> => {
@@ -53,4 +53,22 @@ export const updateSubService = async (subService: SubService, token: string): P
 
 export const deleteSubService = async (subServiceId: number, token: string) => {
 	await secureApiDeleteCall(getBaseUrl() + '/subServices/'+subServiceId.toString(), token);
+};
+
+export const getPortfolioPictureNames = async (mainServiceId: number, from: number, amount: number): Promise<Array<string>> => {
+	const response = await apiGetCall(`${getBaseUrl()}/services/${mainServiceId.toString()}/portfolio-pictures?from=${from}&amount=${amount}`);
+	return response.data;
+};
+
+export const getPortfolioPictureAmount = async (mainServiceId: number): Promise<number> => {
+	const response = await apiGetCall(`${getBaseUrl()}/services/${mainServiceId.toString()}/portfolio-pictures/total`);
+	return response.data;
+};
+
+export const uploadPortfolioPicture = async (mainServiceId: number, file: File, token: string) => {
+    await secureApiFileUploadCall(`${getBaseUrl()}/services/${mainServiceId.toString()}/portfolio-pictures`, file, token);
+};
+
+export const deletePortfolioPicture = async (mainServiceId: number, fileName: string, token: string) => {
+	await secureApiDeleteCall(`${getBaseUrl()}/services/${mainServiceId.toString()}/portfolio-pictures/${fileName}`, token);
 };

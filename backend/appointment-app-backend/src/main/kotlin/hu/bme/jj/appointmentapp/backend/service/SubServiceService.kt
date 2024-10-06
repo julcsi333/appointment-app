@@ -1,11 +1,6 @@
 package hu.bme.jj.appointmentapp.backend.service
 
-import hu.bme.jj.appointmentapp.backend.api.model.ProviderDTO
-import hu.bme.jj.appointmentapp.backend.api.model.ServiceDTO
 import hu.bme.jj.appointmentapp.backend.api.model.SubServiceDTO
-import hu.bme.jj.appointmentapp.backend.db.mongo.ImageService
-import hu.bme.jj.appointmentapp.backend.db.sql.model.MainService
-import hu.bme.jj.appointmentapp.backend.db.sql.model.Provider
 import hu.bme.jj.appointmentapp.backend.db.sql.model.SubService
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.ServiceRepository
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.SubServiceRepository
@@ -15,8 +10,7 @@ import org.springframework.stereotype.Service
 @Service
 class SubServiceService(
     private val repository: SubServiceRepository,
-    private val mainServiceRepository: ServiceRepository,
-    private val imageService: ImageService
+    private val mainServiceRepository: ServiceRepository
 ) : ISubServiceService {
 
     @Throws(EntityNotFoundException::class)

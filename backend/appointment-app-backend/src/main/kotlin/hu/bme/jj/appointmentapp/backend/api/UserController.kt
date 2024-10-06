@@ -3,7 +3,6 @@ package hu.bme.jj.appointmentapp.backend.api
 import hu.bme.jj.appointmentapp.backend.api.model.UserDTO
 import hu.bme.jj.appointmentapp.backend.service.IUserService
 import jakarta.persistence.EntityNotFoundException
-import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource
 import org.springframework.http.HttpHeaders
@@ -113,10 +112,7 @@ class UserController(private val userService: IUserService) {
                 .body(resource)
         } else {
             // Return a default image if the user has no profile picture
-            val defaultImage: Resource = ClassPathResource("static/default-profile-picture.png")
-            ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.IMAGE_PNG)
-                .body(defaultImage)
+            return ResponseEntity(null, HttpStatus.NOT_FOUND)
         }
     }
 }

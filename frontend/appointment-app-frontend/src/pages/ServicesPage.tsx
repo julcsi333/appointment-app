@@ -85,7 +85,7 @@ const ServicesPage: React.FC = () => {
 				<NotServiceProvider creatingBProfileCallback={setCreatingBusinessProfile} />
 			)}
 			<Box sx={{ p: 2 }}>
-				<BusinessInformation provider={provider} ownPage={ownPage} creatingProfile={creatingBusinessProfile} saveProfile={saveProfile} user={currentUser}/>
+				<BusinessInformation provider={provider} ownPage={ownPage} creatingProfile={creatingBusinessProfile} saveProfile={saveProfile} user={currentUser} token={token}/>
 				<ServicesInformation provider={provider!} ownPage={ownPage} creatingProfile={creatingBusinessProfile} token={token}/>
 			</Box>
 

@@ -46,9 +46,6 @@ class MainServiceService(
             throw EntityExistsException("Main service with id #${service.id} already exists")
 
         val newService = saveService(service)
-        service.subServices.forEach {
-            subServiceService.createService(it, newService.id!!) // ID of main service from database cannot be null
-        }
         return mapToDTO(getServiceByIdFromRepositoryOrThrow(newService.id!!)) // ID of main service from database cannot be null
     }
 
@@ -65,21 +62,6 @@ class MainServiceService(
         if (updatedService.id == null) {
             throw NullPointerException("Main service id null when updating")
         }
-        /*val savedSubServiceIds = subServiceService.getServicesByMainServiceId(updatedService.id)
-            .map {it.id!!}.toMutableList() // Services from database cannot have null id
-        updatedService.subServices.forEach {
-            if (it.id == null) {
-                subServiceService.createService(it, updatedService.id)
-            } else if (savedSubServiceIds.contains(it.id)) {
-                subServiceService.updateService(it)
-                savedSubServiceIds.remove(it.id)
-            } else {
-                throw IllegalArgumentException("New sub service cannot be added with non-null id")
-            }
-        }
-        savedSubServiceIds.forEach {
-            subServiceService.deleteService(it)
-        }*/
         return saveService(updatedService)
     }
 
@@ -113,7 +95,7 @@ class MainServiceService(
                 mainService.id ?: throw NullPointerException("Main service id null when mapping to UI representation")
             ),
             globalServiceService.getGlobalServiceById(mainService.globalService.id!!), // Global service id is not optional in DB. This cannot be null
-            mainService.provider.id!! // Provider id is not optional in DB. This cannot be null
+            mainService.provider.user.id!! // Id is not optional in DB. This cannot be null
         )
     }
 

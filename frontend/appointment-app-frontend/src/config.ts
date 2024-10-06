@@ -1,4 +1,5 @@
-import configJson from "./auth_config.json";
+import authConfigJson from "./auth_config.json";
+import backendConfigJson from "./backend_config.json";
 
 export interface Auth0Config {
   domain: string;
@@ -7,12 +8,15 @@ export interface Auth0Config {
   scope: string;
 }
 
-export function getConfig() : Auth0Config {
-    return {
-      domain: configJson.domain,
-      clientId: configJson.clientId,
-      audience: configJson.audience,
-      scope: configJson.scope
-    };
-  }
-  
+export function getAuthConfig() : Auth0Config {
+  return {
+    domain: authConfigJson.domain,
+    clientId: authConfigJson.clientId,
+    audience: authConfigJson.audience,
+    scope: authConfigJson.scope
+  };
+}
+
+export function getBaseUrl() : string {
+  return backendConfigJson.baseUrl;
+}

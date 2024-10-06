@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid, Typography, Button, IconButton, Pagination, TableContainer, TableHead, Table, Paper, TableCell, TableRow, TableBody, TablePagination, TextField } from '@mui/material';
+import { Typography, IconButton, TableContainer, TableHead, Table, Paper, TableCell, TableRow, TableBody, TablePagination, TextField } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { EditedSubService, MainService, SubService } from '../api/model';
 import { styled } from '@mui/material/styles';
 import SaveIcon from '@mui/icons-material/Save';
-import { createSubService, getSubServicesByMainServiceId, updateSubService } from '../api/services-api-call';
+import { createSubService, getSubServicesByMainServiceId, updateSubService, deleteSubService } from '../api/services-api-call';
 
 // Styled TableCell
 const TableHeadCell = styled(TableCell)(({ theme }) => ({
@@ -34,7 +35,8 @@ interface SubServicesTableProps {
 
 const SubServicesTable: React.FC<SubServicesTableProps> = ({mainService, ownPage, token}) => {
 	const [subServices, setSubServices] = useState<SubService[]>([]);
-	const [editedSubServices, setEditedSubServices] = useState<Map<number|null,EditedSubService>>(new Map().set(null, new EditedSubService(null, "", "", "")));
+	const [editedSubServices, setEditedSubServices] = useState<Map<number,EditedSubService>>(new Map());
+	const [newEditedSubService, setNewEditedSubService] = useState<EditedSubService>(new EditedSubService(null, "", "", ""));
 	const [page, setPage] = useState<number>(0); // Page state for SubServices table
 	const [rowsPerPage, setRowsPerPage] = useState<number>(5); // Number of items per page
 	useEffect(() => {
@@ -43,6 +45,8 @@ const SubServicesTable: React.FC<SubServicesTableProps> = ({mainService, ownPage
 				if (mainService !== null) {
 					const fetchedSubServices = await getSubServicesByMainServiceId(mainService!.id);
 					setSubServices(fetchedSubServices);
+					setEditedSubServices(new Map())
+					setNewEditedSubService(new EditedSubService(null, "", "", ""))
 				}
 			} catch (error) {
 				console.error('Error:', error);
@@ -63,16 +67,27 @@ const SubServicesTable: React.FC<SubServicesTableProps> = ({mainService, ownPage
 	};
 	const setSubServiceToEditing = (subService: SubService) => {
 		const newEdited: EditedSubService = new EditedSubService(subService.id, subService.name, subService.duration.toString(), subService.price.toString());
-		setEditedSubServices(new Map(editedSubServices).set(newEdited.id, newEdited));
+		setEditedSubServices(new Map(editedSubServices).set(newEdited.id!, newEdited));
 	};
 	const saveSubService = async (id: number | null) => {
-		const editedSubService = editedSubServices.get(id)
+		let editedSubService: EditedSubService | undefined = newEditedSubService
+		if (id !== null) {
+			editedSubService = editedSubServices.get(id)
+		}
 		if (editedSubService === undefined || editedSubService === null) {
 			console.error(`Edited sub service with id #${id} not found`)
 			throw new Error(`Edited sub service with id #${id} not found`)
 		}
 		editedSubService.validate()
 		if (!editedSubService.isValid) {
+			if (id !== null) {
+				setEditedSubServices(new Map(editedSubServices).set(id, editedSubService))
+			} else {
+				console.log(editedSubService)
+				setNewEditedSubService(
+					new EditedSubService(null, editedSubService.name, editedSubService.duration, editedSubService.price, false, editedSubService.errors)
+				)
+			}
 			return;
 		}
 		if (id === null) {
@@ -81,7 +96,7 @@ const SubServicesTable: React.FC<SubServicesTableProps> = ({mainService, ownPage
 				mainService!.id, 
 				token
 			)
-			setEditedSubServices(new Map(editedSubServices).set(null, new EditedSubService(null, "", "", "")))
+			setNewEditedSubService(new EditedSubService(null, "", "", ""))
 		} else {
 			await updateSubService(
 				{id: id, name: editedSubService.name, price: parseFloat(editedSubService.price), duration: parseInt(editedSubService.duration)}, 
@@ -94,35 +109,54 @@ const SubServicesTable: React.FC<SubServicesTableProps> = ({mainService, ownPage
 		setSubServices(fetchedSubServices);
 	};
 
-	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = event.target;
-		const idAndName = name.split(".")
-		const id = parseInt(idAndName[0])
-		const fieldName = idAndName[1]
-		const prevEditedSubService = editedSubServices.get(id)
-		if (fieldName === "name") {
-			const newEditedSubService = new EditedSubService(id, value, prevEditedSubService!.duration, prevEditedSubService!.price)
-			setEditedSubServices(new Map(editedSubServices).set(id,newEditedSubService));
-		} else if (fieldName === "duration") {
-			const newEditedSubService = new EditedSubService(id, prevEditedSubService!.name, value, prevEditedSubService!.price)
-			setEditedSubServices(new Map(editedSubServices).set(id,newEditedSubService));
-		} else if (fieldName === "price") {
-			const newEditedSubService = new EditedSubService(id, prevEditedSubService!.name, prevEditedSubService!.duration, value)
-			setEditedSubServices(new Map(editedSubServices).set(id,newEditedSubService));
+	const handleNameChange = (id: number | null, value: string) => {
+		if (id == null) {
+			setNewEditedSubService(new EditedSubService(null, value, newEditedSubService.duration, newEditedSubService.price))
+		} else {
+			const prevEditedSubService = editedSubServices.get(id)
+			const newEdited = new EditedSubService(id, value, prevEditedSubService!.duration, prevEditedSubService!.price)
+			setEditedSubServices(new Map(editedSubServices).set(id,newEdited));
 		}
 	};
+
+	const handleDurationChange = (id: number | null, value: string) => {
+		if (id == null) {
+			setNewEditedSubService(new EditedSubService(null, newEditedSubService.name, value, newEditedSubService.price))
+		} else {
+			const prevEditedSubService = editedSubServices.get(id)
+			const newEdited = new EditedSubService(id, prevEditedSubService!.name, value, prevEditedSubService!.price)
+			setEditedSubServices(new Map(editedSubServices).set(id,newEdited));
+		}
+	};
+	
+	const handlePriceChange = (id: number | null, value: string) => {
+		if (id == null) {
+			setNewEditedSubService(new EditedSubService(null, newEditedSubService.name, newEditedSubService.duration, value))
+		} else {
+			const prevEditedSubService = editedSubServices.get(id)
+			const newEdited = new EditedSubService(id, prevEditedSubService!.price, prevEditedSubService!.duration, value)
+			setEditedSubServices(new Map(editedSubServices).set(id,newEdited));
+		}
+	};
+
+	const handleDeleteSubService = async (id: number) => {
+		await deleteSubService(id, token)
+		const fetchedSubServices = await getSubServicesByMainServiceId(mainService!.id);
+		setSubServices(fetchedSubServices);
+	}
+
 	return (
 		<>
 			<Typography variant="h5" sx={{ mt: 2 }}>Subservices</Typography>
 			<TableContainer component={Paper} sx={{ mt: 2 }}>
 				<Table>
 					<TableHead>
-						<TableRow>
-							<TableHeadCell>Name</TableHeadCell>
-							<TableHeadCell>Duration (minute)</TableHeadCell>
-							<TableHeadCell>Price</TableHeadCell>
+						<TableRow key="header">
+							<TableHeadCell key="header.name">Name</TableHeadCell>
+							<TableHeadCell key="header.duration">Duration (minute)</TableHeadCell>
+							<TableHeadCell key="header.price">Price</TableHeadCell>
 							{ownPage && (
-								<TableHeadCell></TableHeadCell>
+								<TableHeadCell key="header.operations"></TableHeadCell>
 							)}
 						</TableRow>
 					</TableHead>
@@ -131,57 +165,60 @@ const SubServicesTable: React.FC<SubServicesTableProps> = ({mainService, ownPage
 							<>
 							{editedSubServices.get(subService.id) === undefined ? (
 								<AlternatingTableRow key={subService.id}>
-									<TableCell>{subService.name}</TableCell>
-									<TableCell>{subService.duration}</TableCell>
-									<TableCell>{subService.price} $</TableCell>
+									<TableCell key={`${subService.id}.name`}>{subService.name}</TableCell>
+									<TableCell key={`${subService.id}.duration`}>{subService.duration}</TableCell>
+									<TableCell key={`${subService.id}.price`}>{subService.price} $</TableCell>
 									{ownPage && (
-										<TableCell>
+										<TableCell key={`${subService.id}.operations`}>
 											<IconButton onClick={() => setSubServiceToEditing(subService)}>
 												<EditIcon />
+											</IconButton>
+											<IconButton onClick={() => handleDeleteSubService(subService.id)}>
+												<DeleteIcon />
 											</IconButton>
 										</TableCell>
 									)}
 								</AlternatingTableRow>
 							) : (
 								<AlternatingTableRow key={subService.id}>
-									<TableCell>
+									<TableCell key={`${subService.id}.name`}>
 										<TextField
 										fullWidth
 										label="Name"
-										name={`${subService.id}.name`}
+										name={`name`}
 										value={editedSubServices.get(subService.id)!.name}
-										onChange={handleInputChange}
-										error={!!editedSubServices.get(subService.id)!.name}
+										onChange={(event) => handleNameChange(subService.id, event.target.value)}
+										error={!!editedSubServices.get(subService.id)!.errors.name}
 										helperText={editedSubServices.get(subService.id)!.errors.name}
 										sx={{ mb: 2 }}
 										/>
 									</TableCell>
-									<TableCell>
+									<TableCell key={`${subService.id}.duration`}>
 										<TextField
 										fullWidth
 										label="Duration"
-										name={`${subService.id}.duration`}
+										name={`duration`}
 										value={editedSubServices.get(subService.id)!.duration}
-										onChange={handleInputChange}
-										error={!!editedSubServices.get(subService.id)!.duration}
+										onChange={(event) => handleDurationChange(subService.id, event.target.value)}
+										error={!!editedSubServices.get(subService.id)!.errors.duration}
 										helperText={editedSubServices.get(subService.id)!.errors.duration}
 										sx={{ mb: 2 }}
 										/>
 									</TableCell>
-									<TableCell>
+									<TableCell key={`${subService.id}.price`}>
 										<TextField
 										fullWidth
 										label="Price"
-										name={`${subService.id}.price`}
+										name={`price`}
 										value={editedSubServices.get(subService.id)!.price}
-										onChange={handleInputChange}
-										error={!!editedSubServices.get(subService.id)!.price}
+										onChange={(event) => handlePriceChange(subService.id, event.target.value)}
+										error={!!editedSubServices.get(subService.id)!.errors.price}
 										helperText={editedSubServices.get(subService.id)!.errors.price}
 										sx={{ mb: 2 }}
 										/> $
 									</TableCell>
 									{ownPage && (
-										<TableCell>
+										<TableCell key={`${subService.id}.operations`}>
 											<IconButton onClick={() => saveSubService(subService.id)}>
 												<SaveIcon />
 											</IconButton>
@@ -193,16 +230,16 @@ const SubServicesTable: React.FC<SubServicesTableProps> = ({mainService, ownPage
 							
 						))}
 						{(page+1)*rowsPerPage > subServices.length && ownPage && (
-							<AlternatingTableRow key={null}>
+							<AlternatingTableRow key={newEditedSubService.id}>
 								<TableCell>
 									<TextField
 									fullWidth
 									label="Name"
-									name={`${null}.name`}
-									value={editedSubServices.get(null)!.name}
-									onChange={handleInputChange}
-									error={!!editedSubServices.get(null)!.name}
-									helperText={editedSubServices.get(null)!.errors.name}
+									name={`name`}
+									value={newEditedSubService.name}
+									onChange={(event) => handleNameChange(null, event.target.value)}
+									error={!!newEditedSubService.errors.name}
+									helperText={newEditedSubService.errors.name}
 									sx={{ margin: 0 }}
 									/>
 								</TableCell>
@@ -210,22 +247,22 @@ const SubServicesTable: React.FC<SubServicesTableProps> = ({mainService, ownPage
 									<TextField
 									fullWidth
 									label="Duration"
-									name={`${null}.duration`}
-									value={editedSubServices.get(null)!.duration}
-									onChange={handleInputChange}
-									error={!!editedSubServices.get(null)!.duration}
-									helperText={editedSubServices.get(null)!.errors.duration}
+									name={`duration`}
+									value={newEditedSubService.duration}
+									onChange={(event) => handleDurationChange(null, event.target.value)}
+									error={!!newEditedSubService.errors.duration}
+									helperText={newEditedSubService.errors.duration}
 									/>
 								</TableCell>
 								<TableCell>
 									<TextField
 									fullWidth
 									label="Price"
-									name={`${null}.price`}
-									value={editedSubServices.get(null)!.price}
-									onChange={handleInputChange}
-									error={!!editedSubServices.get(null)!.price}
-									helperText={editedSubServices.get(null)!.errors.price}
+									name={`price`}
+									value={newEditedSubService.price}
+									onChange={(event) => handlePriceChange(null, event.target.value)}
+									error={!!newEditedSubService.errors.price}
+									helperText={newEditedSubService.errors.price}
 									/>
 								</TableCell>
 								<TableCell>

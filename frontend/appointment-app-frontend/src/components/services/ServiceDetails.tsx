@@ -1,40 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid, Typography, Button, IconButton, Pagination } from '@mui/material';
+import { Box, Grid, Typography, Button, IconButton, Pagination, TextField } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { MainService, SubService } from '../api/model';
-import { getSubServicesByMainServiceId } from '../api/services-api-call';
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
+import { MainService } from '../api/model';
 import SubServicesTable from './SubServicesTable';
 
 interface ServiceDetailsProps {
 	mainService: MainService | null;
 	ownPage: boolean;
 	token: string;
+	saveDescription: (description: string) => void;
 }
 
-const ServiceDetails: React.FC<ServiceDetailsProps> = ({mainService, ownPage, token}) => {
-	const [editing, setEditing] = useState<boolean>(false);
+const ServiceDetails: React.FC<ServiceDetailsProps> = ({mainService, ownPage, token, saveDescription}) => {
+	const [editingDesc, setEditingDesc] = useState<boolean>(false);
+	const [editedDesc, setEditedDesc] = useState<string>("");
 	const [portfolioPage, setPortfolioPage] = useState<number>(1); // Pagination state for Portfolio
 	const [portfolioImages, setPortfolioImages] = useState<string[]>([]); // Placeholder for portfolio images
 	const [week, setWeek] = useState<number>(0); // Track which week is being displayed
 
 	const portfolioItemsPerPage = 6;
-
-	// Fetch subservices when the main service changes
-	/*useEffect(() => {
-		const fetchData = async () => {
-			try {
-				if (mainService !== null) {
-					const fetchedSubServices = await getSubServicesByMainServiceId(mainService!.id);
-					setSubServices(fetchedSubServices);
-				}
-			} catch (error) {
-				console.error('Error:', error);
-			}
-		};
-		
-		fetchData();
-		return () => {};
-	}, [mainService]);*/
 
 	// Handle pagination for portfolio images
 	const handlePortfolioPageChange = (event: React.ChangeEvent<unknown>, value: number) => {
@@ -52,15 +38,56 @@ const ServiceDetails: React.FC<ServiceDetailsProps> = ({mainService, ownPage, to
 		console.log("Add image clicked");
 	};
 
+	const handleSaveDescription = () => {
+		setEditingDesc(false)
+		saveDescription(editedDesc)
+	};
+
+	const handleEditDescription = () => {
+		setEditingDesc(true)
+		setEditedDesc(mainService?.description ?? "")
+	};
+
+	const handleInputChangedDescription = (value: string) => {
+		setEditedDesc(value)
+	};
+
 	return (
 		<Box sx={{ flexGrow: 1, p: 3 }}>
 			<Grid container spacing={3}>
 				{/* Left Section: Main Service Details and SubServices */}
 				<Grid item xs={12} md={6}>
-					<Typography variant="h6" gutterBottom>
-						{mainService?.description + "Desc" ?? "Select a service to view details."}
-					</Typography>
+					<Box display="flex" alignItems="center">
+						{editingDesc ? (
+							<>
+								<TextField
+								fullWidth
+								multiline
+								rows={4}
+								label="Description"
+								name="description"
+								value={editedDesc}
+								onChange={(event) => handleInputChangedDescription(event.target.value)}
+								/>
+								<IconButton aria-label="save" onClick={handleSaveDescription}>
+									<SaveIcon />
+								</IconButton>
+							</>
+						) : (
+							<>
+								<Typography variant="h6" gutterBottom style={{ flexGrow: 1 }}>
+									{mainService?.description ?? "No description yet."}
+								</Typography>
+								{ownPage && (
+									<IconButton aria-label="edit" onClick={handleEditDescription}>
+										<EditIcon />
+									</IconButton>
+								)}
+							</>
+						)}
 
+
+					</Box>
 					<SubServicesTable mainService={mainService} ownPage={ownPage} token={token}/>
 
 					{/* Weekly Visualization */}

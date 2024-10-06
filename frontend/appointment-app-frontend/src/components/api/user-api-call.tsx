@@ -1,12 +1,17 @@
 import { User } from "./model";
-import { secureApiGetCall } from "./api-call";
+import { secureApiFileUploadCall, secureApiGetCall } from "./api-call";
+import { getBaseUrl } from "../../config";
 
 export const getUser = async (id: string, token: string): Promise<User> => {
-    const response = await secureApiGetCall(`http://localhost:8080/users/${id}`, token);
+    const response = await secureApiGetCall(`${getBaseUrl()}/users/${id}`, token);
     return response.data;
 };
 
 export const getUserByExternalId = async (id: string, token: string): Promise<User> => {
-    const response = await secureApiGetCall(`http://localhost:8080/users/auth/${id}`, token);
+    const response = await secureApiGetCall(`${getBaseUrl()}/users/auth/${id}`, token);
     return response.data;
+};
+
+export const uploadProfilePicture = async (id: string, file: File, token: string) => {
+    await secureApiFileUploadCall(`${getBaseUrl()}/users/${id}/profile-picture`, file, token);
 };

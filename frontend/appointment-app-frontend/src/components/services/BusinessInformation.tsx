@@ -7,6 +7,7 @@ import { Provider, User } from '../api/model';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
+import ProfileAvatar from '../ProfileAvatar';
 
 interface BusinessInformationProps {
 	provider: Provider | null;
@@ -14,6 +15,7 @@ interface BusinessInformationProps {
 	ownPage: boolean;
 	creatingProfile: boolean;
 	saveProfile: (provider: Provider) => void
+	token: string;
 }
 
 function createProviderFromUser(user: User, businessAddress: string): Provider {
@@ -29,7 +31,7 @@ function createProvider(provider: Provider): Provider | null {
 	return new Provider(provider.id, provider.name, provider.phoneNumber, provider.email, provider.bio, provider.businessAddress)
 }
 
-const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user, ownPage, creatingProfile, saveProfile}) => {
+const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user, ownPage, creatingProfile, saveProfile, token}) => {
     const [editedProvider, setEditedProvider] = useState<Provider | null>(null);
     const [editing, setEditing] = useState<boolean>(creatingProfile);
 	//const [formValues, setFormValues] = useState(editedProvider);
@@ -112,11 +114,7 @@ const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user
 
 	return (
 		<Card sx={{ display: 'flex', mb: 3, p: 2 }}>
-			<Avatar 
-			alt={editedProvider?.name}
-			src="/path-to-image.jpg"
-			sx={{ width: 150, height: 150, mr: 2 }}
-			/>
+			<ProfileAvatar user={provider} ownPage={ownPage} token={token}/>
 			<CardContent>
 				
 				{editing ? (

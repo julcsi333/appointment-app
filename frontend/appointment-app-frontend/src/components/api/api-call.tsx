@@ -80,3 +80,45 @@ export const secureApiDeleteCall = async (url: string, token: string): Promise<A
         throw error;
     }
 };
+
+export const secureApiFileUploadCall = async (url: string, file: File, token: string) => {
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response =  await axios.post(
+            url,
+            formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data"
+                }
+            }
+        );
+        alert('File uploaded successfully!');
+        console.log('Response:', response.data);
+    } catch (error) {
+        console.error('Error uploading file:', error);
+        alert('File upload failed!');
+    }
+};
+
+/*
+export const secureApiFileGetCall = async (url: string, token: string): Promise<AxiosResponse<any, any>> => {
+    try {
+        const response =  await axios.get(
+            url,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data"
+                }
+            }
+        );
+        alert('File uploaded successfully!');
+        console.log('Response:', response.data);
+    } catch (error) {
+        console.error('Error uploading file:', error);
+        alert('File upload failed!');
+    }
+};*/

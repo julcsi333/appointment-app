@@ -74,14 +74,20 @@ export class EditedSubService {
     price: string;
     errors: SubServiceError = new SubServiceError();
     isValid: boolean = false
-    constructor(id: number | null, name: string, duration: string, price: string) {
+    constructor(id: number | null, name: string, duration: string, price: string, isValid: boolean = false, errors: SubServiceError = new SubServiceError()) {
         this.id = id;
         this.name = name;
         this.duration = duration;
         this.price = price;
+        this.isValid = isValid;
+        this.errors.name = errors.name;
+        this.errors.duration = errors.duration;
+        this.errors.price = errors.price;
     }
     validate(): void {
-        this.isValid = this.validateName() && this.validateDuration() && this.validatePrice()
+        this.isValid = this.validateName()
+        this.isValid = this.validateDuration() && this.isValid
+        this.isValid = this.validatePrice() && this.isValid
     }
     private validateName(): boolean {
         if (this.name.trim()  === "") {
@@ -91,14 +97,13 @@ export class EditedSubService {
         return true
     }
     private validateDuration(): boolean {
-        const trimmed = this.duration.trim()
-        if (trimmed  === "") {
+        if (this.duration === null || this.duration === undefined || this.duration.trim()  === "") {
             this.errors.duration = "Duration is required"
             return false
         }
-        const duration = parseInt(trimmed)
-        if (Number.isInteger(duration)|| duration >= 180) {
-            this.errors.duration = "Duration is required"
+        const duration = parseInt(this.duration.trim())
+        if (!Number.isInteger(duration)) {
+            this.errors.duration = "Duration should be a number"
         } else if (duration <= 0 ) {
             this.errors.duration = "Duration should be greater than 0 minutes"
         } else if (duration > 180) {
@@ -110,10 +115,14 @@ export class EditedSubService {
     }
     private validatePrice(): boolean {
         if (this.price === null || this.price === undefined || this.price.trim()  === "") {
-            this.errors.name = "Price is required"
+            this.errors.price = "Price is required"
             return false
         }
-        parseFloat(this.price.trim())
+        const price = parseFloat(this.price.trim())
+        if (isNaN(price)) {
+            this.errors.price = "Price should be a number"
+            return false
+        }
         return true
     }
 }

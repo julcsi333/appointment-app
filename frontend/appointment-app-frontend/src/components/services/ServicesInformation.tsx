@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Card, Typography, Tabs, Tab, IconButton, Menu, MenuItem } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { GlobalService, MainService, Provider } from '../api/model';
-import { createService, deleteService, getAllGlobalServices, getServicesByProviderId } from '../api/services-api-call';
+import { createService, deleteService, getAllGlobalServices, getServiceById, getServicesByProviderId, updateService } from '../api/services-api-call';
 import DeleteDialog from '../DeleteDialog';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ServiceDetails from './ServiceDetails';
@@ -97,8 +97,17 @@ const ServicesInformation: React.FC<ServicesInformationProps> = ({provider, ownP
 		}
 	};
 
+	const saveDescription = async (description: string) => {
+		const service = await getServiceById(currentService!.id.toString())
+		service.description = description
+		const updatedService = await updateService(service, token)
+		setCurrentService(updatedService)
+		var providedServices = await getServicesByProviderId(provider!.id.toString());
+		setServices(providedServices)
+	}
+
 	return (
-		<Card sx={{ p: 2, height: '70vh', display: 'flex', flexDirection: 'column' }}>
+		<Card sx={{ p: 2, minHeight:'70vh', display: 'flex', flexDirection: 'column' }}>
 			{/* Tabs */}
 			<Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center' }}>
 				<Tabs value={currentTab} onChange={handleTabChange} aria-label="service tabs">
@@ -151,7 +160,7 @@ const ServicesInformation: React.FC<ServicesInformationProps> = ({provider, ownP
 			<DeleteDialog deleteDialogOpen={deleteDialogOpen} dialogDescription={'Are you sure you want to delete this service? This action cannot be undone.'} confirmDelete={handleDeleteService} cancelDelete={() => setDeleteDialogOpen(false)} />
 			{/* Tab Content */}
 			{services.length !== 0 ? (
-				<ServiceDetails mainService={currentService} ownPage={ownPage} token={token} />
+				<ServiceDetails mainService={currentService} ownPage={ownPage} token={token} saveDescription={saveDescription}/>
 			) : (
 				<center>
 					<Typography sx={{ mt: 2, pl: 2 }} variant="h6">You have no services</Typography>

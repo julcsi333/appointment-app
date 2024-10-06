@@ -113,135 +113,143 @@ const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user
 	};
 
 	return (
-		<Card sx={{ display: 'flex', mb: 3, p: 2 }}>
-			<ProfileAvatar user={provider} ownPage={ownPage} token={token}/>
-			<CardContent>
-				
-				{editing ? (
-					<Box sx={{ display: 'flex', alignItems: 'center', mt: 1, pl: 4 /* Align with icon padding */ }}>
-						<TextField
-						fullWidth
-						label="Name"
-						name="name"
-						value={editedProvider?.name ?? ""}
-						onChange={handleInputChange}
-						error={!!errors.name}
-						helperText={errors.name}
-						sx={{ mb: 2 }}
-						/>
+		<Card sx={{display: 'flex', justifyContent: 'space-between', mb: 3, p: 2 }}>
+			<Box sx={{ display: 'flex'}}>
+				<ProfileAvatar user={provider} ownPage={ownPage} token={token}/>
+				<CardContent>
+					
+					{editing ? (
+						<Box sx={{ display: 'flex', alignItems: 'center', mt: 1, pl: 4 /* Align with icon padding */ }}>
+							<TextField
+							fullWidth
+							label="Name"
+							name="name"
+							value={editedProvider?.name ?? ""}
+							onChange={handleInputChange}
+							error={!!errors.name}
+							helperText={errors.name}
+							sx={{ mb: 2 }}
+							/>
+						</Box>
+					) : (
+						<Typography variant="h5">{provider?.name}</Typography>
+					)}
+
+					{/* Address with Icon */}
+					<Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+						<LocationOnIcon sx={{ mr: 1, color: 'gray' }} />
+						{editing ? (
+							<TextField
+								fullWidth
+								label="Business Address"
+								name="businessAddress"
+								value={editedProvider?.businessAddress ?? ""}
+								error={!!errors.businessAddress}
+								helperText={errors.businessAddress}
+								onChange={handleInputChange}
+							/>
+						) : (
+							<Typography variant="body1">{provider?.businessAddress}</Typography>
+						)}
 					</Box>
-				) : (
-					<Typography variant="h5">{provider?.name}</Typography>
-				)}
 
-				{/* Address with Icon */}
-				<Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
-					<LocationOnIcon sx={{ mr: 1, color: 'gray' }} />
-					{editing ? (
-						<TextField
-							fullWidth
-							label="Business Address"
-							name="businessAddress"
-							value={editedProvider?.businessAddress ?? ""}
-							error={!!errors.businessAddress}
-							helperText={errors.businessAddress}
-							onChange={handleInputChange}
+					{/* Phone Number with Icon */}
+					<Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+						<PhoneIcon sx={{ mr: 1, color: 'gray' }} />
+						{editing ? (
+							<TextField
+								fullWidth
+								label="Phone Number"
+								name="phoneNumber"
+								value={editedProvider?.phoneNumber ?? ""}
+								error={!!errors.phoneNumber}
+								helperText={errors.phoneNumber}
+								onChange={handleInputChange}
 						/>
-					) : (
-						<Typography variant="body1">{provider?.businessAddress}</Typography>
-					)}
-				</Box>
-
-				{/* Phone Number with Icon */}
-				<Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
-					<PhoneIcon sx={{ mr: 1, color: 'gray' }} />
-					{editing ? (
-						<TextField
-							fullWidth
-							label="Phone Number"
-							name="phoneNumber"
-							value={editedProvider?.phoneNumber ?? ""}
-							error={!!errors.phoneNumber}
-							helperText={errors.phoneNumber}
-							onChange={handleInputChange}
-					/>
-					) : (
-						<Typography variant="body1">{provider?.phoneNumber}</Typography>
-					)}
-				</Box>
-
-				{/* Email with Icon */}
-				<Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
-					<EmailIcon sx={{ mr: 1, color: 'gray' }} />
-					{editing ? (
-						<TextField
-							fullWidth
-							label="Email"
-							name="email"
-							value={editedProvider?.email ?? ""}
-							error={!!errors.email}
-							helperText={errors.email}
-							onChange={handleInputChange}
-						/>
-					) : (
-						<Typography variant="body1">{provider?.email}</Typography>
-					)}
-				</Box>
-				
-				{editing ? (
-					<Box sx={{ display: 'flex', alignItems: 'center', mt: 2, pl: 4 /* Align with icon padding */ }}>
-						<TextField
-						fullWidth
-						multiline
-						rows={4}
-						label="Bio"
-						name="bio"
-						value={editedProvider?.bio ?? ""}
-						onChange={handleInputChange}
-						/>
+						) : (
+							<Typography variant="body1">{provider?.phoneNumber}</Typography>
+						)}
 					</Box>
-				) : (
-					<Typography variant="body2" sx={{ mt: 1 }}>
-					{provider?.bio}
-					</Typography>
-				)}
-			</CardContent>
-			{/* Edit/Save/Cancel buttons */}
-			
-			{ownPage && (
-				<Box sx={{ position: 'absolute', right: 16, top: 90 }}>
-					{!editing ? (
-						<IconButton onClick={handleEditing}>
-							<EditIcon />
-						</IconButton>
+
+					{/* Email with Icon */}
+					<Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+						<EmailIcon sx={{ mr: 1, color: 'gray' }} />
+						{editing ? (
+							<TextField
+								fullWidth
+								label="Email"
+								name="email"
+								value={editedProvider?.email ?? ""}
+								error={!!errors.email}
+								helperText={errors.email}
+								onChange={handleInputChange}
+							/>
+						) : (
+							<Typography variant="body1">{provider?.email}</Typography>
+						)}
+					</Box>
+					
+					{editing ? (
+						<Box sx={{ display: 'flex', alignItems: 'center', mt: 2, pl: 4 /* Align with icon padding */ }}>
+							<TextField
+							fullWidth
+							multiline
+							rows={4}
+							label="Bio"
+							name="bio"
+							value={editedProvider?.bio ?? ""}
+							onChange={handleInputChange}
+							/>
+						</Box>
 					) : (
-						
-						<>
-							<Button
-								variant="contained"
-								color="primary"
-								startIcon={<SaveIcon />}
-								onClick={handleSave}
-								sx={{ mr: 1 }}
-							>
-								Save
-							</Button>
-							{!creatingProfile && (
-								<Button
-									variant="outlined"
-									color="secondary"
-									startIcon={<CancelIcon />}
-									onClick={handleCancel}
-								>
-									Cancel
-								</Button>
+						<Typography variant="body2" sx={{ mt: 1 }}>
+						{provider?.bio}
+						</Typography>
+					)}
+				</CardContent>
+				{/* Edit/Save/Cancel buttons */}
+				
+				
+			</Box>
+			<Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'end'}}>
+				{ownPage && (
+					<>
+						<Box>
+							{!editing ? (
+								<IconButton onClick={handleEditing}>
+									<EditIcon />
+								</IconButton>
+							) : (
+								
+								<>
+									<Button
+										variant="contained"
+										color="primary"
+										startIcon={<SaveIcon />}
+										onClick={handleSave}
+										sx={{ mr: 1 }}
+									>
+										Save
+									</Button>
+									{!creatingProfile && (
+										<Button
+											variant="outlined"
+											color="secondary"
+											startIcon={<CancelIcon />}
+											onClick={handleCancel}
+										>
+											Cancel
+										</Button>
+									)}
+
+
+								</>
 							)}
-
-
-						</>
-					)}
-				</Box>
-			)}
+						</Box>
+						<Button variant='contained'>Manage availability</Button>
+					</>
+				)}
+			</Box>
 		</Card>
 	);
 };

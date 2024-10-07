@@ -105,7 +105,7 @@ const Portfolio: React.FC<PortfolioProps> = ({mainService, ownPage, token}) => {
             <Typography variant="h5" sx={{ textAlign: 'center', mb: 2 }}>Portfolio</Typography>
             <Grid container spacing={2}>
                 {/* The "+" Icon for Adding a New Image */}
-                {portfolioPage === 1 && (
+                {portfolioPage === 1 && ownPage && (
                     <Grid item xs={4}>
                         <Box 
                             sx={{ 

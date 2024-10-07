@@ -6,6 +6,7 @@ import { withAuthenticationRequired } from '@auth0/auth0-react';
 import ProfilePage from './pages/ProfilePage';
 import ServicesPage from './pages/ServicesPage';
 import ErrorPage from './pages/ErrorPage';
+import AvailabilityPage from './pages/AvailabilityPage';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Routes>
         <Route path="/" Component={HomePage} />
         <Route path="/book/providers/:id" Component={withAuthenticationRequired(BookingPage)} />
+        <Route path="/providers/:id/availability" Component={withAuthenticationRequired(AvailabilityPage)} />
         <Route path="/profile" Component={withAuthenticationRequired(ProfilePage)} />
         <Route path="/error" Component={ErrorPage} />
         <Route path="/services/providers/:id" Component={ServicesPage} />

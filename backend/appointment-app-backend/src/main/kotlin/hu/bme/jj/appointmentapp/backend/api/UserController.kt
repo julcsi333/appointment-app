@@ -68,6 +68,9 @@ class UserController(private val userService: IUserService) {
         if (!uploadDir.exists()) {
             uploadDir.mkdirs() // Create the directory if it does not exist
         }
+        uploadDir.listFiles().all {
+            it.delete()
+        }
         return try {
             // Save the file to the upload directory
             val fileExtension = uploadDirectory.resolve(file.originalFilename).toFile().extension

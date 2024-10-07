@@ -1,3 +1,4 @@
+import { DayPilot } from '@daypilot/daypilot-lite-react';
 import dayjs, { Dayjs } from 'dayjs';
 
 export interface GlobalService {
@@ -131,4 +132,38 @@ export class SubServiceError {
     name: string = "";
     duration: string = "";
     price: string = "";
+}
+
+export interface AppointmentEvent {
+    start: DayPilot.Date;
+    end: DayPilot.Date;
+    id: String;
+    providerId: string;
+    customerId: string;
+    serviceId: string;
+}
+
+/*export enum AvailableEventType {
+    SINGLE = 1,
+    RULE = 2
+}*/
+
+export interface AvailableEvent {
+    //type: AvailableEventType;
+    start: DayPilot.Date;
+    end: DayPilot.Date;
+    id: string | null;
+    providerId: string;
+    repeatEveryWeek: boolean;
+    repeatMonthsCount: number | null;
+}
+
+export interface AvailableEventData extends DayPilot.EventData {
+    //type: AvailableEventType;
+    start: DayPilot.Date;
+    end: DayPilot.Date;
+    id: string | number;
+    providerId: string;
+    repeatEveryWeek: boolean;
+    repeatMonthsCount: number | null;
 }

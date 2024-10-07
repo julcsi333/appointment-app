@@ -8,6 +8,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
 import ProfileAvatar from '../ProfileAvatar';
+import { useNavigate } from 'react-router-dom';
 
 interface BusinessInformationProps {
 	provider: Provider | null;
@@ -34,14 +35,7 @@ function createProvider(provider: Provider): Provider | null {
 const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user, ownPage, creatingProfile, saveProfile, token}) => {
     const [editedProvider, setEditedProvider] = useState<Provider | null>(null);
     const [editing, setEditing] = useState<boolean>(creatingProfile);
-	//const [formValues, setFormValues] = useState(editedProvider);
-	/*useEffect(() => {
-		const fetchData = async () => {
-			setEditedProvider(ownPage ? {...user!, businessAddress: provider?.businessAddress ?? ""} : {...provider!});
-		};
-		fetchData();
-		return () => {};
-	}, [ownPage, provider, user]);*/
+	const navigate = useNavigate();
 
 	const handleSave = () => {
 		if(validateFields()) {
@@ -110,6 +104,10 @@ const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user
 	
 		setErrors(tempErrors);
 		return isValid;
+	};
+
+	const handleAvailabilityButtonClick = () => {
+		navigate(`/providers/${provider!.id}/availability`);
 	};
 
 	return (
@@ -246,7 +244,9 @@ const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user
 								</>
 							)}
 						</Box>
-						<Button variant='contained'>Manage availability</Button>
+						{!creatingProfile && (
+							<Button variant='contained' onClick={handleAvailabilityButtonClick}>Manage availability</Button>
+						)}
 					</>
 				)}
 			</Box>

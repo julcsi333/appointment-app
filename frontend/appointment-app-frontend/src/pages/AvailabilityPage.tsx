@@ -62,7 +62,8 @@ const AvailabilityPage: React.FC = () => {
 			id: null, 
 			repeatEveryWeek: repeatEveryWeek,
 			repeatMonthsCount: repeatMonthsCount
-		} 
+		}
+		
 		const newEventData: AvailableEventData = {
 			providerId: id!, 
 			start: start, 

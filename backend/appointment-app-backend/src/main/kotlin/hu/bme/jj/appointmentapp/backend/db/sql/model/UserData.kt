@@ -16,6 +16,8 @@ open class UserData (
     open var email: String? = null,
     @Column(nullable=true)
     open var bio: String? = "",
+    @Column(nullable=false)
+    val sendDailyAppointmentNotification: Boolean = true,
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
     open var provider: Provider? = null  // Nullable
 )

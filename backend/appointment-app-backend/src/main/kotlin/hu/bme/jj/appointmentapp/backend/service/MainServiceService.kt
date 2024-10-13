@@ -87,7 +87,7 @@ class MainServiceService(
         }
     }
 
-    fun mapToDTO(mainService: MainService): ServiceDTO {
+    private fun mapToDTO(mainService: MainService): ServiceDTO {
         return ServiceDTO(
             mainService.id,
             mainService.description,
@@ -99,7 +99,7 @@ class MainServiceService(
         )
     }
 
-    fun mapToEntity(mainService: ServiceDTO): MainService {
+    private fun mapToEntity(mainService: ServiceDTO): MainService {
         return MainService(
             mainService.id,
             mainService.description,

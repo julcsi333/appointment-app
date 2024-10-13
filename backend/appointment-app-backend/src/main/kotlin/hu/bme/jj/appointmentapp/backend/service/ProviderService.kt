@@ -36,13 +36,16 @@ class ProviderService(
         provider.user.phoneNumber,
         provider.user.email,
         provider.user.bio ?: "",
-        provider.businessAddress
+        provider.user.sendDailyAppointmentNotification,
+        provider.businessAddress,
+        provider.sendDailyAppointmentReport
     )
     private fun mapToEntity(provider: ProviderDTO): Provider {
         val providerEntity = repository.findByUserId(provider.id!!).orElse(null)
         return Provider(
             providerEntity?.id,
             provider.businessAddress,
+            provider.sendDailyAppointmentReport,
             providerEntity?.user ?: userRepository.findById(provider.id)
                 .orElseThrow{ EntityNotFoundException("User not found with id #${provider.id}")}
         )

@@ -1,5 +1,5 @@
 import { DayPilot } from '@daypilot/daypilot-lite-react';
-import dayjs, { Dayjs } from 'dayjs';
+import { Dayjs } from 'dayjs';
 
 export interface GlobalService {
     id: number;

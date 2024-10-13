@@ -6,5 +6,7 @@ class ProviderDTO(
     phoneNumber: String?,
     email: String?,
     bio: String = "",
-    val businessAddress: String = ""
-) : UserDTO(id, name, phoneNumber, email, bio)
+    sendDailyAppointmentNotification: Boolean = true,
+    val businessAddress: String = "",
+    val sendDailyAppointmentReport: Boolean = true,
+) : UserDTO(id, name, phoneNumber, email, bio, sendDailyAppointmentNotification)

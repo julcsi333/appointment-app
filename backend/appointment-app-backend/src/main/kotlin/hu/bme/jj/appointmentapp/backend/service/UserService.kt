@@ -45,7 +45,8 @@ class UserService (
             user.name,
             user.phoneNumber,
             user.email,
-            user.bio ?: ""
+            user.bio ?: "",
+            user.sendDailyAppointmentNotification
         )
     }
 
@@ -55,7 +56,8 @@ class UserService (
             user.name,
             user.phoneNumber,
             user.email,
-            user.bio
+            user.bio,
+            user.sendDailyAppointmentNotification
         )
     }
 

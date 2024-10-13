@@ -1,6 +1,5 @@
 package hu.bme.jj.appointmentapp.backend.service
 
-import hu.bme.jj.appointmentapp.backend.api.model.ServiceDTO
 import hu.bme.jj.appointmentapp.backend.api.model.SubServiceDTO
 
 interface ISubServiceService {

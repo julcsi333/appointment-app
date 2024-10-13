@@ -1,7 +1,12 @@
 package hu.bme.jj.appointmentapp.backend.api
 
+import hu.bme.jj.appointmentapp.backend.api.model.BookableTimeDTO
+import hu.bme.jj.appointmentapp.backend.service.util.BookableTime
+import hu.bme.jj.appointmentapp.backend.api.model.ProviderAvailabilityDTO
+import hu.bme.jj.appointmentapp.backend.api.model.ProviderAvailabilityRuleDTO
 import hu.bme.jj.appointmentapp.backend.api.model.ProviderDTO
-import hu.bme.jj.appointmentapp.backend.db.sql.model.Provider
+import hu.bme.jj.appointmentapp.backend.service.IProviderAvailabilityRuleService
+import hu.bme.jj.appointmentapp.backend.service.IProviderAvailabilityService
 import hu.bme.jj.appointmentapp.backend.service.IProviderService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -9,7 +14,11 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/providers")
-class ProviderController(private val providerService: IProviderService) {
+class ProviderController(
+    private val providerService: IProviderService,
+    private val providerAvailabilityService: IProviderAvailabilityService,
+    private val providerAvailabilityRuleService: IProviderAvailabilityRuleService
+) {
 
     @GetMapping
     fun getAllProviders(): ResponseEntity<List<ProviderDTO>> {
@@ -40,5 +49,51 @@ class ProviderController(private val providerService: IProviderService) {
     fun deleteProvider(@PathVariable id: Long): ResponseEntity<String> {
         providerService.deleteProvider(id)
         return ResponseEntity.ok("Provider #$id deleted.")
+    }
+
+    @GetMapping("/{providerId}/availability")
+    fun getProviderAvailabilities(@PathVariable providerId: Long): ResponseEntity<List<ProviderAvailabilityDTO>> {
+        return ResponseEntity(providerAvailabilityService.getPAsByProviderId(providerId), HttpStatus.OK)
+    }
+
+    @GetMapping("/{providerId}/availability/bookable", params = ["bookTime"])
+    fun getProviderBookableAvailability(@PathVariable providerId: Long, @RequestParam bookTime: Long): ResponseEntity<List<BookableTimeDTO>> {
+        return ResponseEntity(providerAvailabilityService.getBookablePAsByProviderId(providerId, bookTime), HttpStatus.OK)
+    }
+
+    @PostMapping("/{providerId}/availability")
+    fun createProviderAvailability(@PathVariable providerId: Long, @RequestBody entity: ProviderAvailabilityDTO): ResponseEntity<ProviderAvailabilityDTO> {
+        return ResponseEntity(providerAvailabilityService.createPA(entity), HttpStatus.OK)
+    }
+
+    @PutMapping("/{providerId}/availability/{id}")
+    fun updateProviderAvailability(@PathVariable providerId: Long, @PathVariable id: Long, @RequestBody updatedEntity: ProviderAvailabilityDTO): ResponseEntity<ProviderAvailabilityDTO> {
+        return ResponseEntity(providerAvailabilityService.updatePA(updatedEntity), HttpStatus.OK)
+    }
+
+    @DeleteMapping("/{providerId}/availability/{id}")
+    fun deleteProviderAvailability(@PathVariable providerId: Long, @PathVariable id: Long): ResponseEntity<String> {
+        providerAvailabilityService.deletePA(id)
+        return ResponseEntity.ok("Provider availability #$id deleted.")
+    }
+
+    @GetMapping("/{providerId}/availability/rule")
+    fun getProviderAvailabilityRules(@PathVariable providerId: Long): ResponseEntity<List<ProviderAvailabilityRuleDTO>> {
+        return ResponseEntity(providerAvailabilityRuleService.getPARulesByProviderId(providerId), HttpStatus.OK)
+    }
+    @PostMapping("/{providerId}/availability/rule")
+    fun createProviderAvailabilityRule(@PathVariable providerId: Long, @RequestBody entity: ProviderAvailabilityRuleDTO): ResponseEntity<ProviderAvailabilityRuleDTO> {
+        return ResponseEntity(providerAvailabilityRuleService.createPARule(entity), HttpStatus.OK)
+    }
+
+    @PutMapping("/{providerId}/availability/rule/{id}")
+    fun updateProviderAvailabilityRule(@PathVariable providerId: Long, @PathVariable id: Long, @RequestBody updatedEntity: ProviderAvailabilityRuleDTO): ResponseEntity<ProviderAvailabilityRuleDTO> {
+        return ResponseEntity(providerAvailabilityRuleService.updatePARule(updatedEntity), HttpStatus.OK)
+    }
+
+    @DeleteMapping("/{providerId}/availability/rule/{id}")
+    fun deleteProviderAvailabilityRule(@PathVariable providerId: Long, @PathVariable id: Long): ResponseEntity<String> {
+        providerAvailabilityRuleService.deletePARule(id)
+        return ResponseEntity.ok("Provider availability rule #$id deleted.")
     }
 }

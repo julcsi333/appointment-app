@@ -12,6 +12,12 @@ class Appointment(
     @Column(nullable = false)
     var date: java.sql.Date,
 
+    @Column(nullable = false)
+    var startTime: java.sql.Time,
+
+    @Column(nullable = false)
+    var endTime: java.sql.Time,
+
     @ManyToOne
     @JoinColumn(name = "provider_id")
     var provider: Provider,

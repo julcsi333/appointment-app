@@ -1,4 +1,4 @@
-package hu.bme.jj.appointmentapp.backend.service
+package hu.bme.jj.appointmentapp.backend.services.user
 
 import hu.bme.jj.appointmentapp.backend.api.model.UserDTO
 import hu.bme.jj.appointmentapp.backend.db.sql.model.Auth0UserMapping

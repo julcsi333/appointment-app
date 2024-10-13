@@ -1,4 +1,4 @@
-package hu.bme.jj.appointmentapp.backend.service
+package hu.bme.jj.appointmentapp.backend.services.appointment
 
 import hu.bme.jj.appointmentapp.backend.api.model.AppointmentDTO
 import java.time.LocalDate

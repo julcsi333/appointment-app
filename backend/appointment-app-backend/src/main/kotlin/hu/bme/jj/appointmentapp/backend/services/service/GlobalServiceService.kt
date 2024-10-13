@@ -1,4 +1,4 @@
-package hu.bme.jj.appointmentapp.backend.service
+package hu.bme.jj.appointmentapp.backend.services.service
 
 import hu.bme.jj.appointmentapp.backend.api.model.GlobalServiceDTO
 import hu.bme.jj.appointmentapp.backend.db.sql.model.GlobalService
@@ -7,7 +7,7 @@ import jakarta.persistence.EntityNotFoundException
 import org.springframework.stereotype.Service
 
 @Service
-class GlobalServiceService(private val repository: GlobalServiceRepository) : IGlobalServiceService{
+class GlobalServiceService(private val repository: GlobalServiceRepository) : IGlobalServiceService {
     override fun getAllGlobalServices(): List<GlobalServiceDTO> {
         return repository.findAll().map { mapToDTO(it) }
     }

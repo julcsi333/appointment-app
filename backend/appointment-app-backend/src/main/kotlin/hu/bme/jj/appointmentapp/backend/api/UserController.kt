@@ -1,7 +1,7 @@
 package hu.bme.jj.appointmentapp.backend.api
 
 import hu.bme.jj.appointmentapp.backend.api.model.UserDTO
-import hu.bme.jj.appointmentapp.backend.service.IUserService
+import hu.bme.jj.appointmentapp.backend.services.user.IUserService
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource

@@ -1,13 +1,12 @@
 package hu.bme.jj.appointmentapp.backend.api
 
 import hu.bme.jj.appointmentapp.backend.api.model.BookableTimeDTO
-import hu.bme.jj.appointmentapp.backend.service.util.BookableTime
 import hu.bme.jj.appointmentapp.backend.api.model.ProviderAvailabilityDTO
 import hu.bme.jj.appointmentapp.backend.api.model.ProviderAvailabilityRuleDTO
 import hu.bme.jj.appointmentapp.backend.api.model.ProviderDTO
-import hu.bme.jj.appointmentapp.backend.service.IProviderAvailabilityRuleService
-import hu.bme.jj.appointmentapp.backend.service.IProviderAvailabilityService
-import hu.bme.jj.appointmentapp.backend.service.IProviderService
+import hu.bme.jj.appointmentapp.backend.services.provider.IProviderAvailabilityRuleService
+import hu.bme.jj.appointmentapp.backend.services.provider.IProviderAvailabilityService
+import hu.bme.jj.appointmentapp.backend.services.provider.IProviderService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

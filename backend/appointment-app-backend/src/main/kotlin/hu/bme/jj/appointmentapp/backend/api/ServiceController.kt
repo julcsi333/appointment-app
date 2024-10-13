@@ -1,7 +1,7 @@
 package hu.bme.jj.appointmentapp.backend.api
 
 import hu.bme.jj.appointmentapp.backend.api.model.ServiceDTO
-import hu.bme.jj.appointmentapp.backend.service.IMainServiceService
+import hu.bme.jj.appointmentapp.backend.services.service.IMainServiceService
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource
 import org.springframework.http.HttpHeaders

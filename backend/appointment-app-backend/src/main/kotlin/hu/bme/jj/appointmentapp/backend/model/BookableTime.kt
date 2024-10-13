@@ -1,4 +1,4 @@
-package hu.bme.jj.appointmentapp.backend.service.util
+package hu.bme.jj.appointmentapp.backend.model
 
 import hu.bme.jj.appointmentapp.backend.api.model.BookableTimeDTO
 import java.time.Duration

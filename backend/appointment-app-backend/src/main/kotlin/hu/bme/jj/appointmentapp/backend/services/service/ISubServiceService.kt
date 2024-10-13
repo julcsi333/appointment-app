@@ -1,4 +1,4 @@
-package hu.bme.jj.appointmentapp.backend.service
+package hu.bme.jj.appointmentapp.backend.services.service
 
 import hu.bme.jj.appointmentapp.backend.api.model.SubServiceDTO
 

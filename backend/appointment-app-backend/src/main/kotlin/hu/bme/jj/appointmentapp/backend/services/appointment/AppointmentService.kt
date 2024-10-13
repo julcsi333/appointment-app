@@ -1,29 +1,29 @@
-package hu.bme.jj.appointmentapp.backend.service
+package hu.bme.jj.appointmentapp.backend.services.appointment
 
 import hu.bme.jj.appointmentapp.backend.api.model.AppointmentDTO
-import hu.bme.jj.appointmentapp.backend.api.model.UserDTO
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.AppointmentRepository
-import hu.bme.jj.appointmentapp.backend.db.sql.repository.ServiceRepository
 import hu.bme.jj.appointmentapp.backend.db.sql.model.Appointment
-import hu.bme.jj.appointmentapp.backend.db.sql.model.ProviderAvailability
-import hu.bme.jj.appointmentapp.backend.db.sql.model.UserData
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.ProviderRepository
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.SubServiceRepository
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.UserRepository
+import hu.bme.jj.appointmentapp.backend.services.email.IEmailService
+import hu.bme.jj.appointmentapp.backend.services.email.IEmailMessageFactory
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
-import java.sql.Date
 import java.time.LocalDate
-import java.time.temporal.TemporalAdjusters
 
 @Service
 class AppointmentService(
     private val appointmentRepository: AppointmentRepository,
     private val providerRepository: ProviderRepository,
     private val userRepository: UserRepository,
-    private val subServiceRepository: SubServiceRepository
+    private val subServiceRepository: SubServiceRepository,
+    private val emailMessageFactory: IEmailMessageFactory,
+    private val emailService: IEmailService,
 ): IAppointmentService {
+
+
     fun mapToDTO(appointment: Appointment): AppointmentDTO {
         return AppointmentDTO(
             id = appointment.id,
@@ -77,11 +77,25 @@ class AppointmentService(
     @Scheduled(cron = "0 0 20 * * *")
     fun sendAppointmentNotifications() {
         val nextDay = java.sql.Date.valueOf(LocalDate.now().plusDays(1))
+        val providerAppointments = mutableMapOf<Long, MutableList<Appointment>>()
         appointmentRepository.findByDate(nextDay).forEach {
-            if (it.customer.sendDailyAppointmentNotification) {
-                if (it.customer.email != null) {
-                    
+            if (it.customer.sendDailyAppointmentNotification && it.customer.email != null) {
+                emailService.sendMail(
+                    emailMessageFactory.createAppointmentNotificationEmail(appointment = it)
+                )
+            }
+            if (it.provider.sendDailyAppointmentReport && it.provider.user.email != null) {
+                if (providerAppointments[it.provider.id] != null) {
+                    providerAppointments[it.provider.id]!!.add(it)
+                } else {
+                    providerAppointments[it.provider.id!!] = mutableListOf(it)
                 }
+            }
+        }
+        providerAppointments.forEach {
+            val mail = emailMessageFactory.createAppointmentReportEmail(it.value)
+            if (mail != null) {
+                emailService.sendMail(mail)
             }
         }
     }

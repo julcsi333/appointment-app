@@ -1,4 +1,4 @@
-package hu.bme.jj.appointmentapp.backend.service
+package hu.bme.jj.appointmentapp.backend.services.provider
 
 import hu.bme.jj.appointmentapp.backend.api.model.ProviderAvailabilityRuleDTO
 import hu.bme.jj.appointmentapp.backend.db.sql.model.ProviderAvailability

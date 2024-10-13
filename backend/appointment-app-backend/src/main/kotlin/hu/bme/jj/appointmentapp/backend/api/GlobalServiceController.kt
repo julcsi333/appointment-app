@@ -1,7 +1,7 @@
 package hu.bme.jj.appointmentapp.backend.api
 
 import hu.bme.jj.appointmentapp.backend.api.model.GlobalServiceDTO
-import hu.bme.jj.appointmentapp.backend.service.IGlobalServiceService
+import hu.bme.jj.appointmentapp.backend.services.service.IGlobalServiceService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping

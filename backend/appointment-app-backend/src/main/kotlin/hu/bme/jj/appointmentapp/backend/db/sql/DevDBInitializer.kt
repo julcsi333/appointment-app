@@ -1,6 +1,9 @@
 package hu.bme.jj.appointmentapp.backend.db.sql
 
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.*
+import hu.bme.jj.appointmentapp.backend.model.EmailMessage
+import hu.bme.jj.appointmentapp.backend.services.email.EmailService
+import hu.bme.jj.appointmentapp.backend.services.email.IEmailService
 import jakarta.annotation.PostConstruct
 import org.springframework.stereotype.Component
 
@@ -12,6 +15,7 @@ class DevDBInitializer(
     private val serviceRepository: ServiceRepository,
     private val userRepository: UserRepository,
     private val auth0UserMappingRepository: Auth0UserMappingRepository,
+    private val emailService: IEmailService,
 ) {
 
     @PostConstruct

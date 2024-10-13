@@ -1,9 +1,11 @@
-package hu.bme.jj.appointmentapp.backend.service
+package hu.bme.jj.appointmentapp.backend.services.provider
 
 import hu.bme.jj.appointmentapp.backend.api.model.ProviderDTO
 import hu.bme.jj.appointmentapp.backend.db.sql.model.Provider
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.ProviderRepository
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.UserRepository
+import hu.bme.jj.appointmentapp.backend.services.service.IMainServiceService
+import hu.bme.jj.appointmentapp.backend.services.user.UserService
 import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service

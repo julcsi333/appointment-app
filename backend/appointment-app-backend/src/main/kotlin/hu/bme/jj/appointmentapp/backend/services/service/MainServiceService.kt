@@ -1,4 +1,4 @@
-package hu.bme.jj.appointmentapp.backend.service
+package hu.bme.jj.appointmentapp.backend.services.service
 
 import hu.bme.jj.appointmentapp.backend.api.model.ServiceDTO
 import hu.bme.jj.appointmentapp.backend.db.sql.model.MainService
@@ -17,7 +17,7 @@ class MainServiceService(
     private val globalServiceRepository: GlobalServiceRepository,
     private val subServiceService: ISubServiceService,
     private val globalServiceService: IGlobalServiceService,
-): IMainServiceService{
+): IMainServiceService {
 
     //fun findAllServices(): List<ServiceDTO> = repository.findAll().map { mapToDTO(it) }
     @Throws(EntityNotFoundException::class)

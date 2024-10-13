@@ -1,12 +1,13 @@
-package hu.bme.jj.appointmentapp.backend.service
+package hu.bme.jj.appointmentapp.backend.services.provider
 
 import hu.bme.jj.appointmentapp.backend.api.model.BookableTimeDTO
-import hu.bme.jj.appointmentapp.backend.service.util.BookableTime
+import hu.bme.jj.appointmentapp.backend.model.BookableTime
 import hu.bme.jj.appointmentapp.backend.api.model.ProviderAvailabilityDTO
 import hu.bme.jj.appointmentapp.backend.db.sql.model.ProviderAvailability
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.ProviderAvailabilityRepository
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.ProviderAvailabilityRuleRepository
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.ProviderRepository
+import hu.bme.jj.appointmentapp.backend.services.appointment.AppointmentService
 import jakarta.persistence.EntityExistsException
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.scheduling.annotation.Scheduled

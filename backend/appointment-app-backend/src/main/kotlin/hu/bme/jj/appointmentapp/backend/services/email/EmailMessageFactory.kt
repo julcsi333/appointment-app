@@ -2,7 +2,9 @@ package hu.bme.jj.appointmentapp.backend.services.email
 
 import hu.bme.jj.appointmentapp.backend.db.sql.model.Appointment
 import hu.bme.jj.appointmentapp.backend.model.EmailMessage
+import org.springframework.stereotype.Service
 
+@Service
 class EmailMessageFactory: IEmailMessageFactory {
 
     private val applicationName = "Appointment application"

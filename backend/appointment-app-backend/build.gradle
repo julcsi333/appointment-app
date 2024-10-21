@@ -39,9 +39,10 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.h2database:h2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	implementation 'com.microsoft.sqlserver:mssql-jdbc'
+	//implementation 'com.microsoft.sqlserver:mssql-jdbc'
 	implementation 'com.okta.spring:okta-spring-boot-starter:3.0.5'
 	implementation 'org.springframework.boot:spring-boot-starter-mail:3.3.4'
+	implementation 'com.mysql:mysql-connector-j'
 }
 
 tasks.withType(KotlinCompile) {

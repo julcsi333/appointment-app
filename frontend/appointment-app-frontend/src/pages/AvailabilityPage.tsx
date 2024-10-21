@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import { useAuth0 } from '@auth0/auth0-react';
-import GlobalToolbar from '../components/GlobalToolbar';
+import GlobalToolbar from '../components/common/GlobalToolbar';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ErrorType } from '../components/error/model';
 import { DayPilot, DayPilotCalendar, DayPilotNavigator } from '@daypilot/daypilot-lite-react';
 import { AvailableEvent, AvailableEventData } from '../components/api/model';
 import PhoneIcon from '@mui/icons-material/Phone';
-import { getBaseUrl } from '../config';
+import { getBaseUrl } from '../config/config';
 
 
 const AvailabilityPage: React.FC = () => {

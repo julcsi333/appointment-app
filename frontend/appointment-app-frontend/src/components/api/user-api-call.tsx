@@ -1,6 +1,6 @@
 import { User } from "./model";
 import { secureApiFileUploadCall, secureApiGetCall } from "./api-call";
-import { getBaseUrl } from "../../config";
+import { getBaseUrl } from "../../config/config";
 
 export const getUser = async (id: string, token: string): Promise<User> => {
     const response = await secureApiGetCall(`${getBaseUrl()}/users/${id}`, token);

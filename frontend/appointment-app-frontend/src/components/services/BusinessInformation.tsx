@@ -7,8 +7,8 @@ import { Provider, User } from '../api/model';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
-import ProfileAvatar from '../ProfileAvatar';
 import { useNavigate } from 'react-router-dom';
+import ProfileAvatar from '../common/ProfileAvatar';
 
 interface BusinessInformationProps {
 	provider: Provider | null;

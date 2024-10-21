@@ -3,9 +3,9 @@ import { Box, Grid, Typography, Pagination} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { MainService } from '../api/model';
 import { getPortfolioPictureAmount, getPortfolioPictureNames, uploadPortfolioPicture } from '../api/services-api-call';
-import { getBaseUrl } from '../../config';
-import PictureUploadDialog from '../PictureUploadDialog';
+import { getBaseUrl } from '../../config/config';
 import { AddBox } from '@mui/icons-material';
+import PictureUploadDialog from '../common/PictureUploadDialog';
 
 interface PortfolioProps {
 	mainService: MainService | null;

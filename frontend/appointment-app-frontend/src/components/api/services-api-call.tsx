@@ -1,4 +1,4 @@
-import { getBaseUrl } from "../../config";
+import { getBaseUrl } from "../../config/config";
 import { apiGetCall, secureApiDeleteCall, secureApiFileUploadCall, secureApiPostCall, secureApiPutCall } from "./api-call";
 import { GlobalService, MainService, NewMainService, NewSubService, SubService } from "./model";
 

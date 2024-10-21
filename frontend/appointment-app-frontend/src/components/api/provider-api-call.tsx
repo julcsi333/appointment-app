@@ -1,7 +1,7 @@
 import { Provider } from './model';
 import { apiGetCall, secureApiPostCall, secureApiPutCall } from './api-call';
 import { AxiosError } from 'axios';
-import { getBaseUrl } from '../../config';
+import { getBaseUrl } from '../../config/config';
 
 export const getProviders = async (): Promise<Array<Provider>> => {
   const response = await apiGetCall(getBaseUrl() +'/providers');

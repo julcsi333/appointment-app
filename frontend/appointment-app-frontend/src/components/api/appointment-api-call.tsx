@@ -1,4 +1,4 @@
-import { getBaseUrl } from "../../config";
+import { getBaseUrl } from "../../config/config";
 import { secureApiPostCall } from "./api-call";
 import { Appointment, User } from "./model";
 

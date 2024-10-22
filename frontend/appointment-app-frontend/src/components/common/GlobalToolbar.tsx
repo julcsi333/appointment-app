@@ -4,8 +4,8 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { styled } from '@mui/system';
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
-import { getUserByExternalId } from "./api/user-api-call";
-import { User } from "./api/model";
+import { getUserByExternalId } from "../api/user-api-call";
+import { User } from "../api/model";
 
 const ToolbarLeft = styled('div')({
   flexGrow: 1,

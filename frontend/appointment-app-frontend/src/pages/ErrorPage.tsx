@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Button, Grid, Paper, Typography } from '@mui/material';
-import GlobalToolbar from '../components/GlobalToolbar';
+import GlobalToolbar from '../components/common/GlobalToolbar';
 import { useLocation, useNavigate } from "react-router-dom";
 import { ErrorType } from '../components/error/model';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';

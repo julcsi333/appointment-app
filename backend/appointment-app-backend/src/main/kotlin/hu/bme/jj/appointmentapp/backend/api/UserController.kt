@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
@@ -20,7 +21,7 @@ import kotlin.io.path.Path
 class UserController(private val userService: IUserService) {
     @GetMapping("/auth/{auth0UserId}")
     fun getOrCreateUserForAuth0(@PathVariable auth0UserId: String): UserDTO {
-        //SecurityContextHolder.getContext().authentication
+        SecurityContextHolder.getContext().authentication
         return userService.getOrCreateUserForAuth0(auth0UserId)
     }
 

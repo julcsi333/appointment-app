@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import {getProviders} from './api/provider-api-call';
-import { Provider } from './api/model';
+import {getProviders} from '../api/provider-api-call';
+import { Provider } from '../api/model';
 import { List, ListItem } from '@mui/material';
 import ProviderInformation from './ProviderInformation';
 import { useAuth0 } from '@auth0/auth0-react';

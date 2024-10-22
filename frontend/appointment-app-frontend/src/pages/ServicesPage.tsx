@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import { useAuth0 } from '@auth0/auth0-react';
-import GlobalToolbar from '../components/GlobalToolbar';
+import GlobalToolbar from '../components/common/GlobalToolbar';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Provider, User } from '../components/api/model';
 import BusinessInformation from '../components/services/BusinessInformation';

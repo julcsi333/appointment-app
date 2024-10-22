@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Typography} from '@mui/material';
-import ProviderInformation from '../components/ProviderInformation';
+import ProviderInformation from '../components/common/ProviderInformation';
 import { Provider, User } from '../components/api/model';
 import { getProvider } from '../components/api/provider-api-call';
-import ProviderNotFound from '../components/ProviderNotFound';
+import ProviderNotFound from '../components/common/ProviderNotFound';
 import BookingForm from '../components/booking/BookingForm';
-import GlobalToolbar from '../components/GlobalToolbar';
+import GlobalToolbar from '../components/common/GlobalToolbar';
 import { useAuth0 } from '@auth0/auth0-react';
 import { getUserByExternalId } from '../components/api/user-api-call';
 

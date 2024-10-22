@@ -1,6 +1,6 @@
 import React from 'react';
-import GlobalToolbar from '../components/GlobalToolbar';
-import ProviderComponent from '../components/ProviderComponent';
+import GlobalToolbar from '../components/common/GlobalToolbar';
+import ProviderComponent from '../components/common/ProviderComponent';
 import '../App.css';
 
 export const HomePage: React.FC = () => {

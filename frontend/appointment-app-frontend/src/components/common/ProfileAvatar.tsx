@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { User } from './api/model';
+import { User } from '../api/model';
 import { Avatar } from '@mui/material';
-import { getBaseUrl } from '../config';
-import { uploadProfilePicture } from './api/user-api-call';
+import { uploadProfilePicture } from '../api/user-api-call';
 import PictureUploadDialog from './PictureUploadDialog';
+import { getBaseUrl } from '../../config/config';
 
 interface ProfileAvatarProps {
 	user: User | null;

@@ -3,7 +3,7 @@ import { Box, Card, Typography, Tabs, Tab, IconButton, Menu, MenuItem } from '@m
 import AddIcon from '@mui/icons-material/Add';
 import { GlobalService, MainService, Provider } from '../api/model';
 import { createService, deleteService, getAllGlobalServices, getServiceById, getServicesByProviderId, updateService } from '../api/services-api-call';
-import DeleteDialog from '../DeleteDialog';
+import DeleteDialog from '../common/DeleteDialog';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ServiceDetails from './ServiceDetails';
 

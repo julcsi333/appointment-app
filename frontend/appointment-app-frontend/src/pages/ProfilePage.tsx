@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
-import GlobalToolbar from '../components/GlobalToolbar';
+import GlobalToolbar from '../components/common/GlobalToolbar';
 import '../App.css';
 import { useAuth0 } from '@auth0/auth0-react';
 import { getUserByExternalId } from '../components/api/user-api-call';

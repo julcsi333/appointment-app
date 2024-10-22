@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography, Card, CardContent, CardMedia, styled, Paper, Box } from '@mui/material';
-import { Provider } from './api/model';
+import { Provider } from '../api/model';
 import AppointmentButton from './AppointmentButton';
 
 interface ProviderInformationProps {

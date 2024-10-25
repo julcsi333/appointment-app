@@ -1,16 +1,24 @@
 package hu.bme.jj.appointmentapp.backend.api
 
 import hu.bme.jj.appointmentapp.backend.api.model.UserDTO
+import hu.bme.jj.appointmentapp.backend.api.model.UserMetaData
 import hu.bme.jj.appointmentapp.backend.services.user.IUserService
 import jakarta.persistence.EntityNotFoundException
+import org.apache.catalina.util.URLEncoder
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource
+import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.getForObject
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
 import java.io.IOException
@@ -19,10 +27,28 @@ import kotlin.io.path.Path
 @RestController
 @RequestMapping("/users")
 class UserController(private val userService: IUserService) {
+    private  val restTemplate = RestTemplate()
+
+    @Value("\${okta.oauth2.issuer}")
+    private lateinit var authIssuer: String
+
+    @Value("\${auth0.user.management.token}")
+    private lateinit var authManagementToken: String
+
     @GetMapping("/auth/{auth0UserId}")
     fun getOrCreateUserForAuth0(@PathVariable auth0UserId: String): UserDTO {
-        SecurityContextHolder.getContext().authentication
-        return userService.getOrCreateUserForAuth0(auth0UserId)
+        val user = userService.tryGetUserByAuth0Id(auth0UserId)
+        return if(user != null) {
+            user
+        } else {
+            val requestHeaders = HttpHeaders()
+            requestHeaders.setBearerAuth(authManagementToken)
+            val url = "${authIssuer}api/v2/users/${auth0UserId}"
+            val result = restTemplate.exchange(url, HttpMethod.GET, HttpEntity<String>("", requestHeaders),
+                UserMetaData::class.java
+            )
+            userService.createUser(UserDTO(null, result.body?.name, null, result.body?.email), auth0UserId)
+        }
     }
 
     @GetMapping("/{id}")
@@ -45,7 +71,7 @@ class UserController(private val userService: IUserService) {
     fun updateUser(@PathVariable id: Long, @RequestBody updatedUser: UserDTO): ResponseEntity<UserDTO> {
         return try {
             val result = userService.updateUser(
-                UserDTO(id, updatedUser.name, updatedUser.phoneNumber, updatedUser.email, updatedUser.bio)
+                UserDTO(id, updatedUser.name, updatedUser.phoneNumber, updatedUser.email)
             )
             ResponseEntity.ok(result)
         } catch (ex: Exception){

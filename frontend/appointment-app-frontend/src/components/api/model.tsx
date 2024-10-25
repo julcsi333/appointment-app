@@ -42,21 +42,21 @@ export class User {
     name: string;
     phoneNumber: string;
     email: string;
-    bio: string;
-    constructor(id: number, name: string, phoneNumber: string, email: string, bio: string) {
+    constructor(id: number, name: string, phoneNumber: string, email: string) {
         this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
-        this.bio = bio;
     }
 }
 
 export class Provider extends User{
     businessAddress: string;
+    bio: string;
     constructor(id: number, name: string, phoneNumber: string, email: string, bio: string, businessAddress: string) {
-        super(id, name, phoneNumber, email, bio)
+        super(id, name, phoneNumber, email)
         this.businessAddress = businessAddress;
+        this.bio = bio;
     }
 }
 

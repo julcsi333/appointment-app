@@ -37,8 +37,8 @@ class ProviderService(
         provider.user.name,
         provider.user.phoneNumber,
         provider.user.email,
-        provider.user.bio ?: "",
         provider.user.sendDailyAppointmentNotification,
+        provider.bio,
         provider.businessAddress,
         provider.sendDailyAppointmentReport
     )
@@ -46,6 +46,7 @@ class ProviderService(
         val providerEntity = repository.findByUserId(provider.id!!).orElse(null)
         return Provider(
             providerEntity?.id,
+            provider.bio ?: "",
             provider.businessAddress,
             provider.sendDailyAppointmentReport,
             providerEntity?.user ?: userRepository.findById(provider.id)

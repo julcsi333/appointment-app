@@ -9,12 +9,14 @@ import ServiceDetails from './ServiceDetails';
 
 interface ServicesInformationProps {
 	provider: Provider | null;
+	providerExists: boolean;
 	ownPage: boolean;
 	creatingProfile: boolean;
 	token: string;
+	editingBProfile: boolean;
 }
 
-const ServicesInformation: React.FC<ServicesInformationProps> = ({provider, ownPage, creatingProfile, token}) => {
+const ServicesInformation: React.FC<ServicesInformationProps> = ({provider, providerExists, ownPage, creatingProfile, token, editingBProfile}) => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const [currentTab, setCurrentTab] = useState<number>(0);
 	const [currentService, setCurrentService] = useState<MainService | null>(null);
@@ -26,7 +28,7 @@ const ServicesInformation: React.FC<ServicesInformationProps> = ({provider, ownP
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				if (provider !== null) {
+				if (provider !== null && providerExists) {
 					var providedServices = await getServicesByProviderId(provider.id.toString());
 					if(providedServices.length > 0) {
 						setCurrentService(providedServices[0])
@@ -42,7 +44,7 @@ const ServicesInformation: React.FC<ServicesInformationProps> = ({provider, ownP
 		
 		fetchData();
 		return () => {};
-	}, [provider, provider?.id]);
+	}, [provider, provider?.id, providerExists]);
 
 	// Handle tab change
 	const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -107,9 +109,9 @@ const ServicesInformation: React.FC<ServicesInformationProps> = ({provider, ownP
 	}
 
 	return (
-		<Card sx={{ minHeight:'70vh', display: 'flex', flexDirection: 'column' }}>
+		<Card sx={{ minHeight: editingBProfile ? '30vh': '60vh', display: 'flex', flexDirection: 'column' }}>
 			{/* Tabs */}
-			<Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center' }}>
+			<Box sx={[{ borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center' }, ]}>
 				<Tabs value={currentTab} onChange={handleTabChange} aria-label="service tabs">
 					{services.map((service, idx) => (
 					<Tab

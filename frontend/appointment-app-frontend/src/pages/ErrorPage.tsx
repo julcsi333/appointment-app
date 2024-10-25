@@ -17,15 +17,8 @@ const ErrorPage: React.FC = () => {
 	return (
 		<div>
 			<GlobalToolbar/>
-			<Grid
-				container
-				direction="column"
-				justifyContent="center"
-				alignItems="center"
-				minHeight="100vh"
-				sx={{ backgroundColor: '#f9f9f9', padding: 2 }}
-			>
-				<Paper elevation={3} sx={{ padding: 4, maxWidth: 500, textAlign: 'center' }}>
+			<center>
+				<Paper elevation={3} sx={{ mt:3, padding: 4, maxWidth: 500, textAlign: 'center' }}>
 					<Box display="flex" flexDirection="column" alignItems="center">
 						{/* Error icon */}
 						<ErrorOutlineIcon color="error" sx={{ fontSize: 50, mb: 2 }} />
@@ -52,7 +45,7 @@ const ErrorPage: React.FC = () => {
 						</Button>
 					</Box>
 				</Paper>
-			</Grid>
+				</center>
 		</div>
 	);
 };

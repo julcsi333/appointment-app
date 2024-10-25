@@ -5,6 +5,5 @@ open class UserDTO(
     val name: String?,
     val phoneNumber: String?,
     val email: String?,
-    val bio: String = "",
     val sendDailyAppointmentNotification: Boolean = true
 )

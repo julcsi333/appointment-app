@@ -3,8 +3,6 @@ package hu.bme.jj.appointmentapp.backend.services.user
 import hu.bme.jj.appointmentapp.backend.api.model.UserDTO
 
 interface IUserService {
-    // TODO: remove this
-    fun getOrCreateUserForAuth0(auth0UserId: String): UserDTO
 
     fun updateUser(updatedUser: UserDTO): UserDTO
 

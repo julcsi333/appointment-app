@@ -18,7 +18,7 @@ class UserService (
     private val providerRepository: ProviderRepository
 ): IUserService {
 
-    @Transactional
+    /*@Transactional
     override fun getOrCreateUserForAuth0(auth0UserId: String): UserDTO {
         val mapping = auth0UserMappingRepository.findByAuth0UserId(auth0UserId)
         return if (mapping != null) {
@@ -29,7 +29,7 @@ class UserService (
             auth0UserMappingRepository.save(newMapping)
             mapToDTO(newUser)
         }
-    }
+    }*/
 
     private fun getUserByIdFromRepositoryOrThrow(id: Long): UserData {
         return getUserByIdFromRepository(id) ?: throw EntityNotFoundException("User not found with id $id")
@@ -45,7 +45,6 @@ class UserService (
             user.name,
             user.phoneNumber,
             user.email,
-            user.bio ?: "",
             user.sendDailyAppointmentNotification
         )
     }
@@ -56,7 +55,6 @@ class UserService (
             user.name,
             user.phoneNumber,
             user.email,
-            user.bio,
             user.sendDailyAppointmentNotification
         )
     }
@@ -83,8 +81,7 @@ class UserService (
                     null,
                     user.name,
                     user.phoneNumber,
-                    user.email,
-                    user.bio
+                    user.email
                     )
             )
             val newMapping = Auth0UserMapping(auth0UserId = auth0UserId, localUser = newUser)

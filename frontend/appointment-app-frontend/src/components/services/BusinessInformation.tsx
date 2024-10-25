@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Card, CardContent, Typography, Avatar, TextField, IconButton, Button } from '@mui/material';
+import { Box, Card, CardContent, Typography, TextField, IconButton, Button } from '@mui/material';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -13,14 +13,16 @@ import ProfileAvatar from '../common/ProfileAvatar';
 interface BusinessInformationProps {
 	provider: Provider | null;
 	user: User | null;
+	editingBProfile: boolean;
+	setEditingBProfile: (editing: boolean) => void;
 	ownPage: boolean;
 	creatingProfile: boolean;
-	saveProfile: (provider: Provider) => void
+	saveProfile: (provider: Provider) => void;
 	token: string;
 }
 
-function createProviderFromUser(user: User, businessAddress: string): Provider {
-	return new Provider(user.id, user.name, user.phoneNumber, user.email, user.bio, businessAddress)
+function createProviderFromUser(user: User, bio: string | undefined | null, businessAddress: string | undefined | null): Provider {
+	return new Provider(user.id, user.name, user.phoneNumber, user.email, bio ?? "", businessAddress ?? "")
 }
 
 function createProvider(provider: Provider): Provider | null {
@@ -32,26 +34,32 @@ function createProvider(provider: Provider): Provider | null {
 	return new Provider(provider.id, provider.name, provider.phoneNumber, provider.email, provider.bio, provider.businessAddress)
 }
 
-const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user, ownPage, creatingProfile, saveProfile, token}) => {
+const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user, editingBProfile, setEditingBProfile, ownPage, creatingProfile, saveProfile, token}) => {
     const [editedProvider, setEditedProvider] = useState<Provider | null>(null);
-    const [editing, setEditing] = useState<boolean>(creatingProfile);
 	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (creatingProfile) {
+			setEditedProvider(createProvider(provider!))
+		}
+		return () => {};
+	}, [creatingProfile, provider]);
 
 	const handleSave = () => {
 		if(validateFields()) {
 			saveProfile(editedProvider!);
-			setEditing(false);
+			setEditingBProfile(false);
 		}
 	}
 
 	const handleEditing = () => {
-		setEditedProvider(ownPage && creatingProfile ? createProviderFromUser(user!, provider?.businessAddress ?? "") : createProvider(provider!));
-		setEditing(true);
+		setEditedProvider(ownPage && creatingProfile ? createProviderFromUser(user!, provider?.bio, provider?.businessAddress) : createProvider(provider!));
+		setEditingBProfile(true);
 	}
 
 	const handleCancel = () => {
-		setEditedProvider(ownPage && creatingProfile ? createProviderFromUser(user!, provider?.businessAddress ?? "") : createProvider(provider!));
-		setEditing(false);
+		setEditedProvider(ownPage && creatingProfile ? createProviderFromUser(user!,provider?.bio, provider?.businessAddress) : createProvider(provider!));
+		setEditingBProfile(false);
 	}
 
 	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -116,7 +124,7 @@ const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user
 				<ProfileAvatar user={provider} ownPage={ownPage} token={token}/>
 				<CardContent>
 					
-					{editing ? (
+					{editingBProfile ? (
 						<Box sx={{ display: 'flex', alignItems: 'center', mt: 1, pl: 4 /* Align with icon padding */ }}>
 							<TextField
 							fullWidth
@@ -136,7 +144,7 @@ const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user
 					{/* Address with Icon */}
 					<Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
 						<LocationOnIcon sx={{ mr: 1, color: 'gray' }} />
-						{editing ? (
+						{editingBProfile ? (
 							<TextField
 								fullWidth
 								label="Business Address"
@@ -154,7 +162,7 @@ const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user
 					{/* Phone Number with Icon */}
 					<Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
 						<PhoneIcon sx={{ mr: 1, color: 'gray' }} />
-						{editing ? (
+						{editingBProfile ? (
 							<TextField
 								fullWidth
 								label="Phone Number"
@@ -172,7 +180,7 @@ const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user
 					{/* Email with Icon */}
 					<Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
 						<EmailIcon sx={{ mr: 1, color: 'gray' }} />
-						{editing ? (
+						{editingBProfile ? (
 							<TextField
 								fullWidth
 								label="Email"
@@ -187,7 +195,7 @@ const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user
 						)}
 					</Box>
 					
-					{editing ? (
+					{editingBProfile ? (
 						<Box sx={{ display: 'flex', alignItems: 'center', mt: 2, pl: 4 /* Align with icon padding */ }}>
 							<TextField
 							fullWidth
@@ -213,7 +221,7 @@ const BusinessInformation: React.FC<BusinessInformationProps> = ({provider, user
 				{ownPage && (
 					<>
 						<Box>
-							{!editing ? (
+							{!editingBProfile ? (
 								<IconButton onClick={handleEditing}>
 									<EditIcon />
 								</IconButton>

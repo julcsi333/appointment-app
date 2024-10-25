@@ -9,6 +9,8 @@ class Provider (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
     @Column(nullable=false)
+    val bio: String,
+    @Column(nullable=false)
     val businessAddress: String,
     @Column(nullable=false)
     val sendDailyAppointmentReport: Boolean = true,

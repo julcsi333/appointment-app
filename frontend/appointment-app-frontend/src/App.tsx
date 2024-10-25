@@ -7,6 +7,7 @@ import ProfilePage from './pages/ProfilePage';
 import ServicesPage from './pages/ServicesPage';
 import ErrorPage from './pages/ErrorPage';
 import AvailabilityPage from './pages/AvailabilityPage';
+import { Box, styled } from '@mui/material';
 
 function App() {
   return (

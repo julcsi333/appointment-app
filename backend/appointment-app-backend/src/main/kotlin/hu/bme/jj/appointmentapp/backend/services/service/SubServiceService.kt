@@ -32,6 +32,22 @@ class SubServiceService(
         return repository.findByMainServiceId(id).map { mapToDTO(it) }
     }
 
+    override fun getServicesByName(name: String, globalServiceId: Long): List<SubServiceDTO> {
+        val subServices = repository.findByName(name)
+        return subServices.filter { subService -> subService.mainService.globalService.id == globalServiceId }
+            .map { mapToDTO(it) }
+    }
+
+    override fun getSubServiceNamesByGlobalServiceId(globalServiceId: Long): List<String> {
+        val subServiceNames: MutableSet<String> = mutableSetOf()
+        mainServiceRepository.findByGlobalServiceId(globalServiceId).forEach { mainService ->
+            val subServices = repository.findByMainServiceId(mainService.id!!)
+            val names = subServices.map { subService -> subService.name }
+            subServiceNames.addAll(names)
+        }
+        return subServiceNames.toList()
+    }
+
     override fun createService(service: SubServiceDTO, mainServiceId: Long): SubServiceDTO {
         return mapToDTO(
             repository.save(

@@ -5,6 +5,8 @@ import hu.bme.jj.appointmentapp.backend.api.model.ServiceDTO
 interface IMainServiceService {
     fun getAllMainServices(): List<ServiceDTO>
 
+    //fun getServicesByGlobalServiceId(id: Long): List<ServiceDTO>
+
     fun createService(service: ServiceDTO): ServiceDTO
 
     fun updateService(updatedService: ServiceDTO): ServiceDTO

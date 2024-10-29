@@ -23,7 +23,7 @@ const startIndex = (page - 1) * itemsPerPage;
 const displayedProviders = providers.slice(startIndex, startIndex + itemsPerPage);
 
 return (
-	<Stack spacing={2} alignItems='center' sx={{mt:2, height:'100%'}}>
+	<Stack spacing={2} alignItems='center' sx={{mt:2, height:'100%', minWidth:'75vh'}}>
 		<Box
 			display="flex"
 			flexDirection="column"

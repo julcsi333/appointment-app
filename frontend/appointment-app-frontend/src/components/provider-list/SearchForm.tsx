@@ -1,16 +1,57 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { Box, TextField, Button, MenuItem, Select, FormControl, InputLabel, Typography, SelectChangeEvent, Paper } from '@mui/material';
+import { GlobalService, Provider } from '../api/model';
+import { getAllGlobalServices, getSubServicesByGlobalServiceId } from '../api/services-api-call';
+import { getProviders, getProvidersByForm } from '../api/provider-api-call';
 
-const SearchForm: React.FC = () => {
-	const [service, setService] = useState('');
+interface Props {
+	setProviders: (providers: Provider[]) => void;
+}
+
+const SearchForm: React.FC<Props> = ({setProviders}) => {
+	const [providerName, setProviderName] = useState<string>('');
+	const [globalService, setGlobalService] = useState<GlobalService | null>(null);
+	const [globalServices, setGlobalServices] = useState<GlobalService[]>([]);
+	const [subServices, setSubServices] = useState<string[]>([]);
 	const [subService, setSubService] = useState('');
 	const [sortBy, setSortBy] = useState('');
 
-	const handleServiceChange = (event: SelectChangeEvent<string>, child: ReactNode) => {
-		setService(event.target.value as string);
-    	setSubService(''); // clear sub-service when service changes
+	
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const services = await getAllGlobalServices();
+				setGlobalServices(services)
+			} catch (error) {
+				console.error('Error:', error);
+			}
+		};
+	
+		fetchData();
+	
+		return () => {};
+	}, []);
+
+	const handleServiceChange = async (event: SelectChangeEvent<string>, child: ReactNode) => {
+		const value = event.target.value
+		if (value !== null && value !== undefined && value !== '') {
+			const gs = globalServices.find(gs => gs.id === Number(value))!
+			setGlobalService(gs);
+			setSubServices(await getSubServicesByGlobalServiceId(gs.id));
+		} else {
+			setGlobalService(null);
+			setSubServices([])
+		}
+		setSubService(''); // clear sub-service when service changes
+		
 	};
 
+	const searchProviders = async () => {
+		setProviders(await getProvidersByForm(providerName, globalService?.id, subService))
+	}
+	const handleProviderNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setProviderName(event.target.value)
+	};
 	return (
 		<Paper sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 500, mt: 2, p: 3, boxShadow: 3, minWidth: '60vh', maxHeight:'45vh'}}>
 			<Typography variant="h5" sx={{ mb: 2, textAlign: 'center' }}>
@@ -22,19 +63,21 @@ const SearchForm: React.FC = () => {
 				label="Provider Name" 
 				variant="outlined" 
 				fullWidth 
+				value={providerName}
+				onChange={handleProviderNameChange}
 			/>
 
 			{/* Service Selection */}
 			<FormControl fullWidth>
 				<InputLabel>Service</InputLabel>
 				<Select
-				value={service}
+				value={globalService != null ? String(globalService.id) : ''}
 				onChange={handleServiceChange}
 				label="Service"
 				>
-				<MenuItem value="service1">Service 1</MenuItem>
-				<MenuItem value="service2">Service 2</MenuItem>
-				<MenuItem value="service3">Service 3</MenuItem>
+				{globalServices.map((gs: GlobalService) => (
+					<MenuItem key={gs.id} value={gs.id}>{gs.name}</MenuItem>
+				))}
 				</Select>
 			</FormControl>
 
@@ -45,22 +88,11 @@ const SearchForm: React.FC = () => {
 				value={subService}
 				onChange={(e) => setSubService(e.target.value as string)}
 				label="Sub-Service"
-				disabled={!service} // disable if no service is selected
+				disabled={globalService === null} // disable if no service is selected
 				>
-				{/* Conditionally render sub-services based on selected service */}
-				{service === 'service1' && (
-					<>
-					<MenuItem value="sub1">Sub-Service 1A</MenuItem>
-					<MenuItem value="sub2">Sub-Service 1B</MenuItem>
-					</>
-				)}
-				{service === 'service2' && (
-					<>
-					<MenuItem value="sub1">Sub-Service 2A</MenuItem>
-					<MenuItem value="sub2">Sub-Service 2B</MenuItem>
-					</>
-				)}
-				{/* Add more sub-services as needed */}
+					{subServices.map((subServiceName: string) => (
+						<MenuItem key={subServiceName} value={subServiceName}>{subServiceName}</MenuItem>
+					))}
 				</Select>
 			</FormControl>
 
@@ -84,6 +116,7 @@ const SearchForm: React.FC = () => {
 				color="primary" 
 				fullWidth 
 				sx={{ mt: 2 }}
+				onClick={searchProviders}
 			>
 				Search
 			</Button>

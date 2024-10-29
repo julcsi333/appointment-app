@@ -41,6 +41,11 @@ export const getSubServicesByMainServiceId = async (mainServiceId: number): Prom
 	return response.data;
 };
 
+export const getSubServicesByGlobalServiceId = async (globalServiceId: number): Promise<Array<string>> => {
+	const response = await apiGetCall(`${getBaseUrl()}/subServices/globalService/${globalServiceId.toString()}`);
+	return response.data;
+};
+
 export const createSubService = async (subService: NewSubService, mainServiceId: number, token: string): Promise<SubService> => {
 	const response = await secureApiPostCall(getBaseUrl() + '/subServices/' + mainServiceId.toString(), JSON.stringify(subService), token);
 	return response.data;

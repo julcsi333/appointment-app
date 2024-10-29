@@ -8,6 +8,18 @@ export const getProviders = async (): Promise<Array<Provider>> => {
   return response.data;
 };
 
+export const getProvidersByForm = async (name: string, globalServiceId: number | undefined, subServiceName: string | undefined): Promise<Array<Provider>> => {
+  let url = getBaseUrl() +`/providers?name=${name}`
+  if (globalServiceId !== undefined) {
+    url += `&globalServiceId=${globalServiceId}`
+  }
+  if (subServiceName !== undefined && subServiceName !== "") {
+    url += `&subServiceName=${subServiceName}`
+  }
+  const response = await apiGetCall(url);
+  return response.data;
+};
+
 export const getProvider = async (id: string): Promise<Provider | null> => {
   try {
     const response = await apiGetCall(`${getBaseUrl()}/providers/${id}`);

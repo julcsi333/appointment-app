@@ -8,4 +8,7 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ServiceRepository : JpaRepository<MainService, Long> {
     fun findByProviderId(providerId: Long): List<MainService>
+
+
+    fun findByGlobalServiceId(globalServiceId: Long): List<MainService>
 }

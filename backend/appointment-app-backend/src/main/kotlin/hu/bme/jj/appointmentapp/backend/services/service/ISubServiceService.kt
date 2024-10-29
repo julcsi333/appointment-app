@@ -7,6 +7,10 @@ interface ISubServiceService {
 
     fun getServicesByMainServiceId(id: Long): List<SubServiceDTO>
 
+    fun getServicesByName(name: String, globalServiceId: Long): List<SubServiceDTO>
+
+    fun getSubServiceNamesByGlobalServiceId(globalServiceId: Long): List<String>
+
     fun createService(service: SubServiceDTO, mainServiceId: Long): SubServiceDTO
 
     fun updateService(updatedService: SubServiceDTO): SubServiceDTO

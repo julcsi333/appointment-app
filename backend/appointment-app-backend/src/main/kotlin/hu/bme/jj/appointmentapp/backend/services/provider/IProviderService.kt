@@ -11,6 +11,8 @@ interface IProviderService {
 
     fun getProviderById(id: Long): ProviderDTO
 
+    fun getProvidersByForm(name: String?, globalServiceId: Long?, subServiceName: String?): List<ProviderDTO>
+
     fun tryGetProviderById(id: Long): ProviderDTO?
 
     fun deleteProvider(id: Long)

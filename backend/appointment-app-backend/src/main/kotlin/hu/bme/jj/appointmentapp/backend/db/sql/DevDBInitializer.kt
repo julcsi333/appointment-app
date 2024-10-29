@@ -1,5 +1,6 @@
 package hu.bme.jj.appointmentapp.backend.db.sql
 
+import hu.bme.jj.appointmentapp.backend.db.sql.model.GlobalService
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.*
 import hu.bme.jj.appointmentapp.backend.model.EmailMessage
 import hu.bme.jj.appointmentapp.backend.services.email.EmailService

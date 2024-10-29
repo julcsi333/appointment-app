@@ -20,8 +20,8 @@ class ProviderController(
 ) {
 
     @GetMapping
-    fun getAllProviders(): ResponseEntity<List<ProviderDTO>> {
-        return ResponseEntity(providerService.getAllProviders(), HttpStatus.OK)
+    fun getAllProvidersByForm(@RequestParam(required = false) name: String?, @RequestParam(required = false) globalServiceId: Long?, @RequestParam(required = false) subServiceName: String?): ResponseEntity<List<ProviderDTO>> {
+        return ResponseEntity(providerService.getProvidersByForm(name, globalServiceId, subServiceName), HttpStatus.OK)
     }
 
     @GetMapping("/{id}")

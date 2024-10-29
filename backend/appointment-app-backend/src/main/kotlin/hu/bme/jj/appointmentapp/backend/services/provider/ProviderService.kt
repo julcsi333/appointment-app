@@ -62,6 +62,28 @@ class ProviderService(
         return mapToDTO(getProviderByUserIdFromRepositoryOrThrow(id))
     }
 
+    override fun getProvidersByForm(name: String?, globalServiceId: Long?, subServiceName: String?): List<ProviderDTO> {
+        var providers = repository.findAll()
+        if (!name.isNullOrEmpty()) {
+            providers = providers.filter { it.user.name?.lowercase()?.contains(name.lowercase()) ?: false }
+        }
+        if (globalServiceId != null) {
+            providers = providers.filter { provider ->
+                val mainServices = mainServiceService.getServicesByProviderId(provider.user.id!!)
+                val mainService = mainServices.find { ms -> ms.globalService.id == globalServiceId }
+                if (subServiceName.isNullOrEmpty()) {
+                    // If we found a main service of the provider with the global service id
+                    mainService != null
+                } else {
+                    // If we found a main service of the provider with the global service id, and it has the specified sub service name
+                    mainService?.subServices?.find { it.name.lowercase() == subServiceName.lowercase() } != null
+                }
+
+            }
+        }
+        return providers.map { mapToDTO(it) }
+    }
+
     override fun tryGetProviderById(id: Long): ProviderDTO? {
         return mapToDTOOptional(getProviderByUserIdFromRepository(id))
     }

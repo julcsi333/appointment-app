@@ -32,4 +32,8 @@ class SubServiceController(private val subServiceService: ISubServiceService) {
         subServiceService.deleteService(id)
     }
 
+    @GetMapping("/globalService/{id}")
+    fun getSubServiceNamesByGlobalServiceId(@PathVariable id: Long): List<String> {
+        return subServiceService.getSubServiceNamesByGlobalServiceId(id)
+    }
 }

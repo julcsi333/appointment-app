@@ -39,6 +39,10 @@ class MainServiceService(
         return repository.findAll().map { mapToDTO(it) }
     }
 
+    /*fun getServicesByGlobalServiceId(id: Long): List<ServiceDTO> {
+        return repository.findByGlobalServiceId(id).map { mapToDTO(it) }
+    }*/
+
     @Transactional
     @Throws(EntityExistsException::class)
     override fun createService(service: ServiceDTO): ServiceDTO {

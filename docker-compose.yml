@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend/appointment-app-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_API_URL=http://localhost:8080
+
+  backend:
+    build:
+      context: ./backend/appointment-app-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - SPRING_MYSQL_DATASOURCE_URL=jdbc:mysql://db:3306/docker_mysql
+      - SPRING_MYSQL_DATASOURCE_USERNAME=root
+      - SPRING_MYSQL_DATASOURCE_PASSWORD=appointment_app_backend
+  db:
+    image: mysql:8.0
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=appointment_app_backend
+      - MYSQL_DATABASE=docker_mysql
+    volumes:
+      - mysql_data:/var/lib/mysql  # Mount the volume
+
+volumes:
+  mysql_data:  # Declare the named volume

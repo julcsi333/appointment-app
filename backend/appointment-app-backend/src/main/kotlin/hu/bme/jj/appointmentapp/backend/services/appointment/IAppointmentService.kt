@@ -6,6 +6,10 @@ import java.time.LocalDate
 interface IAppointmentService {
     fun bookAppointment(appointment: AppointmentDTO): AppointmentDTO
 
+    fun modifyAppointment(appointment: AppointmentDTO): AppointmentDTO
+
+    fun cancelAppointment(appointmentId: Long, customerCancelled: Boolean)
+
     fun getAppointmentsForCustomer(customerId: Long): List<AppointmentDTO>
 
     fun getAppointmentsForProvider(providerId: Long): List<AppointmentDTO>

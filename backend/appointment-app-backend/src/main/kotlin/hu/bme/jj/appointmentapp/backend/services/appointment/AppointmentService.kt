@@ -8,6 +8,7 @@ import hu.bme.jj.appointmentapp.backend.db.sql.repository.SubServiceRepository
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.UserRepository
 import hu.bme.jj.appointmentapp.backend.services.email.IEmailService
 import hu.bme.jj.appointmentapp.backend.services.email.IEmailMessageFactory
+import jakarta.persistence.EntityExistsException
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -51,10 +52,37 @@ class AppointmentService(
         )
     }
     override fun bookAppointment(appointment: AppointmentDTO): AppointmentDTO {
+        if (appointment.id != null && appointmentRepository.findById(appointment.id).orElse(null) != null) {
+            throw EntityExistsException("Appointment entity ${appointment.id} already exists")
+        }
         return mapToDTO(
             appointmentRepository.save(
                 mapToEntity(appointment)
             )
+        )
+    }
+
+    override fun modifyAppointment(appointment: AppointmentDTO): AppointmentDTO {
+        if (appointment.id == null || appointmentRepository.findById(appointment.id).orElse(null) == null) {
+            throw EntityNotFoundException("Appointment not found with id ${appointment.id}")
+        }
+        val modifiedAppointment = appointmentRepository.save(
+            mapToEntity(appointment)
+        )
+        emailService.sendMail(
+            emailMessageFactory.createAppointmentModifiedEmail(modifiedAppointment)
+        )
+        return mapToDTO(
+            modifiedAppointment
+        )
+    }
+
+    override fun cancelAppointment(appointmentId: Long, customerCancelled: Boolean) {
+        val appointment = appointmentRepository.findById(appointmentId).orElseThrow {
+            EntityNotFoundException("Appointment not found with id $appointmentId")
+        }
+        emailService.sendMail(
+            emailMessageFactory.createAppointmentCancelledEmail(appointment, customerCancelled)
         )
     }
 

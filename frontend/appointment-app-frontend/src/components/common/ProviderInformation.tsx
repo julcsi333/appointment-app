@@ -37,7 +37,7 @@ const ProviderInformation: React.FC<ProviderInformationProps>  = ({ provider, sh
                 <Typography align= 'left' color="textSecondary">
                   Business Address: {provider.businessAddress}
                 </Typography>
-                <Box sx={{mt:2}}>
+                <Box sx={{mt:2, display: 'flex', justifyContent:'start'}}>
                   {showBookbutton && <AppointmentButton providerId={provider.id}/>}
                 </Box>
               </CardContent>

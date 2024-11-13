@@ -3,7 +3,7 @@ import GlobalToolbar from '../components/common/GlobalToolbar';
 import { useAuth0 } from '@auth0/auth0-react';
 import { getUserByExternalId, updateUser } from '../components/api/user-api-call';
 import { User } from '../components/api/model';
-import { Avatar, Box, Container, Paper, styled, TextField, Typography } from '@mui/material';
+import { Box, Container, Paper, styled, TextField, Typography, Checkbox } from '@mui/material';
 import EditProfileButton from '../components/profile/editProfileButton';
 import ProfileAvatar from '../components/common/ProfileAvatar';
 import PhoneIcon from '@mui/icons-material/Phone';
@@ -28,6 +28,11 @@ export const ProfilePage: React.FC = () => {
 
 	const handleEditingClick = () => {
     setEditedUserData({...currentUserData!})
+    setErrors({
+      name: '',
+      email: '',
+      phoneNumber: '',
+    })
 		setEditing(true)
 	};
 
@@ -111,6 +116,13 @@ export const ProfilePage: React.FC = () => {
     return isValid;
   };
 
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEditedUserData({
+      ...editedUserData!, 
+      sendDailyAppointmentNotification: event.target.checked,
+    })
+  };
+
   return (
     <div>
       <GlobalToolbar />
@@ -132,60 +144,59 @@ export const ProfilePage: React.FC = () => {
               </Box>
 
             </Box>
-            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent:'space-evenly'}}>
-                {editing ? (
-                  <TextField
-                    name="name"
-                    value={currentUserData?.name ?? ""}
-                    onChange={handleChange}
-                    variant="outlined"
-                    error={!!errors.name}
-                    helperText={errors.name}
-                    fullWidth
-                    margin="normal"
-                  />
+            {editing ? (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent:'space-evenly'}}>
+                    <TextField
+                      name="name"
+                      value={editedUserData?.name ?? ""}
+                      onChange={handleChange}
+                      variant="outlined"
+                      error={!!errors.name}
+                      helperText={errors.name}
+                      fullWidth
+                      margin="normal"
+                    />
+                    <TextField
+                      name="email"
+                      value={editedUserData?.email ?? ""}
+                      onChange={handleChange}
+                      variant="outlined"
+                      error={!!errors.email}
+                      helperText={errors.email}
+                      fullWidth
+                      margin="normal"
+                    />
+                    <TextField
+                      name="phoneNumber"
+                      value={editedUserData?.phoneNumber ?? ""}
+                      onChange={handleChange}
+                      variant="outlined"
+                      error={!!errors.phoneNumber}
+                      helperText={errors.phoneNumber}
+                      fullWidth
+                      margin="normal"
+                    />
+                  </Box>
                 ) : (
-                  
-                  <Typography variant="h5" gutterBottom>
-                    {currentUserData?.name ?? '-'}
-                  </Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent:'space-evenly'}}>
+                    <Typography variant="h5" gutterBottom>
+                      {currentUserData?.name ?? '-'}
+                    </Typography>
+                    <Typography variant="body1" color="textSecondary">
+                      {currentUserData?.email ?? "-"}
+                    </Typography>
+                    <Typography variant="body1" color="textSecondary">
+                      {currentUserData?.phoneNumber ?? "-"}
+                    </Typography>
+                  </Box>
                 )}
-              
-              {editing ? (
-                <TextField
-                  name="email"
-                  value={currentUserData?.email ?? ""}
-                  onChange={handleChange}
-                  variant="outlined"
-                  error={!!errors.email}
-                  helperText={errors.email}
-                  fullWidth
-                  margin="normal"
-                />
-              ) : (
-                <Typography variant="body1" color="textSecondary">
-                  {currentUserData?.email ?? "-"}
-                </Typography>
-              )}
-              {editing ? (
-                <TextField
-                  name="phoneNumber"
-                  value={currentUserData?.phoneNumber ?? ""}
-                  onChange={handleChange}
-                  variant="outlined"
-                  error={!!errors.phoneNumber}
-                  helperText={errors.phoneNumber}
-                  fullWidth
-                  margin="normal"
-                />
-              ) : (
-                <Typography variant="body1" color="textSecondary">
-                  {currentUserData?.phoneNumber ?? "-"}
-                </Typography>
-              )}
-              
-            </Box>
           </Box>
+          {editing && (
+              <Box sx={{m:2, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <Typography variant='body1'>Would you like to receive e-mail notifications the day before your appointments? </Typography>
+                <Checkbox checked={editedUserData?.sendDailyAppointmentNotification ?? true} onChange={handleCheckboxChange} sx={{ml: 2}}/>
+              </Box>
+          )}
           <Box sx={{mt:2}}>
             <EditProfileButton editing={editing} handleEditClick={handleEditingClick} handleSaveClick={handleSaveClick} handleCancelClick={handleCancelClick}/>
           </Box>

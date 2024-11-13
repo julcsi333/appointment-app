@@ -15,4 +15,10 @@ class Configuration : WebMvcConfigurer {
             .allowedMethods("GET", "POST", "PUT", "DELETE")
             .allowedHeaders("Content-Type", "Authorization")
     }
+
+    companion object {
+        val emailRegex = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]".toRegex()
+
+        val phoneRegex = "^[\\d\\s()-]".toRegex()
+    }
 }

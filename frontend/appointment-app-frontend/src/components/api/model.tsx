@@ -42,21 +42,25 @@ export class User {
     name: string;
     phoneNumber: string;
     email: string;
-    constructor(id: number, name: string, phoneNumber: string, email: string) {
+    sendDailyAppointmentNotification: boolean;
+    constructor(id: number, name: string, phoneNumber: string, email: string, sendDailyAppointmentNotification: boolean = true) {
         this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
+        this.sendDailyAppointmentNotification = sendDailyAppointmentNotification;
     }
 }
 
 export class Provider extends User{
     businessAddress: string;
     bio: string;
-    constructor(id: number, name: string, phoneNumber: string, email: string, bio: string, businessAddress: string) {
-        super(id, name, phoneNumber, email)
+    sendDailyAppointmentReport: boolean;
+    constructor(id: number, name: string, phoneNumber: string, email: string, bio: string, businessAddress: string, sendDailyAppointmentNotification: boolean = true, sendDailyAppointmentReport:boolean = true) {
+        super(id, name, phoneNumber, email, sendDailyAppointmentNotification)
         this.businessAddress = businessAddress;
         this.bio = bio;
+        this.sendDailyAppointmentReport = sendDailyAppointmentReport;
     }
 }
 

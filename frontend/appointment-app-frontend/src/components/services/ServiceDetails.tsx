@@ -60,7 +60,7 @@ const ServiceDetails: React.FC<ServiceDetailsProps> = ({mainService, ownPage, to
 							</>
 						) : (
 							<>
-								<Typography variant="h6" gutterBottom style={{ flexGrow: 1 }}>
+								<Typography variant="body1" gutterBottom style={{ flexGrow: 1 }}>
 									{mainService?.description ?? "No description yet."}
 								</Typography>
 								{ownPage && (
@@ -75,13 +75,6 @@ const ServiceDetails: React.FC<ServiceDetailsProps> = ({mainService, ownPage, to
 					</Box>
 					<SubServicesTable mainService={mainService} ownPage={ownPage} token={token}/>
 
-					{/* Weekly Visualization */}
-					<Typography variant="h6" sx={{ mt: 3 }}>Weekly Visualization</Typography>
-					<Box>
-						<Typography>Week {week}</Typography>
-						<Button onClick={() => handleWeekChange('previous')}>Previous Week</Button>
-						<Button onClick={() => handleWeekChange('next')}>Next Week</Button>
-					</Box>
 				</Grid>
 
 				{/* Right Section: Portfolio Grid */}

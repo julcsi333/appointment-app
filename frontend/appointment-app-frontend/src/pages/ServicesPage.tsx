@@ -55,7 +55,7 @@ const ServicesPage: React.FC = () => {
 					setToken(token)
 					const userData = await getUserByExternalId(user!.sub!, token);
 					if (currentProvider === null) {
-						setProvider({...userData, bio: "", businessAddress: ""})
+						setProvider({...userData, bio: "", businessAddress: "", sendDailyAppointmentReport: true})
 					}
 					setCurrentUser(userData)
 					if (userData.id.toString() === id) {

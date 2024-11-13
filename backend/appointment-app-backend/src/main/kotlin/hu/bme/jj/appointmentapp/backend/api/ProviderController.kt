@@ -4,6 +4,7 @@ import hu.bme.jj.appointmentapp.backend.api.model.BookableTimeDTO
 import hu.bme.jj.appointmentapp.backend.api.model.ProviderAvailabilityDTO
 import hu.bme.jj.appointmentapp.backend.api.model.ProviderAvailabilityRuleDTO
 import hu.bme.jj.appointmentapp.backend.api.model.ProviderDTO
+import hu.bme.jj.appointmentapp.backend.config.Configuration
 import hu.bme.jj.appointmentapp.backend.services.provider.IProviderAvailabilityRuleService
 import hu.bme.jj.appointmentapp.backend.services.provider.IProviderAvailabilityService
 import hu.bme.jj.appointmentapp.backend.services.provider.IProviderService
@@ -41,6 +42,15 @@ class ProviderController(
 
     @PutMapping("/{id}")
     fun updateProvider(@PathVariable id: Long, @RequestBody updatedEntity: ProviderDTO): ResponseEntity<ProviderDTO> {
+        if (updatedEntity.name.isNullOrEmpty()) {
+            throw IllegalArgumentException("Name '${updatedEntity.name}' is not valid.")
+        }
+        if (updatedEntity.email.isNullOrEmpty() || Configuration.emailRegex.matches(updatedEntity.email)) {
+            throw IllegalArgumentException("E-mail address '${updatedEntity.email}' is not valid.")
+        }
+        if (updatedEntity.phoneNumber.isNullOrEmpty() || Configuration.phoneRegex.matches(updatedEntity.email)) {
+            throw IllegalArgumentException("Phone number '${updatedEntity.phoneNumber}' is not valid.")
+        }
         return ResponseEntity(providerService.updateProvider(updatedEntity), HttpStatus.OK)
     }
 

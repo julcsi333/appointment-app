@@ -22,10 +22,10 @@ const EditProfileButton : React.FC<EditProfileButtonProps> = ({editing, handleEd
 				</Button>
 			) : (
 				<>
-					<Button variant="outlined" color="secondary" onClick={handleCancelClick} startIcon={<CancelIcon />}>
+					<Button sx={{mr:1}} variant="outlined" color="secondary" onClick={handleCancelClick} startIcon={<CancelIcon />}>
 						Cancel
 					</Button>
-					<Button variant="contained" color="primary" onClick={handleSaveClick} startIcon={<SaveIcon />}>
+					<Button sx={{ml:1}} variant="contained" color="primary" onClick={handleSaveClick} startIcon={<SaveIcon />}>
 						Save
 					</Button>
 				</>

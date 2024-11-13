@@ -2,6 +2,7 @@ package hu.bme.jj.appointmentapp.backend.api
 
 import hu.bme.jj.appointmentapp.backend.api.model.UserDTO
 import hu.bme.jj.appointmentapp.backend.api.model.UserMetaData
+import hu.bme.jj.appointmentapp.backend.config.Configuration
 import hu.bme.jj.appointmentapp.backend.services.user.IUserService
 import jakarta.persistence.EntityNotFoundException
 import org.apache.catalina.util.URLEncoder
@@ -53,13 +54,7 @@ class UserController(private val userService: IUserService) {
 
     @GetMapping("/{id}")
     fun getUserById(@PathVariable id: Long): ResponseEntity<UserDTO> {
-        return try {
-            ResponseEntity.ok(userService.getUserById(id))
-        } catch (e: EntityNotFoundException) {
-            ResponseEntity(null, HttpStatus.NOT_FOUND)
-        } catch (e: Exception) {
-            ResponseEntity(null, HttpStatus.INTERNAL_SERVER_ERROR)
-        }
+        return ResponseEntity.ok(userService.getUserById(id))
     }
 /*
     @PostMapping
@@ -69,14 +64,17 @@ class UserController(private val userService: IUserService) {
 
     @PutMapping("/{id}")
     fun updateUser(@PathVariable id: Long, @RequestBody updatedUser: UserDTO): ResponseEntity<UserDTO> {
-        return try {
-            val result = userService.updateUser(
-                UserDTO(id, updatedUser.name, updatedUser.phoneNumber, updatedUser.email)
-            )
-            ResponseEntity.ok(result)
-        } catch (ex: Exception){
-            ResponseEntity(null, HttpStatus.INTERNAL_SERVER_ERROR)
+        if (updatedUser.name.isNullOrEmpty()) {
+            throw IllegalArgumentException("Name '${updatedUser.name}' is not valid.")
         }
+        if (updatedUser.email.isNullOrEmpty() || Configuration.emailRegex.matches(updatedUser.email)) {
+            throw IllegalArgumentException("E-mail address '${updatedUser.email}' is not valid.")
+        }
+        if (updatedUser.phoneNumber.isNullOrEmpty() || Configuration.phoneRegex.matches(updatedUser.email)) {
+            throw IllegalArgumentException("Phone number '${updatedUser.phoneNumber}' is not valid.")
+        }
+        val result = userService.updateUser(updatedUser)
+        return ResponseEntity.ok(result)
     }
 
     @DeleteMapping("/{id}")

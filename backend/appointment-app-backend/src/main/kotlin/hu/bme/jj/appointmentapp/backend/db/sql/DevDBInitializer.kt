@@ -24,7 +24,7 @@ class DevDBInitializer(
         // Add sample data to GlobalServiceRepository
         if (globalServiceRepository.findAll().isEmpty()) {
             val globalServices = listOf(
-                GlobalService(name = "Hairdresser", description = "Cut or style hair in order to change or maintain a person's image"),
+                GlobalService(name = "Hairdressing", description = "Cut or style hair in order to change or maintain a person's image"),
                 GlobalService(name = "Manicure", description = "Cosmetic beauty treatment for the fingernails and hands"),
                 GlobalService(name = "Cosmetics", description = "Skin care and appearance enhancement.")
             )

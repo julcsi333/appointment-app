@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid, Typography, Pagination} from '@mui/material';
+import { Box, Grid, Typography, Pagination, IconButton} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { MainService } from '../api/model';
-import { getPortfolioPictureAmount, getPortfolioPictureNames, uploadPortfolioPicture } from '../api/services-api-call';
+import { deletePortfolioPicture, getPortfolioPictureAmount, getPortfolioPictureNames, uploadPortfolioPicture } from '../api/services-api-call';
 import { getBaseUrl } from '../../config/config';
 import { AddBox } from '@mui/icons-material';
 import PictureUploadDialog from '../common/PictureUploadDialog';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface PortfolioProps {
 	mainService: MainService | null;
@@ -18,6 +19,7 @@ const Portfolio: React.FC<PortfolioProps> = ({mainService, ownPage, token}) => {
 	const [portfolioPage, setPortfolioPage] = useState<number>(1); // Pagination state for Portfolio
 	const [portfolioPictureNames, setPortfolioPictureNames] = useState<string[]>([]); // Portfolio images
 	const [portfolioPictureAmount, setPortfolioPictureAmount] = useState<number>(0); // How many pictures are there
+	const [portfolioFillingPictures, setPortfolioFillingPictures] = useState<JSX.Element[]>([]);
 
 	const portfolioItemsPerPage = 6;
 	useEffect(() => {
@@ -40,13 +42,31 @@ const Portfolio: React.FC<PortfolioProps> = ({mainService, ownPage, token}) => {
 			try {
 				if (mainService !== null) {
 					let images: Array<string> = []
+                    console.log(portfolioPage)
 					if (portfolioPage === 1 && ownPage) {
 						// We need one less image, because the first image is always the placeholder
 						images = await getPortfolioPictureNames(mainService.id, 0, portfolioItemsPerPage-1)
 					} else {
-						images = await getPortfolioPictureNames(mainService.id, (portfolioPage-1)*portfolioItemsPerPage-1, portfolioItemsPerPage)
+                        if (ownPage) {
+                            images = await getPortfolioPictureNames(mainService.id, Math.max((portfolioPage-1)*portfolioItemsPerPage-1, 0), portfolioItemsPerPage)
+                        } else {
+                            images = await getPortfolioPictureNames(mainService.id, (portfolioPage-1)*portfolioItemsPerPage, portfolioItemsPerPage)
+                        }
+                        
 					}
 					setPortfolioPictureNames(images)
+                    
+                    // Add filling pictures
+                    const rows = [];
+                    const lastPageFillingPicAmount = portfolioItemsPerPage - (portfolioPictureAmount % portfolioItemsPerPage + 1)
+                    for(let i = 0; i < lastPageFillingPicAmount; i++) {
+                        rows.push(
+                            <Grid item xs={4} key={i}>
+                                <Box sx={{ width: '100%', height: 250, objectFit: 'contain', border: '2px solid gray', borderRadius: '16px' }}/>
+                            </Grid>
+                        )
+                    }
+                    setPortfolioFillingPictures(rows)
 				}
 			} catch (error) {
 				console.error('Error:', error);
@@ -80,6 +100,11 @@ const Portfolio: React.FC<PortfolioProps> = ({mainService, ownPage, token}) => {
         setOpen(false);
         setPortfolioPictureAmount(portfolioPictureAmount+1);
     };
+
+    const deletePic = async (fileName: string) => {
+        await deletePortfolioPicture(mainService!.id, fileName, token);
+        setPortfolioPictureAmount(portfolioPictureAmount-1);
+    };
     
     /*const getFillerGrids = () => {
 
@@ -94,7 +119,7 @@ const Portfolio: React.FC<PortfolioProps> = ({mainService, ownPage, token}) => {
 		<>
         <Box 
             sx={{
-            height: 700,  // Adjust this to fit 2 rows + padding for typography/pagination
+            height: 640,  // Adjust this to fit 2 rows + padding for typography/pagination
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',  // Center typography and pagination horizontally
@@ -126,43 +151,32 @@ const Portfolio: React.FC<PortfolioProps> = ({mainService, ownPage, token}) => {
 
                 {/* Display Portfolio Images */}
                 {portfolioPictureNames.map((image, index) => (
-                    <Grid item xs={4} key={image}>
+                    <Grid item sx={{position:'relative'}} xs={4} key={image}>
                         <Box
                             component="img"
                             src={`${getBaseUrl()}/services/${mainService?.id}/portfolio-pictures/${image}`}
                             sx={{ width: '100%', height: 250, objectFit: 'contain', border: '2px solid gray', borderRadius: '16px' }}
                             
-                        />
+                        >
+                            
+                        </Box>
+                        { ownPage && (
+                            <IconButton
+                                size="small"
+                                onClick={() => deletePic(image)}
+                                sx={{ ml: 1, position: 'absolute', top: '25px', right:'8px' }}
+                                aria-label="delete-service"
+                            >
+                                <DeleteIcon fontSize="small" />
+                            </IconButton>
+                        )}
+                        
                     </Grid>
                 ))}
 
-                {portfolioPage === 2 && (
+                {portfolioPage*portfolioItemsPerPage > portfolioPictureAmount && portfolioFillingPictures.map((image) =>
                     <>
-                        <Grid item xs={4} key={"asd"}>
-                            <Box
-                                sx={{ width: '100%', height: 250, objectFit: 'contain', border: '2px solid gray', borderRadius: '16px' }}
-                            />
-                        </Grid>
-                        <Grid item xs={4} key={"asdasd"}>
-                            <Box
-                                sx={{ width: '100%', height: 250, objectFit: 'contain', border: '2px solid gray', borderRadius: '16px' }}
-                            />
-                        </Grid>
-                        <Grid item xs={4} key={"asdasdasd"}>
-                            <Box
-                                sx={{ width: '100%', height: 250, objectFit: 'contain', border: '2px solid gray', borderRadius: '16px' }}
-                            />
-                        </Grid>
-                        <Grid item xs={4} key={"asdasdasdasd"}>
-                            <Box
-                                sx={{ width: '100%', height: 250, objectFit: 'contain', border: '2px solid gray', borderRadius: '16px' }}
-                            />
-                        </Grid>
-                        <Grid item xs={4} key={"asdasdasdasdads"}>
-                            <Box
-                                sx={{ width: '100%', height: 250, objectFit: 'contain', border: '2px solid gray', borderRadius: '16px' }}
-                            />
-                        </Grid>
+                        {image}
                     </>
                 )}
 

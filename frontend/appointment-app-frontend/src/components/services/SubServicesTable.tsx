@@ -169,7 +169,7 @@ const SubServicesTable: React.FC<SubServicesTableProps> = ({mainService, ownPage
 									<TableCell key={`${subService.id}.duration`}>{subService.duration}</TableCell>
 									<TableCell key={`${subService.id}.price`}>{subService.price} $</TableCell>
 									{ownPage && (
-										<TableCell key={`${subService.id}.operations`}>
+										<TableCell sx={{display: 'flex'}} key={`${subService.id}.operations`}>
 											<IconButton onClick={() => setSubServiceToEditing(subService)}>
 												<EditIcon />
 											</IconButton>
@@ -215,7 +215,7 @@ const SubServicesTable: React.FC<SubServicesTableProps> = ({mainService, ownPage
 										error={!!editedSubServices.get(subService.id)!.errors.price}
 										helperText={editedSubServices.get(subService.id)!.errors.price}
 										sx={{ mb: 2 }}
-										/> $
+										/>
 									</TableCell>
 									{ownPage && (
 										<TableCell key={`${subService.id}.operations`}>

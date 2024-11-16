@@ -64,9 +64,19 @@ export class Provider extends User{
     }
 }
 
-export interface Appointment {
-    id: number | null;
+export interface NewAppointment {
+    id: null;
     date: Dayjs;
+    customerId: number;
+    providerId: number;
+    subServiceId: number;
+}
+
+export interface Appointment {
+    id: number;
+    date: Dayjs;
+    startTime: Dayjs;
+    endTime: Dayjs;
     customerId: number;
     providerId: number;
     subServiceId: number;
@@ -152,12 +162,21 @@ export interface AppointmentEvent {
     RULE = 2
 }*/
 
-export interface AvailableEvent {
+export interface Availability {
     //type: AvailableEventType;
     start: DayPilot.Date;
     end: DayPilot.Date;
-    id: string | null;
-    providerId: string;
+    id: number | null;
+    providerId: number;
+    ruleId: number | null;
+}
+
+export interface AvailabilityRule {
+    //type: AvailableEventType;
+    start: DayPilot.Date;
+    end: DayPilot.Date;
+    id: number | null;
+    providerId: number;
     repeatEveryWeek: boolean;
     repeatMonthsCount: number | null;
 }
@@ -167,7 +186,14 @@ export interface AvailableEventData extends DayPilot.EventData {
     start: DayPilot.Date;
     end: DayPilot.Date;
     id: string | number;
-    providerId: string;
+    providerId: number;
     repeatEveryWeek: boolean;
     repeatMonthsCount: number | null;
+    ruleId: number | null;
+}
+
+export enum SortByTactic{
+    POPULARITY = 0,
+    PRICE_AVG = 1,
+    PRICE_LOWEST = 2
 }

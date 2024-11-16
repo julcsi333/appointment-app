@@ -1,46 +1,53 @@
 import React from 'react';
-import { Typography, Card, CardContent, CardMedia, styled, Paper, Box } from '@mui/material';
+import { Typography, Card, CardContent, Box } from '@mui/material';
 import { Provider } from '../api/model';
 import AppointmentButton from './AppointmentButton';
 import ProfileAvatar from './ProfileAvatar';
+import { useNavigate } from 'react-router-dom';
+import PhoneIcon from '@mui/icons-material/Phone';
+import EmailIcon from '@mui/icons-material/Email';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 interface ProviderInformationProps {
     provider: Provider;
     showBookbutton: boolean;
 }
 
-const handleAppointmentClick = () => {
-    console.log('Appointment clicked');
-  };
-
-const StyledCard = styled(Card)({
-    height: '100%', // Ensure the card takes up full height of the ListItem
-    minWidth: '100vh',
-    display: 'flex', // Use flexbox layout
-    flexDirection: 'row', // Arrange child elements in a column
-    justifyContent: 'space-around'
-  });
-
 const ProviderInformation: React.FC<ProviderInformationProps>  = ({ provider, showBookbutton }) => {
-    //const profileImageUrl = '/images/profile/'+provider.id
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+      navigate(`/services/providers/${provider.id}`);
+    };
+
     return (
       <center>
-            <Card sx={{boxShadow: 3, p:1, minWidth:'70vh', display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxHeight:'18vh' }}>
-              <ProfileAvatar user={provider} ownPage={false} token={""}/>
-              <CardContent >
+            <Card onClick={handleClick} sx={{boxShadow: 3, p:1, minWidth:'70vh', maxWidth:'100vh', display: 'flex', alignItems: 'center', maxHeight:'18vh', cursor: 'pointer', "&:hover": {boxShadow:6}}}>
+              <Box sx={{ flexShrink: 0, mr: 2 }}>
+                <ProfileAvatar user={provider} ownPage={false} token={""}/>
+              </Box>
+              <CardContent sx={{ flex: 1 }}>
                 <Typography align='left' variant="h5" component="h2">
                   {provider.name}
                 </Typography>
-                <Typography align='left' color="textSecondary">
-                  Phone Number: {provider.phoneNumber}
-                </Typography>
-                <Typography align= 'left' color="textSecondary">
-                  Business Address: {provider.businessAddress}
-                </Typography>
-                <Box sx={{mt:2, display: 'flex', justifyContent:'start'}}>
-                  {showBookbutton && <AppointmentButton providerId={provider.id}/>}
+                <Box sx={{display: 'flex', alignItems: 'left'}}>
+                  <EmailIcon sx={{ mr: 1, color: 'gray' }} />
+                  <Typography color="textSecondary">{provider.email}</Typography>
+                </Box>
+                <Box sx={{display: 'flex', alignItems: 'left'}}>
+                  <PhoneIcon sx={{ mr: 1, color: 'gray' }} />
+                  <Typography color="textSecondary">{provider.phoneNumber}</Typography>
+                </Box>
+                <Box sx={{display: 'flex', alignItems: 'left'}}>
+                  <LocationOnIcon sx={{ mr: 1, color: 'gray' }} />
+                  <Typography color="textSecondary">{provider.businessAddress}</Typography>
                 </Box>
               </CardContent>
+              {showBookbutton && (
+                  <Box sx={{ flexShrink: 0, ml: 2 }}>
+                    <AppointmentButton providerId={provider.id}/>
+                  </Box>
+                )}
             </Card>
       </center>
     );

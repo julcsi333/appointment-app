@@ -104,13 +104,24 @@ class MainServiceService(
     }
 
     private fun mapToEntity(mainService: ServiceDTO): MainService {
-        return MainService(
-            mainService.id,
-            mainService.description,
-            providerRepository.findByUserId(mainService.providerId)
-                .orElseThrow {EntityNotFoundException("Provider #${mainService.providerId} for main service #${mainService.id} not found!")},
-            globalServiceRepository.findById(mainService.globalService.id)
-                .orElseThrow {EntityNotFoundException("Global service #${mainService.globalService.id} for main service #${mainService.id} not found!")},
-        )
+        return if (mainService.id != null) {
+            val entity = repository.findById(mainService.id).orElseThrow()
+            MainService(
+                mainService.id,
+                mainService.description,
+                entity.provider,
+                entity.globalService,
+                entity.subServices
+            )
+        } else {
+            MainService(
+                null,
+                mainService.description,
+                providerRepository.findByUserId(mainService.providerId)
+                    .orElseThrow {EntityNotFoundException("Provider #${mainService.providerId} for new main service not found!")},
+                globalServiceRepository.findById(mainService.globalService.id)
+                    .orElseThrow {EntityNotFoundException("Global service #${mainService.globalService.id} for new main service not found!")},
+            )
+        }
     }
 }

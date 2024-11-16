@@ -5,10 +5,26 @@ import GlobalToolbar from '../components/common/GlobalToolbar';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ErrorType } from '../components/error/model';
 import { DayPilot, DayPilotCalendar, DayPilotNavigator } from '@daypilot/daypilot-lite-react';
-import { AvailableEvent, AvailableEventData } from '../components/api/model';
-import PhoneIcon from '@mui/icons-material/Phone';
+import { Availability, AvailabilityRule, AvailableEventData } from '../components/api/model';
 import { getBaseUrl } from '../config/config';
+import { createAvailability, createAvailabilityRule, deleteAvailability, getAvailabilityByProviderId } from '../components/api/provider-availability-api-call';
 
+function createEventsFromAvailabilities(availabilities: Availability[]): AvailableEventData[] {
+	const newEvents: AvailableEventData[] = [];
+	availabilities.forEach(a => {
+		newEvents.push({
+			providerId: a.providerId, 
+			start: a.start, 
+			end: a.end, 
+			id: a.id!,
+			repeatEveryWeek: false,
+			repeatMonthsCount: null,
+			ruleId: a.ruleId,
+			text: "Open for appointments"
+		});
+	});
+	return newEvents;
+}
 
 const AvailabilityPage: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
@@ -36,6 +52,9 @@ const AvailabilityPage: React.FC = () => {
 				if (isAuthenticated) {
 					const accessToken = await getAccessTokenSilently();
 					setToken(accessToken)
+					const newEvents = createEventsFromAvailabilities(await getAvailabilityByProviderId(Number(id)))
+					setEvents(newEvents)
+					calendar!.events.list = newEvents
 				}
 			} catch (error) {
 				console.error('Error:', error);
@@ -45,36 +64,50 @@ const AvailabilityPage: React.FC = () => {
 		return () => {
 
 		};
-	}, [getAccessTokenSilently, id, isAuthenticated, navigate]);
+	}, [calendar, getAccessTokenSilently, id, isAuthenticated, navigate]);
 
 	const saveAvailabilityEvent = async (
-		providerId: string, 
+		providerId: number, 
 		start: DayPilot.Date,
 		end: DayPilot.Date,
 		repeatEveryWeek: boolean,
 		repeatMonthsCount: number | null,
 		text: string
 	) => {
-		const newEvent: AvailableEvent = /*TODO: replace this with backend call*/{
-			providerId: id!, 
-			start: start, 
-			end: end, 
-			id: null, 
-			repeatEveryWeek: repeatEveryWeek,
-			repeatMonthsCount: repeatMonthsCount
+		if (repeatEveryWeek) {
+			const newEvent: AvailabilityRule = {
+				providerId: providerId, 
+				start: start, 
+				end: end, 
+				id: null, 
+				repeatEveryWeek: repeatEveryWeek,
+				repeatMonthsCount: repeatMonthsCount
+			}
+			await createAvailabilityRule(newEvent, token)
+			const newEvents = createEventsFromAvailabilities(await getAvailabilityByProviderId(Number(id)))
+			setEvents(newEvents)
+			calendar!.events.list = newEvents
+		} else {
+			const availability: Availability = {
+				providerId: providerId, 
+				start: start, 
+				end: end, 
+				id: null, 
+				ruleId: null
+			}
+			const newEvent = await createAvailability(availability, token)
+			const newEventData: AvailableEventData = {
+				providerId: providerId, 
+				start: start, 
+				end: end, 
+				id: newEvent.id!,
+				repeatEveryWeek: repeatEveryWeek,
+				repeatMonthsCount: repeatMonthsCount,
+				ruleId: null,
+				text: text
+			}
+			setEvents([...events, newEventData])
 		}
-		
-		const newEventData: AvailableEventData = {
-			providerId: id!, 
-			start: start, 
-			end: end, 
-			id: DayPilot.guid(),// TODO: newEvent.id!, 
-			repeatEveryWeek: repeatEveryWeek,
-			repeatMonthsCount: repeatMonthsCount,
-			text: text
-		}
-		setEvents([...events, newEventData])
-		// TODO: backend call, return id of event
 	}
 
 	const CalendarLocaleConfig = {
@@ -87,9 +120,10 @@ const AvailabilityPage: React.FC = () => {
 					text: "Delete",
 					onClick: async args => {
 						console.log(args)
-						//setEvents([...events.filter(e => e.id !== args.source.id)])
-						// TODO: call backend
-						//calendar!.events.remove(args.source);
+						// TODO POPUP
+						await deleteAvailability(args.source.providerId, args.source.id, token)
+						setEvents([...events.filter(e => e.id !== args.source.id)])
+						calendar!.events.remove(args.source);
 					},
 				},
 				{
@@ -196,7 +230,7 @@ const AvailabilityPage: React.FC = () => {
 		const endDate = args.start.getDatePart().addHours(parseInt(endTime[0])).addMinutes(parseInt(endTime[1]));
 
 		await saveAvailabilityEvent(
-				id!, 
+				Number(id), 
 				startDate, 
 				endDate, 
 				form.result.repeatWeekly,
@@ -220,6 +254,7 @@ const AvailabilityPage: React.FC = () => {
 				</Box>
 				<Box sx={{flexGrow:1}}>
 					<DayPilotCalendar 
+						eventMoveHandling='Disabled'
 						viewType='Week' 
 						startDate={startDate}
 						onTimeRangeSelected={onTimeRangeSelected}

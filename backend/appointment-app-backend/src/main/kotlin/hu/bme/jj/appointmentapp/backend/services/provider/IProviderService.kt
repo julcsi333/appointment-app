@@ -1,6 +1,7 @@
 package hu.bme.jj.appointmentapp.backend.services.provider
 
 import hu.bme.jj.appointmentapp.backend.api.model.ProviderDTO
+import hu.bme.jj.appointmentapp.backend.api.model.SortByTactic
 
 interface IProviderService {
     fun updateProvider(updatedProvider: ProviderDTO): ProviderDTO
@@ -11,7 +12,7 @@ interface IProviderService {
 
     fun getProviderById(id: Long): ProviderDTO
 
-    fun getProvidersByForm(name: String?, globalServiceId: Long?, subServiceName: String?): List<ProviderDTO>
+    fun getProvidersByForm(name: String?, globalServiceId: Long?, subServiceName: String?, sortByTactic: SortByTactic?): List<ProviderDTO>
 
     fun tryGetProviderById(id: Long): ProviderDTO?
 

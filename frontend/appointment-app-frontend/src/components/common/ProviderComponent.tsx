@@ -1,19 +1,14 @@
 import { useState, useEffect } from 'react';
 import {getProviders} from '../api/provider-api-call';
 import { Provider } from '../api/model';
-import { Box, List, ListItem, Paper } from '@mui/material';
-import ProviderInformation from './ProviderInformation';
-import { useAuth0 } from '@auth0/auth0-react';
+import { Box } from '@mui/material';
 import SearchForm from '../provider-list/SearchForm';
 import ProviderList from '../provider-list/ProviderList';
 
 const ProviderComponent = () => {
-  const [resultList, setResultList] = useState<Provider[]>([]);
-  const {
-    isAuthenticated
-  } = useAuth0();
+	const [resultList, setResultList] = useState<Provider[]>([]);
 
-  useEffect(() => {
+	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const data = await getProviders();
@@ -39,7 +34,7 @@ const ProviderComponent = () => {
 		return () => {};
 	}, []);
 
-  const setProviders = (providers: Provider[]) => {
+	const setProviders = (providers: Provider[]) => {
     setResultList(providers)
   }
   return (

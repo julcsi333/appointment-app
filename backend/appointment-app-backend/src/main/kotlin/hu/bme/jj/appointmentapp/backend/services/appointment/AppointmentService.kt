@@ -1,6 +1,7 @@
 package hu.bme.jj.appointmentapp.backend.services.appointment
 
 import hu.bme.jj.appointmentapp.backend.api.model.AppointmentDTO
+import hu.bme.jj.appointmentapp.backend.api.model.NewAppointmentDTO
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.AppointmentRepository
 import hu.bme.jj.appointmentapp.backend.db.sql.model.Appointment
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.ProviderRepository
@@ -32,26 +33,49 @@ class AppointmentService(
             startTime = appointment.startTime.toLocalTime(),
             endTime = appointment.endTime.toLocalTime(),
             customerId = appointment.customer.id!!, // Field not nullable in DB. Cannot be null
-            providerId = appointment.provider.id!!, // Field not nullable in DB. Cannot be null
+            providerId = appointment.provider.user.id!!, // Field not nullable in DB. Cannot be null
             subServiceId = appointment.subService.id!! // Field not nullable in DB. Cannot be null
         )
     }
 
     fun mapToEntity(appointment: AppointmentDTO): Appointment {
+        if (appointment.id == null) {
+            throw NullPointerException("Not new appointment with null id.")
+        }
+        val entity = appointmentRepository.findById(appointment.id).orElseThrow{
+            EntityNotFoundException("Appointment not found with id #${appointment.id}")
+        }
         return Appointment(
             id = appointment.id,
             date = java.sql.Date.valueOf(appointment.date),
             startTime = java.sql.Time.valueOf(appointment.startTime),
             endTime = java.sql.Time.valueOf(appointment.endTime),
+            customer = entity.customer,
+            provider = entity.provider,
+            subService = entity.subService
+        )
+    }
+
+    fun mapToEntity(appointment: NewAppointmentDTO): Appointment {
+        val startTime = appointment.date.toLocalTime()
+        val subService = subServiceRepository.findById(appointment.subServiceId)
+            .orElseThrow { EntityNotFoundException("Service not found with id ${appointment.subServiceId}") }
+        val endTime = startTime.plusMinutes(subService.duration.toLong())
+
+        return Appointment(
+            id = appointment.id,
+            date = java.sql.Date.valueOf(appointment.date.toLocalDate()),
+            startTime = java.sql.Time.valueOf(startTime),
+            endTime = java.sql.Time.valueOf(endTime),
             customer = userRepository.findById(appointment.customerId)
                 .orElseThrow { EntityNotFoundException("User not found with id ${appointment.customerId}") },
             provider = providerRepository.findByUserId(appointment.providerId)
                 .orElseThrow { EntityNotFoundException("Provider not found with id ${appointment.providerId}") },
-            subService = subServiceRepository.findById(appointment.subServiceId)
-                .orElseThrow { EntityNotFoundException("Service not found with id ${appointment.subServiceId}") }
+            subService = subService
         )
     }
-    override fun bookAppointment(appointment: AppointmentDTO): AppointmentDTO {
+
+    override fun bookAppointment(appointment: NewAppointmentDTO): AppointmentDTO {
         if (appointment.id != null && appointmentRepository.findById(appointment.id).orElse(null) != null) {
             throw EntityExistsException("Appointment entity ${appointment.id} already exists")
         }

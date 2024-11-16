@@ -5,12 +5,13 @@ import { TimeView } from '@mui/x-date-pickers/models';
 import { DatePicker as MuiDatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { Grid } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import { SubService } from '../api/model';
 
 interface DatePickerProps {
     id: number;
     selectedService: SubService;
+    prevSelectedDate: Dayjs | null;
     onTimeSelect: (date: Dayjs | null) => void;
 }
 
@@ -28,10 +29,10 @@ function isSameTime(date1: dayjs.Dayjs | null, date2: Dayjs | null): boolean {
     return date1.hour() === date2.hour() && date1.minute() === date2.minute()
 }
 
-const DatePicker: React.FC<DatePickerProps> = ({ id, selectedService, onTimeSelect }) => {
+const DatePicker: React.FC<DatePickerProps> = ({ id, prevSelectedDate, selectedService, onTimeSelect }) => {
     const dates: Dayjs[] = generateRandomDates();
-    const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
-    const [timePickerEnabled, setTimePickerEnabled] = useState<boolean>(false);
+    const [selectedDate, setSelectedDate] = useState<Dayjs | null>(prevSelectedDate);
+    const [timePickerEnabled, setTimePickerEnabled] = useState<boolean>(selectedDate !== null);
 
     const handleDateSelect = (time: Dayjs | null) => {
         console.log(`Date select: ${time?.year()}.${time?.month()}.${time?.date()}`)
@@ -86,10 +87,13 @@ const DatePicker: React.FC<DatePickerProps> = ({ id, selectedService, onTimeSele
 
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <Typography variant="h6" sx={{ marginBottom: 2, textAlign: 'center' }}>
+                Select Date and Time
+            </Typography>
             <Grid
                 container
                 spacing={2}
-                justifyContent="center"
+                justifyContent='space-evenly'
                 alignItems="center"
             >
                 <Grid item xs={3}>
@@ -101,7 +105,7 @@ const DatePicker: React.FC<DatePickerProps> = ({ id, selectedService, onTimeSele
                     />
                 </Grid>
                 <Grid item xs={3}>
-                    <DigitalClock disabled={!timePickerEnabled} onChange={(newValue) => handleTimeSelect(newValue)} ampm={false} timeStep={30} shouldDisableTime={shouldDisableTime}/>
+                    <DigitalClock disabled={!timePickerEnabled} value={prevSelectedDate} onChange={(newValue) => handleTimeSelect(newValue)} ampm={false} timeStep={15} shouldDisableTime={shouldDisableTime}/>
                 </Grid>
             </Grid>
         </LocalizationProvider>
@@ -113,29 +117,44 @@ export default DatePicker;
 
 const generateRandomDates = (): Dayjs[] => {
     const dates: Dayjs[] = [];
-    let date = dayjs("2024-05-28");
+    let date = dayjs("2024-11-28");
     date = date.hour(15);
     dates.push(date);
 
-    date = dayjs("2024-05-28");
+    date = dayjs("2024-11-28");
     date = date.hour(16);
     date = date.minute(30);
     dates.push(date);
 
-    date = dayjs("2024-05-29");
+    date = dayjs("2024-11-29");
     date = date.hour(15);
     dates.push(date);
 
-    date = date = dayjs("2024-05-29");
+    date = dayjs("2024-11-29");
+    date = date.hour(15);
+    date = date.minute(15);
+    dates.push(date);
+
+    date = dayjs("2024-11-29");
+    date = date.hour(15);
+    date = date.minute(30);
+    dates.push(date);
+
+    date = dayjs("2024-11-29");
+    date = date.hour(15);
+    date = date.minute(45);
+    dates.push(date);
+
+    date = date = dayjs("2024-11-29");
     date = date.hour(16);
     date = date.minute(30);
     dates.push(date);
 
-    date = dayjs("2024-05-30");
+    date = dayjs("2024-11-30");
     date = date.hour(15);
     dates.push(date);
 
-    date = dayjs("2024-05-30");
+    date = dayjs("2024-11-30");
     date = date.hour(16);
     date = date.minute(30);
     dates.push(date);

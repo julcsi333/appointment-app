@@ -1,10 +1,11 @@
 package hu.bme.jj.appointmentapp.backend.services.appointment
 
 import hu.bme.jj.appointmentapp.backend.api.model.AppointmentDTO
+import hu.bme.jj.appointmentapp.backend.api.model.NewAppointmentDTO
 import java.time.LocalDate
 
 interface IAppointmentService {
-    fun bookAppointment(appointment: AppointmentDTO): AppointmentDTO
+    fun bookAppointment(appointment: NewAppointmentDTO): AppointmentDTO
 
     fun modifyAppointment(appointment: AppointmentDTO): AppointmentDTO
 

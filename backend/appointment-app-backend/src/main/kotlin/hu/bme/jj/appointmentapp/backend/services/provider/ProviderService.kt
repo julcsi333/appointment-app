@@ -1,6 +1,7 @@
 package hu.bme.jj.appointmentapp.backend.services.provider
 
 import hu.bme.jj.appointmentapp.backend.api.model.ProviderDTO
+import hu.bme.jj.appointmentapp.backend.api.model.SortByTactic
 import hu.bme.jj.appointmentapp.backend.db.sql.model.Provider
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.ProviderRepository
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.UserRepository
@@ -42,16 +43,30 @@ class ProviderService(
         provider.businessAddress,
         provider.sendDailyAppointmentReport
     )
-    private fun mapToEntity(provider: ProviderDTO): Provider {
+    private fun saveProvider(provider: ProviderDTO): Provider {
         val providerEntity = repository.findByUserId(provider.id!!).orElse(null)
-        return Provider(
-            providerEntity?.id,
-            provider.bio ?: "",
-            provider.businessAddress,
-            provider.sendDailyAppointmentReport,
-            providerEntity?.user ?: userRepository.findById(provider.id)
-                .orElseThrow{ EntityNotFoundException("User not found with id #${provider.id}")}
-        )
+        return repository.save( if (providerEntity != null) {
+            // Updated provider
+            Provider(
+                providerEntity.id,
+                provider.bio ?: "",
+                provider.businessAddress,
+                provider.sendDailyAppointmentReport,
+                providerEntity.user,
+                providerEntity.appointments,
+                providerEntity.mainServices
+            )
+        } else {
+            // New provider
+            Provider(
+                null,
+                provider.bio ?: "",
+                provider.businessAddress,
+                provider.sendDailyAppointmentReport,
+                userRepository.findById(provider.id)
+                    .orElseThrow{ EntityNotFoundException("User not found with id #${provider.id}")}
+            )
+        })
     }
 
     override fun getAllProviders(): List<ProviderDTO> {
@@ -62,23 +77,56 @@ class ProviderService(
         return mapToDTO(getProviderByUserIdFromRepositoryOrThrow(id))
     }
 
-    override fun getProvidersByForm(name: String?, globalServiceId: Long?, subServiceName: String?): List<ProviderDTO> {
-        var providers = repository.findAll()
-        if (!name.isNullOrEmpty()) {
-            providers = providers.filter { it.user.name?.lowercase()?.contains(name.lowercase()) ?: false }
-        }
-        if (globalServiceId != null) {
-            providers = providers.filter { provider ->
-                val mainServices = mainServiceService.getServicesByProviderId(provider.user.id!!)
-                val mainService = mainServices.find { ms -> ms.globalService.id == globalServiceId }
+    override fun getProvidersByForm(name: String?, globalServiceId: Long?, subServiceName: String?, sortByTactic: SortByTactic?): List<ProviderDTO> {
+        val providers = if (name.isNullOrEmpty()) {
+            if (globalServiceId != null) {
                 if (subServiceName.isNullOrEmpty()) {
-                    // If we found a main service of the provider with the global service id
-                    mainService != null
+                    when(sortByTactic) {
+                        SortByTactic.POPULARITY -> repository.findAllByFormOrderedByPopularity("", globalServiceId)
+                        SortByTactic.PRICE_AVG -> repository.findAllByFormOrderedByAveragePrice("", globalServiceId)
+                        SortByTactic.PRICE_LOWEST -> repository.findAllByFormOrderedByLowestPrice("", globalServiceId)
+                        null -> repository.findAllByFormOrderedByPopularity("", globalServiceId)
+                    }
                 } else {
-                    // If we found a main service of the provider with the global service id, and it has the specified sub service name
-                    mainService?.subServices?.find { it.name.lowercase() == subServiceName.lowercase() } != null
+                    when(sortByTactic) {
+                        SortByTactic.POPULARITY -> repository.findAllByFormOrderedByPopularity("", globalServiceId, subServiceName)
+                        SortByTactic.PRICE_AVG -> repository.findAllByFormOrderedByAveragePrice("", globalServiceId, subServiceName)
+                        SortByTactic.PRICE_LOWEST -> repository.findAllByFormOrderedByLowestPrice("", globalServiceId, subServiceName)
+                        null -> repository.findAllByFormOrderedByPopularity("", globalServiceId, subServiceName)
+                    }
                 }
-
+            } else {
+                when(sortByTactic) {
+                    SortByTactic.POPULARITY -> repository.findAllByFormOrderedByPopularity()
+                    SortByTactic.PRICE_AVG -> repository.findAllByFormOrderedByAveragePrice()
+                    SortByTactic.PRICE_LOWEST -> repository.findAllByFormOrderedByLowestPrice()
+                    null -> repository.findAllByFormOrderedByPopularity()
+                }
+            }
+        } else {
+            if (globalServiceId != null) {
+                if (subServiceName.isNullOrEmpty()) {
+                    when(sortByTactic) {
+                        SortByTactic.POPULARITY -> repository.findAllByFormOrderedByPopularity(name, globalServiceId)
+                        SortByTactic.PRICE_AVG -> repository.findAllByFormOrderedByAveragePrice(name, globalServiceId)
+                        SortByTactic.PRICE_LOWEST -> repository.findAllByFormOrderedByLowestPrice(name, globalServiceId)
+                        null -> repository.findAllByFormOrderedByPopularity(name, globalServiceId)
+                    }
+                } else {
+                    when(sortByTactic) {
+                        SortByTactic.POPULARITY -> repository.findAllByFormOrderedByPopularity(name, globalServiceId, subServiceName)
+                        SortByTactic.PRICE_AVG -> repository.findAllByFormOrderedByAveragePrice(name, globalServiceId, subServiceName)
+                        SortByTactic.PRICE_LOWEST -> repository.findAllByFormOrderedByLowestPrice(name, globalServiceId, subServiceName)
+                        null -> repository.findAllByFormOrderedByPopularity(name, globalServiceId, subServiceName)
+                    }
+                }
+            } else {
+                when(sortByTactic) {
+                    SortByTactic.POPULARITY -> repository.findAllByFormOrderedByPopularity(name)
+                    SortByTactic.PRICE_AVG -> repository.findAllByFormOrderedByAveragePrice(name)
+                    SortByTactic.PRICE_LOWEST -> repository.findAllByFormOrderedByLowestPrice(name)
+                    null -> repository.findAllByFormOrderedByPopularity(name)
+                }
             }
         }
         return providers.map { mapToDTO(it) }
@@ -93,13 +141,13 @@ class ProviderService(
             throw EntityNotFoundException("Provider not found with user id ${updatedProvider.id}")
         }
         userService.updateUser(updatedProvider)
-        return mapToDTO(repository.save(mapToEntity(updatedProvider)))
+        return mapToDTO(saveProvider(updatedProvider))
     }
 
     @Transactional
     override fun createProvider(provider: ProviderDTO): ProviderDTO {
         userService.updateUser(provider)
-        return mapToDTO(repository.save(mapToEntity(provider)))
+        return mapToDTO(saveProvider(provider))
     }
 
     override fun deleteProvider(id: Long) {

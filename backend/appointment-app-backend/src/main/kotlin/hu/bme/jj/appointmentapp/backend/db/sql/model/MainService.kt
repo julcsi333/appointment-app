@@ -6,18 +6,21 @@ import jakarta.persistence.*
 @Table(name = "services")
 class MainService (
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null,
+    val id: Long? = null,
     @Column(nullable=true)
-    var description: String,
+    val description: String,
 
 
     // Many-to-One relationship with Provider
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "provider_id", nullable = false)
-    var provider: Provider,
+    val provider: Provider,
 
     // Many-to-One relationship with GlobalService
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "global_service_id", nullable = false)
-    var globalService: GlobalService
+    val globalService: GlobalService,
+
+    @OneToMany(mappedBy = "mainService", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    val subServices: List<SubService> = mutableListOf()
     )

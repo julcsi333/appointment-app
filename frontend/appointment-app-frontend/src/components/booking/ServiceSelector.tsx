@@ -1,38 +1,59 @@
-import React from 'react';
-import { InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material';
-import { SubService } from '../api/model';
+import React, { useEffect, useState } from 'react';
+import { InputLabel, Select, MenuItem, SelectChangeEvent, Typography, FormControl } from '@mui/material';
+import { MainService, SubService } from '../api/model';
+import { getServicesByProviderId, getSubServicesByMainServiceId } from '../api/services-api-call';
 
 interface ServiceSelectorProps {
-    onServiceSelect: (service: number) => void;
-    selectedService: SubService | null;
+    id: number;
+    prevSelectedService: MainService | undefined;
+    prevSelectedSubService: SubService | undefined;
+    services: MainService[];
+    subservices: SubService[];
+    onServiceSelect: (service: MainService) => void;
+    onSubServiceSelect: (subService: SubService | undefined) => void;
 }
-
-const ServiceSelector: React.FC<ServiceSelectorProps> = ({ onServiceSelect, selectedService }) => {
-    const defaultOption = "Select an option";
-    const defaultOptionId = -1;
-    const handleChange = (event: SelectChangeEvent<string>) => {
-        const service =Number(event.target.value);
-        if (service !== defaultOptionId) {
-            onServiceSelect(service); // Update the selected service when dropdown value changes
-        }
-    };
+const ServiceSelector: React.FC<ServiceSelectorProps> = ({ id, prevSelectedService, prevSelectedSubService, services, subservices, onServiceSelect, onSubServiceSelect }) => {
 
     return (
-        <div>
-            <InputLabel id="service-select-label">Select Service</InputLabel>
+        <>
+            <Typography variant="h6" sx={{ marginBottom: 2, textAlign: 'center' }}>
+                Select Service
+            </Typography>
+
+            <FormControl fullWidth sx={{ marginBottom: 2 }}>
+                <InputLabel id="service-select-label">Service</InputLabel>
+                <Select
+                labelId="service-select-label"
+                value={prevSelectedService?.id || ''}
+                onChange={(e) => onServiceSelect(services.find(s => s.id === e.target.value)!)}
+                label="Service"
+                >
+                {services.map((service) => (
+                    <MenuItem key={service.id} value={service.id}>
+                    {service.globalService.name}
+                    </MenuItem>
+                ))}
+                </Select>
+            </FormControl>
+
+            <FormControl fullWidth sx={{ marginBottom: 2 }}>
+            <InputLabel id="subservice-select-label">Subservice</InputLabel>
             <Select
-            labelId="service-select-label"
-            id="service-select"
-            value={selectedService === null ? defaultOptionId.toString() : selectedService.id.toString() }
-            onChange={handleChange}
+                labelId="subservice-select-label"
+                value={prevSelectedSubService?.id || ''}
+                onChange={(e) => onSubServiceSelect(subservices.find(s => s.id === e.target.value))}
+                label="Subservice"
             >
-                <MenuItem value={defaultOptionId}>{defaultOption}</MenuItem>
-                <MenuItem value={1}>Haircut</MenuItem>
-                <MenuItem value={2}>Massage</MenuItem>
-                <MenuItem value={3}>Facial</MenuItem>
-                {/* Add more default values as needed */}
+                {subservices.map((subService) => (
+                    <MenuItem key={subService.id} value={subService.id}>
+                    {subService.name}
+                    </MenuItem>
+                ))}
             </Select>
-        </div>
+        </FormControl>
+
+
+        </>
     );
 };
 

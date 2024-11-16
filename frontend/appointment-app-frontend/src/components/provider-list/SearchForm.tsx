@@ -1,8 +1,8 @@
 import React, { ReactNode, useEffect, useState } from 'react';
-import { Box, TextField, Button, MenuItem, Select, FormControl, InputLabel, Typography, SelectChangeEvent, Paper } from '@mui/material';
-import { GlobalService, Provider } from '../api/model';
+import { TextField, Button, MenuItem, Select, FormControl, InputLabel, Typography, SelectChangeEvent, Paper } from '@mui/material';
+import { GlobalService, Provider, SortByTactic } from '../api/model';
 import { getAllGlobalServices, getSubServicesByGlobalServiceId } from '../api/services-api-call';
-import { getProviders, getProvidersByForm } from '../api/provider-api-call';
+import { getProvidersByForm } from '../api/provider-api-call';
 
 interface Props {
 	setProviders: (providers: Provider[]) => void;
@@ -10,11 +10,11 @@ interface Props {
 
 const SearchForm: React.FC<Props> = ({setProviders}) => {
 	const [providerName, setProviderName] = useState<string>('');
-	const [globalService, setGlobalService] = useState<GlobalService | null>(null);
+	const [globalService, setGlobalService] = useState<GlobalService | undefined>(undefined);
 	const [globalServices, setGlobalServices] = useState<GlobalService[]>([]);
 	const [subServices, setSubServices] = useState<string[]>([]);
 	const [subService, setSubService] = useState('');
-	const [sortBy, setSortBy] = useState('');
+	const [sortBy, setSortBy] = useState<SortByTactic>(SortByTactic.POPULARITY);
 
 	
 	useEffect(() => {
@@ -39,7 +39,7 @@ const SearchForm: React.FC<Props> = ({setProviders}) => {
 			setGlobalService(gs);
 			setSubServices(await getSubServicesByGlobalServiceId(gs.id));
 		} else {
-			setGlobalService(null);
+			setGlobalService(undefined);
 			setSubServices([])
 		}
 		setSubService(''); // clear sub-service when service changes
@@ -47,7 +47,7 @@ const SearchForm: React.FC<Props> = ({setProviders}) => {
 	};
 
 	const searchProviders = async () => {
-		setProviders(await getProvidersByForm(providerName, globalService?.id, subService))
+		setProviders(await getProvidersByForm(providerName, globalService?.id, subService, sortBy))
 	}
 	const handleProviderNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setProviderName(event.target.value)
@@ -87,7 +87,7 @@ const SearchForm: React.FC<Props> = ({setProviders}) => {
 				<Select
 				value={subService}
 				onChange={(e) => setSubService(e.target.value as string)}
-				label="Sub-Service"
+				label="Subservice"
 				disabled={globalService === null} // disable if no service is selected
 				>
 					{subServices.map((subServiceName: string) => (
@@ -101,12 +101,12 @@ const SearchForm: React.FC<Props> = ({setProviders}) => {
 				<InputLabel>Sort By</InputLabel>
 				<Select
 				value={sortBy}
-				onChange={(e) => setSortBy(e.target.value as string)}
+				onChange={(e) => setSortBy(e.target.value as SortByTactic)}
 				label="Sort By"
 				>
-				<MenuItem value="rating">Rating</MenuItem>
-				<MenuItem value="popularity">Popularity</MenuItem>
-				<MenuItem value="distance">Distance</MenuItem>
+				<MenuItem value={SortByTactic.POPULARITY}>Popularity</MenuItem>
+				<MenuItem value={SortByTactic.PRICE_AVG}>Average Price</MenuItem>
+				<MenuItem value={SortByTactic.PRICE_LOWEST}>Lowest Price</MenuItem>
 				</Select>
 			</FormControl>
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@mui/material';
+import { Box, Button } from '@mui/material';
 
 interface StepperButtonsProps {
     activeStep: number;
@@ -12,23 +12,23 @@ interface StepperButtonsProps {
 
 const StepperButtons : React.FC<StepperButtonsProps> = ({ activeStep, onBack, onNext, enableNextButton, onSubmit, enableSubmitButton }) => {
     return (
-        <div className="margin">
+        <Box>
             {activeStep !== 0 && (
-            <Button variant="contained" onClick={onBack}>
+            <Button sx={{mr:2, ml:2}} variant="contained" onClick={onBack}>
                 Back
             </Button>
             )}
             {activeStep !== 2 && (
-            <Button variant="contained" onClick={onNext} disabled={!enableNextButton}>
+            <Button sx={{mr:2, ml:2}} variant="contained" onClick={onNext} disabled={!enableNextButton}>
                 Next
             </Button>
             )}
             {activeStep === 2 && (
-            <Button variant="contained" onClick={onSubmit} disabled={!enableSubmitButton}>
+            <Button sx={{mr:2, ml:2}} variant="contained" onClick={onSubmit} disabled={!enableSubmitButton}>
                 Submit
             </Button>
             )}
-        </div>
+        </Box>
     );
 };
 

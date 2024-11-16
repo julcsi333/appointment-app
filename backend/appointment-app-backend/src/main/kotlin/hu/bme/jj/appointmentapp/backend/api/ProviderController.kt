@@ -4,6 +4,7 @@ import hu.bme.jj.appointmentapp.backend.api.model.BookableTimeDTO
 import hu.bme.jj.appointmentapp.backend.api.model.ProviderAvailabilityDTO
 import hu.bme.jj.appointmentapp.backend.api.model.ProviderAvailabilityRuleDTO
 import hu.bme.jj.appointmentapp.backend.api.model.ProviderDTO
+import hu.bme.jj.appointmentapp.backend.api.model.SortByTactic
 import hu.bme.jj.appointmentapp.backend.config.Configuration
 import hu.bme.jj.appointmentapp.backend.services.provider.IProviderAvailabilityRuleService
 import hu.bme.jj.appointmentapp.backend.services.provider.IProviderAvailabilityService
@@ -21,8 +22,17 @@ class ProviderController(
 ) {
 
     @GetMapping
-    fun getAllProvidersByForm(@RequestParam(required = false) name: String?, @RequestParam(required = false) globalServiceId: Long?, @RequestParam(required = false) subServiceName: String?): ResponseEntity<List<ProviderDTO>> {
-        return ResponseEntity(providerService.getProvidersByForm(name, globalServiceId, subServiceName), HttpStatus.OK)
+    fun getAllProvidersByForm(
+        @RequestParam(required = false) name: String?,
+        @RequestParam(required = false) globalServiceId: Long?,
+        @RequestParam(required = false) subServiceName: String?,
+        @RequestParam(required = false) sortByTactic: SortByTactic?
+    ): ResponseEntity<List<ProviderDTO>> {
+        return ResponseEntity(
+            providerService.getProvidersByForm(
+                name, globalServiceId, subServiceName, sortByTactic
+            ), HttpStatus.OK
+        )
     }
 
     @GetMapping("/{id}")

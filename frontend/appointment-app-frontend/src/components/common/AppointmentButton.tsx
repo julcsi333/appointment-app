@@ -14,7 +14,10 @@ const AppointmentButton : React.FC<AppointmentButtonProps> = ({ providerId }) =>
   };
 
   return (
-    <Button variant="contained" color="primary" onClick={handleButtonClick}>
+    <Button variant="contained" color="primary" onClick={(e) => {
+      e.stopPropagation();
+      handleButtonClick();
+      }}>
       Book Appointment
     </Button>
   );

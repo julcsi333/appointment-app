@@ -7,9 +7,9 @@ interface StepperProgressBarProps {
 
 const StepperProgressBar: React.FC<StepperProgressBarProps> = ({ activeStep }) => {
     return (
-        <Stepper activeStep={activeStep}>
+        <Stepper sx={{width: '100%', mt: 4, mb: 4}} activeStep={activeStep}>
             <Step>
-                <StepLabel>Choose Service</StepLabel>
+                <StepLabel>Select Service</StepLabel>
             </Step>
             <Step>
                 <StepLabel>Select Date and Time</StepLabel>

@@ -16,5 +16,9 @@ class Provider (
     val sendDailyAppointmentReport: Boolean = true,
     @OneToOne(optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
-    var user: UserData  // Non-nullable
+    var user: UserData,  // Non-nullable
+    @OneToMany(mappedBy = "provider", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    val appointments: List<Appointment> = mutableListOf(),
+    @OneToMany(mappedBy = "provider", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    val mainServices: List<MainService> = mutableListOf()
 )

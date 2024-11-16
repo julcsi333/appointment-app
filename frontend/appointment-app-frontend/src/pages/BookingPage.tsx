@@ -14,6 +14,7 @@ import { getUserByExternalId } from '../components/api/user-api-call';
 const BookingPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [provider, setProvider] = useState<Provider | null>(null);
+    const [token, setToken] = useState<string>('');
     const {
         user,
         getAccessTokenSilently,
@@ -27,6 +28,7 @@ const BookingPage: React.FC = () => {
                 setProvider(providerData);
                 
                 const token = await getAccessTokenSilently();
+                setToken(token)
                 const userData = await getUserByExternalId(user!.sub!, token);
                 setCurrentUserData(userData);
             } catch (error) {
@@ -47,9 +49,9 @@ const BookingPage: React.FC = () => {
         {provider === null && <ProviderNotFound />}
         {provider !== null && (
             <div>
-                <center className='margin'><Typography variant="h4">Book Appointment</Typography></center>
+                <center><Typography margin={2} variant="h4">Book Appointment</Typography></center>
                 <ProviderInformation provider={provider} showBookbutton={false} />
-                <BookingForm id={provider.id} user_id={currentUserData === null ? null : currentUserData.id} enableSubmit={currentUserData?.name !== null && currentUserData?.phoneNumber !== null}/>
+                <BookingForm token={token} provider={provider} user_id={currentUserData === null ? null : currentUserData.id} enableSubmit={currentUserData?.name !== null && currentUserData?.phoneNumber !== null}/>
             </div>
         )}
       </div>

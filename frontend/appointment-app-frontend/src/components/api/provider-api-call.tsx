@@ -1,4 +1,4 @@
-import { Provider } from './model';
+import { Provider, SortByTactic } from './model';
 import { apiGetCall, secureApiPostCall, secureApiPutCall } from './api-call';
 import { AxiosError } from 'axios';
 import { getBaseUrl } from '../../config/config';
@@ -8,14 +8,18 @@ export const getProviders = async (): Promise<Array<Provider>> => {
   return response.data;
 };
 
-export const getProvidersByForm = async (name: string, globalServiceId: number | undefined, subServiceName: string | undefined): Promise<Array<Provider>> => {
-  let url = getBaseUrl() +`/providers?name=${name}`
+export const getProvidersByForm = async (name: string | undefined, globalServiceId: number | undefined, subServiceName: string | undefined, sortTactic: SortByTactic): Promise<Array<Provider>> => {
+  let url = getBaseUrl() +`/providers?sortByTactic=${sortTactic}`
+  if (name !== undefined && name !== "") {
+    url += `&name=${name}`
+  }
   if (globalServiceId !== undefined) {
     url += `&globalServiceId=${globalServiceId}`
   }
   if (subServiceName !== undefined && subServiceName !== "") {
     url += `&subServiceName=${subServiceName}`
   }
+
   const response = await apiGetCall(url);
   return response.data;
 };

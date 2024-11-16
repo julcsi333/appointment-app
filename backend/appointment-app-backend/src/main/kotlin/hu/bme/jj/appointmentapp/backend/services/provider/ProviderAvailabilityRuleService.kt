@@ -123,12 +123,12 @@ class ProviderAvailabilityRuleService(
     }
 
     private fun mapToDTO(pa: ProviderAvailabilityRule): ProviderAvailabilityRuleDTO {
+        val date = pa.date.toLocalDate()
         return ProviderAvailabilityRuleDTO(
             pa.id,
             pa.provider.id ?: throw NullPointerException("Provider id null when mapping to UI representation"),
-            pa.date.toLocalDate(),
-            pa.startTime.toLocalTime(),
-            pa.endTime.toLocalTime(),
+            date.atTime(pa.startTime.toLocalTime()),
+            date.atTime(pa.endTime.toLocalTime()),
             pa.repeatMonthCount
         )
     }
@@ -139,9 +139,9 @@ class ProviderAvailabilityRuleService(
             providerRepository.findByUserId(pa.providerId).orElseThrow {
                 EntityNotFoundException("Provider #${pa.providerId} for availability rule #${pa.id} not found!")
             },
-            java.sql.Date.valueOf(pa.date),
-            java.sql.Time.valueOf(pa.startTime),
-            java.sql.Time.valueOf(pa.endTime),
+            java.sql.Date.valueOf(pa.start.toLocalDate()),
+            java.sql.Time.valueOf(pa.start.toLocalTime()),
+            java.sql.Time.valueOf(pa.end.toLocalTime()),
             pa.repeatMonthCount
         )
     }

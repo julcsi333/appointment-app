@@ -53,7 +53,7 @@ const SearchForm: React.FC<Props> = ({setProviders}) => {
 		setProviderName(event.target.value)
 	};
 	return (
-		<Paper sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 500, mt: 2, p: 3, boxShadow: 3, minWidth: '60vh', maxHeight:'45vh'}}>
+		<Paper sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: '70vh', mt: 2, p: 3, boxShadow: 3, minWidth: '60vh', maxHeight:'41vh'}}>
 			<Typography variant="h5" sx={{ mb: 2, textAlign: 'center' }}>
 				Search Providers
 			</Typography>
@@ -115,7 +115,7 @@ const SearchForm: React.FC<Props> = ({setProviders}) => {
 				variant="contained" 
 				color="primary" 
 				fullWidth 
-				sx={{ mt: 2 }}
+				sx={{ mt: 2, minHeight:'5vh' }}
 				onClick={searchProviders}
 			>
 				Search

@@ -9,6 +9,7 @@ function getAvailabilityUrl(providerId: number) {
 
 export const getAvailabilityByProviderId = async (id: number): Promise<Availability[]> => {
 	const response = await apiGetCall(getAvailabilityUrl(id));
+	console.log(response)
 	return response.data;
 };
 
@@ -18,24 +19,24 @@ export const createAvailability = async (availability: Availability, token: stri
 };
 
 export const createAvailabilityRule = async (availabilityRule: AvailabilityRule, token: string): Promise<AvailabilityRule> => {
-	const response = await secureApiPostCall(getAvailabilityUrl(availabilityRule.providerId) + `/rule`, JSON.stringify(availabilityRule), token);
+	const response = await secureApiPostCall(`${getAvailabilityUrl(availabilityRule.providerId)}/rule`, JSON.stringify(availabilityRule), token);
 	return response.data;
 };
 
 export const updateAvailability = async (availability: Availability, token: string): Promise<Availability> => {
-	const response = await secureApiPutCall(getAvailabilityUrl(availability.providerId) + `/${availability.id}`, JSON.stringify(availability), token);
+	const response = await secureApiPutCall(`${getAvailabilityUrl(availability.providerId)}/${availability.id}`, JSON.stringify(availability), token);
 	return response.data;
 };
 
 export const updateAvailabilityRule = async (availability: AvailabilityRule, token: string): Promise<AvailabilityRule> => {
-	const response = await secureApiPutCall(getAvailabilityUrl(availability.providerId) + `/rule/${availability.id}`, JSON.stringify(availability), token);
+	const response = await secureApiPutCall(`${getAvailabilityUrl(availability.providerId)}/rule/${availability.id}`, JSON.stringify(availability), token);
 	return response.data;
 };
 
 export const deleteAvailability = async (providerId: number, availabilityId: number, token: string) => {
-	await secureApiDeleteCall(getAvailabilityUrl(providerId) + `/${availabilityId}`, token);
+	await secureApiDeleteCall(`${getAvailabilityUrl(providerId)}/${availabilityId}`, token);
 };
 
 export const deleteAvailabilityRule = async (providerId: number, availabilityRuleId: number, token: string) => {
-	await secureApiDeleteCall(getAvailabilityUrl(providerId) + `/rule/${availabilityRuleId}`, token);
+	await secureApiDeleteCall(`${getAvailabilityUrl(providerId)}/rule/${availabilityRuleId}`, token);
 };

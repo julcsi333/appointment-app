@@ -115,7 +115,8 @@ class AppointmentService(
     }
 
     override fun getAppointmentsForProvider(providerId: Long): List<AppointmentDTO> {
-        return appointmentRepository.findByProviderId(providerId).map { mapToDTO(it) }
+        val provider = providerRepository.findByUserId(providerId).orElseThrow()
+        return appointmentRepository.findByProviderId(provider.id!!).map { mapToDTO(it) }
     }
 
     override fun getAppointmentsForProviderAfter(providerId: Long, date: LocalDate): List<AppointmentDTO> {

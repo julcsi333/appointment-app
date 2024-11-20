@@ -58,11 +58,13 @@ class ProviderAvailabilityService(
 
     override fun getPAById(id: Long): ProviderAvailabilityDTO = mapToDTO(getPAByIdFromRepositoryOrThrow(id))
     override fun getPAsByProviderId(id: Long): List<ProviderAvailabilityDTO> {
-        return repository.findByProviderId(id).map { mapToDTO(it) }
+        val provider = providerRepository.findByUserId(id).orElseThrow()
+        return repository.findByProviderId(provider.id!!).map { mapToDTO(it) }
     }
 
     override fun getBookablePAsByProviderId(id: Long, bookTimeMinutes: Long): List<BookableTimeDTO> {
-        var bookableTimes = repository.findByProviderId(id).map { BookableTime(it.date.toLocalDate(), it.startTime.toLocalTime(), it.endTime.toLocalTime()) }.toMutableList()
+        val provider = providerRepository.findByUserId(id).orElseThrow()
+        var bookableTimes = repository.findByProviderId(provider.id!!).map { BookableTime(it.date.toLocalDate(), it.startTime.toLocalTime(), it.endTime.toLocalTime()) }.toMutableList()
         appointmentService.getAppointmentsForProviderAfter(id, LocalDate.now()).forEach { appointment ->
             val newBookableTimes = mutableListOf<BookableTime>()
             bookableTimes.forEach { bookableTime ->
@@ -110,7 +112,7 @@ class ProviderAvailabilityService(
      */
     @Scheduled(cron = "0 1 0 * * *")
     fun deletePastAvailability() {
-        val availabilitiesToDelete = repository.findByDateLessThan(java.sql.Date.valueOf(LocalDate.now())).map { it.id }
+        val availabilitiesToDelete = repository.findByDateLessThan(java.sql.Date.valueOf(LocalDate.now().plusDays(1))).map { it.id }
         repository.deleteAllById(availabilitiesToDelete)
     }
 }

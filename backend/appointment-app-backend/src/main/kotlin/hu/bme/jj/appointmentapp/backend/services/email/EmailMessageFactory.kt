@@ -44,11 +44,11 @@ class EmailMessageFactory: IEmailMessageFactory {
     """.trimIndent()
 
     private fun getAppointmentCancelledBody(appointment: Appointment, customerCancelled: Boolean) = """
-        Dear ${appointment.customer.name},
+        Dear ${if(!customerCancelled) appointment.customer.name else appointment.provider.user.name},
         
-        Your appointment for ${appointment.subService.mainService.globalService.name}-${appointment.subService.name} scheduled with ${if(customerCancelled) appointment.customer.name else appointment.provider.user.name} on ${appointment.date.toLocalDate()} at ${appointment.startTime.toLocalTime()} has been cancelled.
+        Your appointment for ${appointment.subService.mainService.globalService.name}-${appointment.subService.name} scheduled with ${if(!customerCancelled) appointment.customer.name else appointment.provider.user.name} on ${appointment.date.toLocalDate()} at ${appointment.startTime.toLocalTime()} has been cancelled.
         
-        If you have any questions, please contact ${if(customerCancelled) appointment.customer.name else appointment.provider.user.name} by email (${if(customerCancelled) appointment.customer.email else appointment.provider.user.email}) or phone (${if(customerCancelled) appointment.customer.phoneNumber else appointment.provider.user.phoneNumber}).
+        If you have any questions, please contact ${if(!customerCancelled) appointment.customer.name else appointment.provider.user.name} by email (${if(!customerCancelled) appointment.customer.email else appointment.provider.user.email}) or phone (${if(!customerCancelled) appointment.customer.phoneNumber else appointment.provider.user.phoneNumber}).
         We are sorry for the inconvenience.
         
         Best regards,

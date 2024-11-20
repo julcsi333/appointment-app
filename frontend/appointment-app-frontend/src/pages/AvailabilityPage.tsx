@@ -52,9 +52,12 @@ const AvailabilityPage: React.FC = () => {
 				if (isAuthenticated) {
 					const accessToken = await getAccessTokenSilently();
 					setToken(accessToken)
-					const newEvents = createEventsFromAvailabilities(await getAvailabilityByProviderId(Number(id)))
+					const availabilities = await getAvailabilityByProviderId(Number(id))
+					//console.log("new availabilities:" + JSON.stringify(availabilities))
+					const newEvents = createEventsFromAvailabilities(availabilities)
+					//console.log("new events:" + JSON.stringify(newEvents))
 					setEvents(newEvents)
-					calendar!.events.list = newEvents
+					
 				}
 			} catch (error) {
 				console.error('Error:', error);
@@ -64,7 +67,7 @@ const AvailabilityPage: React.FC = () => {
 		return () => {
 
 		};
-	}, [calendar, getAccessTokenSilently, id, isAuthenticated, navigate]);
+	}, [getAccessTokenSilently, id, isAuthenticated, navigate]);
 
 	const saveAvailabilityEvent = async (
 		providerId: number, 
@@ -86,7 +89,7 @@ const AvailabilityPage: React.FC = () => {
 			await createAvailabilityRule(newEvent, token)
 			const newEvents = createEventsFromAvailabilities(await getAvailabilityByProviderId(Number(id)))
 			setEvents(newEvents)
-			calendar!.events.list = newEvents
+			//calendar!.events.list = newEvents
 		} else {
 			const availability: Availability = {
 				providerId: providerId, 
@@ -106,24 +109,37 @@ const AvailabilityPage: React.FC = () => {
 				ruleId: null,
 				text: text
 			}
-			setEvents([...events, newEventData])
+			//setEvents([...events, newEventData])
+			calendar!.events.add(newEventData)
 		}
 	}
+
+	/*const deleteEvent = async (eventId: number) => {
+		let event = events.find(event => event.id === eventId)
+		console.log("afsda")
+		if (event) {
+			await deleteAvailability(event.providerId, Number(event.id), token)
+		} else {
+			console.error(`Event with id ${eventId} not found!`)
+		}
+		
+		//setEvents([...events.filter(e => e.id !== args.source.id)])
+	}*/
 
 	const CalendarLocaleConfig = {
 		weekStarts: 1,
 		headerDateFormat: 'dddd (MM.dd.)',
 		timeFormat: 'Clock24Hours' as "Clock24Hours" | "Auto" | "Clock12Hours" | undefined,
-		contextMenu: new DayPilot.Menu({
+		/*contextMenu: new DayPilot.Menu({
 			items: [
 				{
 					text: "Delete",
 					onClick: async args => {
+						console.log('ARGS:')
 						console.log(args)
 						// TODO POPUP
-						await deleteAvailability(args.source.providerId, args.source.id, token)
-						setEvents([...events.filter(e => e.id !== args.source.id)])
-						calendar!.events.remove(args.source);
+						await deleteEvent(args.source.id)
+						//calendar!.events.remove(args.source);
 					},
 				},
 				{
@@ -136,19 +152,25 @@ const AvailabilityPage: React.FC = () => {
 					}
 				}
 			]
-		}),
+		}),*/
 		onBeforeEventRender: (args: DayPilot.CalendarBeforeEventRenderArgs) => {
 			args.data.areas = [
-				/*{
-					top: 3,
-					right: 3,
+				{
+					top: 4,
+					right: 4,
 					width: 20,
 					height: 20,
-					symbol: "icons/daypilot.svg#minichevron-down-2",
-					fontColor: "#fff",
-					toolTip: "Show context menu",
-					action: "ContextMenu",
-				},
+					html: `<img width="20" class="none" height="20" style="object-fit: 'fit'; overflow: hidden;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAACEElEQVR4nO2YTUhVQRTHf738olQUw02CPBIRNATBhQs1LXCT7mwVRO1ci6ILNwa5dSHoRnAltghxEbWplWJQILUJQnlggraoqEQLP54MzOJyOL3eh8ydcH4wmzvnnPnfOzNnzlwIBAKBQOCC0gr0A1cKjNMF9ACXcchjIG3bOnA1zzgTkTivgQSO+B4Z2LT5PGLcAU5FnCSO2BADmzaQg3818Fn47wAlOOIWcCIEfAFqs/RfEr6ndj85ZUqZhZUs/O4rftPEQJHdwFLMoww+dcA3Yf8BKCMmbgA/haB9oEGxTdhMI22biJmHyiysKnl9VLF7gCcsKuJGIv3NwKHof4pHVAEpIfC3Pa1LgfeibxOoxDM6gWMh1AifFc/+AO14yqSylGQbxmOKgLUM4l8Cl/CcJPBLEb+bw0kdKx3AkfICWz5uXEk58CnDEvIqdWosZLGJTS3kJfcUscvAnnj2w5YgXnEd+CqEbtu6v0+5uLx1Wfv/C1OkvRICzV2hO2Izo8zOEzxhTBFnDrQoZbZsli95m5hps6VBVNg7oFixbVEKuh3gGjFhfqd8VOr7xgw+I8psPY/rdJ7L8Tb2t/2SBoZwzIAi4lmWvnVKxjqwdwYnlNi1K9dyTQ4xBpUP8AJH1CvZxPykKvTUTuEIeTkfzzNOBfAmEsekY6d1f6+tPAvNZHeBm+ekKxAIBAIB/ivOAM2OAh166TcAAAAAAElFTkSuQmCC" alt="Delete">`,
+					action: "None",
+					toolTip: "Delete event",
+					onClick: async args => {
+						await deleteAvailability(args.source.data.providerId, args.source.data.id, token)
+						//setEvents([...events.filter(e => e.id !== args.source.data.id)])
+						calendar!!.events.remove(args.source);
+						console.log(args.source.data.id)
+						console.log(events)
+					}
+				}/*,
 				{
 					top: 3,
 					right: 25,

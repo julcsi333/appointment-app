@@ -44,8 +44,8 @@ const ProviderInformation: React.FC<ProviderInformationProps>  = ({ provider, sh
                 </Box>
               </CardContent>
               {showBookbutton && (
-                  <Box sx={{ flexShrink: 0, ml: 2 }}>
-                    <AppointmentButton providerId={provider.id}/>
+                  <Box sx={{ alignSelf:'flex-end' }}>
+                      <AppointmentButton providerId={provider.id}/>
                   </Box>
                 )}
             </Card>

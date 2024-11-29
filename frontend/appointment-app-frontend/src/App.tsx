@@ -7,7 +7,7 @@ import ProfilePage from './pages/ProfilePage';
 import ServicesPage from './pages/ServicesPage';
 import ErrorPage from './pages/ErrorPage';
 import AvailabilityPage from './pages/AvailabilityPage';
-import { Box, styled } from '@mui/material';
+import AppointmentsPage from './pages/AppointmentsPage';
 
 function App() {
   return (
@@ -17,6 +17,8 @@ function App() {
         <Route path="/book/providers/:id" Component={withAuthenticationRequired(BookingPage)} />
         <Route path="/providers/:id/availability" Component={withAuthenticationRequired(AvailabilityPage)} />
         <Route path="/profile" Component={withAuthenticationRequired(ProfilePage)} />
+        <Route path="/profile/:id" Component={withAuthenticationRequired(ProfilePage)} />
+        <Route path="/appointments" Component={withAuthenticationRequired(AppointmentsPage)} />
         <Route path="/error" Component={ErrorPage} />
         <Route path="/services/providers/:id" Component={ServicesPage} />
       </Routes>

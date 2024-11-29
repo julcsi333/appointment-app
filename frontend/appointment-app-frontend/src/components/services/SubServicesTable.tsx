@@ -279,7 +279,7 @@ const SubServicesTable: React.FC<SubServicesTableProps> = ({mainService, ownPage
 			{/* Pagination for the SubServices table */}
 			<TablePagination
 				component="div"
-				count={subServices.length+1}
+				count={subServices.length + (ownPage ? 1 : 0)}
 				page={page}
 				onPageChange={handlePageChange}
 				rowsPerPage={rowsPerPage}

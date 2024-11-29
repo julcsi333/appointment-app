@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import { DigitalClock } from '@mui/x-date-pickers/DigitalClock';
 import { TimeView } from '@mui/x-date-pickers/models';
@@ -6,7 +6,8 @@ import { DatePicker as MuiDatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { Grid, Typography } from '@mui/material';
-import { SubService } from '../api/model';
+import { BookableTime, SubService } from '../api/model';
+import { getBookableTimesByProviderId } from '../api/provider-availability-api-call';
 
 interface DatePickerProps {
     id: number;
@@ -15,14 +16,14 @@ interface DatePickerProps {
     onTimeSelect: (date: Dayjs | null) => void;
 }
 
-function isSameDate(date1: dayjs.Dayjs | null, date2: Dayjs | null): boolean {
+function isSameDate(date1: Dayjs | null, date2: Dayjs | null): boolean {
     if (date1 === null || date2 === null) {
         return false;
     }
     return date1.date() === date2.date() && date1.month() === date2.month() && date1.year() === date2.year()
 }
 
-function isSameTime(date1: dayjs.Dayjs | null, date2: Dayjs | null): boolean {
+function isSameTime(date1: Dayjs | null, date2: Dayjs | null): boolean {
     if (date1 === null || date2 === null) {
         return false;
     }
@@ -30,9 +31,30 @@ function isSameTime(date1: dayjs.Dayjs | null, date2: Dayjs | null): boolean {
 }
 
 const DatePicker: React.FC<DatePickerProps> = ({ id, prevSelectedDate, selectedService, onTimeSelect }) => {
-    const dates: Dayjs[] = generateRandomDates();
+    //const dates: Dayjs[] = generateRandomDates();
+    const [dates, setDates] = useState<Dayjs[]>([]);
     const [selectedDate, setSelectedDate] = useState<Dayjs | null>(prevSelectedDate);
     const [timePickerEnabled, setTimePickerEnabled] = useState<boolean>(selectedDate !== null);
+    
+    useEffect(() => {
+		const fetchData = async () => {
+			try {
+                if (selectedService !== null) {
+                    const data = await getBookableTimesByProviderId(id, selectedService.duration);
+                    const datesCorrected: Dayjs[] = []
+                    data.forEach((d) => {
+                        const time: string[] = d.time.toString().split(":");
+                        datesCorrected.push(dayjs(d.date.toString()).set('hour', Number(time[0])).set('minute', Number(time[1])))
+                    })
+                    setDates(datesCorrected)
+                }
+			} catch (error) {
+				console.error('Error:', error);
+			}
+		};
+		fetchData();
+		return () => {};
+	}, [id, selectedService, selectedService.duration]);
 
     const handleDateSelect = (time: Dayjs | null) => {
         console.log(`Date select: ${time?.year()}.${time?.month()}.${time?.date()}`)

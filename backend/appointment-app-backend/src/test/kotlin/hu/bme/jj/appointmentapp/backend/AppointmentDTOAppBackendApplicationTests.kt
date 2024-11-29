@@ -28,7 +28,7 @@ import java.util.*
 
 @SpringBootTest
 class AppointmentDTOAppBackendApplicationTests {
-/*
+
 	@Test
 	fun contextLoads() {
 	}
@@ -92,6 +92,28 @@ class AppointmentDTOAppBackendApplicationTests {
 		verify(appointmentRepository).findById(appointmentId)
 	}
 
+    @Test
+    fun `should send cancel e-mail to provider when appointment is canceled by customer`() {
+        // Arrange
+        val appointmentId = 1L
+        val customerCancelled = true
+
+        whenever(appointmentRepository.findById(appointmentId)).thenReturn(Optional.of(mockAppointment))
+        val emailMessage = EmailMessage(
+            recipient = mockProvider.user.email!!,
+            msgBody = "",
+            subject = ""
+        )
+        whenever(emailMessageFactory.createAppointmentCancelledEmail(mockAppointment, customerCancelled)).thenReturn(emailMessage)
+
+        // Act
+        appointmentService.cancelAppointment(appointmentId, customerCancelled)
+
+        // Assert
+        verify(emailService).sendMail(emailMessage)
+        verify(appointmentRepository).findById(appointmentId)
+    }
+
 	@Test
 	fun `should throw EntityNotFoundException when appointment is not found`() {
 		val appointmentId = 1L
@@ -101,6 +123,6 @@ class AppointmentDTOAppBackendApplicationTests {
 			appointmentService.cancelAppointment(appointmentId, true)
 		}
 		verify(emailService, never()).sendMail(any())
-	}*/
+	}
 
 }

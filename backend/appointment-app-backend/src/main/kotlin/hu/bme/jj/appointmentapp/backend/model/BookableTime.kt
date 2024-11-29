@@ -34,7 +34,7 @@ data class BookableTime (
         var bookStartTime = from
         while (Duration.between(bookStartTime, to).toMinutes() >= bookTimeMinutes) {
             result.add(BookableTimeDTO(this.date, bookStartTime))
-            bookStartTime = bookStartTime.plusMinutes(bookTimeMinutes)
+            bookStartTime = bookStartTime.plusMinutes(15)
         }
         return result
     }

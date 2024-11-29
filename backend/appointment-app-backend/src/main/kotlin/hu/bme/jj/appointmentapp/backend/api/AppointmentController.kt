@@ -2,15 +2,30 @@ package hu.bme.jj.appointmentapp.backend.api
 
 import hu.bme.jj.appointmentapp.backend.api.model.AppointmentDTO
 import hu.bme.jj.appointmentapp.backend.api.model.NewAppointmentDTO
+import hu.bme.jj.appointmentapp.backend.api.model.ServiceDTO
 import hu.bme.jj.appointmentapp.backend.services.appointment.IAppointmentService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/book")
+@RequestMapping("/appointments")
 class AppointmentController(private val appointmentService: IAppointmentService) {
 
-    @PostMapping
+    @GetMapping("/customer/{id}")
+    fun getAppointmentsById(@PathVariable id: Long): ResponseEntity<List<AppointmentDTO>> {
+        return ResponseEntity.ok(
+            appointmentService.getAppointmentsForCustomer(id)
+        )
+    }
+
+    @GetMapping("/provider/{id}")
+    fun getHostedAppointmentsById(@PathVariable id: Long): ResponseEntity<List<AppointmentDTO>> {
+        return ResponseEntity.ok(
+            appointmentService.getAppointmentsForProvider(id)
+        )
+    }
+
+    @PostMapping("/book")
     fun createAppointment(@RequestBody appointment: NewAppointmentDTO): ResponseEntity<AppointmentDTO> {
         return ResponseEntity.ok(appointmentService.bookAppointment(appointment))
     }

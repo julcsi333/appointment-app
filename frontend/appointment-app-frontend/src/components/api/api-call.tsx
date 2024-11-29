@@ -1,14 +1,10 @@
 import axios, { AxiosResponse } from "axios";
 
 export const apiGetCall = async (url: string): Promise<AxiosResponse<any, any>> => {
-    try {
-        return await axios.get(
-            url,
-        );
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        throw error;
-    }
+
+    return await axios.get(
+        url,
+    );
 };
 
 

@@ -64,7 +64,10 @@ class ProviderAvailabilityService(
 
     override fun getBookablePAsByProviderId(id: Long, bookTimeMinutes: Long): List<BookableTimeDTO> {
         val provider = providerRepository.findByUserId(id).orElseThrow()
-        var bookableTimes = repository.findByProviderId(provider.id!!).map { BookableTime(it.date.toLocalDate(), it.startTime.toLocalTime(), it.endTime.toLocalTime()) }.toMutableList()
+        var bookableTimes = repository.findByProviderId(provider.id!!)
+            .map { BookableTime(it.date.toLocalDate(), it.startTime.toLocalTime(), it.endTime.toLocalTime()) }
+            .filter { it.date.isAfter(LocalDate.now()) }
+            .toMutableList()
         appointmentService.getAppointmentsForProviderAfter(id, LocalDate.now()).forEach { appointment ->
             val newBookableTimes = mutableListOf<BookableTime>()
             bookableTimes.forEach { bookableTime ->

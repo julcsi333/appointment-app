@@ -4,8 +4,6 @@ import hu.bme.jj.appointmentapp.backend.api.model.UserDTO
 import hu.bme.jj.appointmentapp.backend.api.model.UserMetaData
 import hu.bme.jj.appointmentapp.backend.config.Configuration
 import hu.bme.jj.appointmentapp.backend.services.user.IUserService
-import jakarta.persistence.EntityNotFoundException
-import org.apache.catalina.util.URLEncoder
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource
@@ -15,11 +13,8 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.client.getForObject
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
 import java.io.IOException
@@ -38,18 +33,19 @@ class UserController(private val userService: IUserService) {
 
     @GetMapping("/auth/{auth0UserId}")
     fun getOrCreateUserForAuth0(@PathVariable auth0UserId: String): UserDTO {
-        val user = userService.tryGetUserByAuth0Id(auth0UserId)
-        return if(user != null) {
-            user
-        } else {
-            val requestHeaders = HttpHeaders()
-            requestHeaders.setBearerAuth(authManagementToken)
-            val url = "${authIssuer}api/v2/users/${auth0UserId}"
-            val result = restTemplate.exchange(url, HttpMethod.GET, HttpEntity<String>("", requestHeaders),
-                UserMetaData::class.java
-            )
-            userService.createUser(UserDTO(null, result.body?.name, null, result.body?.email), auth0UserId)
-        }
+        return userService.tryGetUserByAuth0Id(auth0UserId)
+            ?: try {
+                val requestHeaders = HttpHeaders()
+                requestHeaders.setBearerAuth(authManagementToken)
+                val url = "${authIssuer}api/v2/users/${auth0UserId}"
+                val result = restTemplate.exchange(
+                    url, HttpMethod.GET, HttpEntity<String>("", requestHeaders),
+                    UserMetaData::class.java
+                )
+                userService.createUser(UserDTO(null, result.body?.name, null, result.body?.email), auth0UserId)
+            } catch (e: Exception) {
+                userService.createUser(UserDTO(null, "", null, ""), auth0UserId)
+            }
     }
 
     @GetMapping("/{id}")

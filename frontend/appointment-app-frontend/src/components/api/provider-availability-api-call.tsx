@@ -1,15 +1,19 @@
 import { getBaseUrl } from "../../config/config";
 import { apiGetCall, secureApiDeleteCall, secureApiPostCall, secureApiPutCall } from "./api-call";
-import { Availability, AvailabilityRule, Provider } from "./model";
+import { Availability, AvailabilityRule, BookableTime, Provider } from "./model";
 
 function getAvailabilityUrl(providerId: number) {
 	return `${getBaseUrl()}/providers/${providerId}/availability`
 }
 
 
+export const getBookableTimesByProviderId = async (id: number, bookTime: number): Promise<BookableTime[]> => {
+	const response = await apiGetCall(`${getAvailabilityUrl(id)}/bookable?bookTime=${bookTime}`);
+	return response.data;
+};
+
 export const getAvailabilityByProviderId = async (id: number): Promise<Availability[]> => {
 	const response = await apiGetCall(getAvailabilityUrl(id));
-	console.log(response)
 	return response.data;
 };
 

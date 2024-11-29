@@ -34,7 +34,8 @@ class AppointmentService(
             endTime = appointment.endTime.toLocalTime(),
             customerId = appointment.customer.id!!, // Field not nullable in DB. Cannot be null
             providerId = appointment.provider.user.id!!, // Field not nullable in DB. Cannot be null
-            subServiceId = appointment.subService.id!! // Field not nullable in DB. Cannot be null
+            subServiceId = appointment.subService.id!!, // Field not nullable in DB. Cannot be null
+            subServiceName = appointment.subService.name
         )
     }
 

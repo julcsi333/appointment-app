@@ -10,5 +10,6 @@ class AppointmentDTO(
     val endTime: LocalTime,
     val customerId: Long,
     var providerId: Long,
-    val subServiceId: Long
+    val subServiceId: Long,
+    val subServiceName: String?,
 )

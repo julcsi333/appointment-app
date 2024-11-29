@@ -130,29 +130,6 @@ const AvailabilityPage: React.FC = () => {
 		weekStarts: 1,
 		headerDateFormat: 'dddd (MM.dd.)',
 		timeFormat: 'Clock24Hours' as "Clock24Hours" | "Auto" | "Clock12Hours" | undefined,
-		/*contextMenu: new DayPilot.Menu({
-			items: [
-				{
-					text: "Delete",
-					onClick: async args => {
-						console.log('ARGS:')
-						console.log(args)
-						// TODO POPUP
-						await deleteEvent(args.source.id)
-						//calendar!.events.remove(args.source);
-					},
-				},
-				{
-					text: "-"
-				},
-				{
-					text: "Edit...",
-					onClick: async args => {
-						await editEvent(args.source);
-					}
-				}
-			]
-		}),*/
 		onBeforeEventRender: (args: DayPilot.CalendarBeforeEventRenderArgs) => {
 			args.data.areas = [
 				{
@@ -170,33 +147,13 @@ const AvailabilityPage: React.FC = () => {
 						console.log(args.source.data.id)
 						console.log(events)
 					}
-				}/*,
-				{
-					top: 3,
-					right: 25,
-					width: 20,
-					height: 20,
-					symbol: "icons/daypilot.svg#x-circle",
-					fontColor: "#fff",
-					action: "None",
-					toolTip: "Delete event",
-					onClick: async args => {
-						//calendar.events.remove(args.source);
-					}
-				}*/
+				}
 			];
-
-			//const participants = args.data.participants;
 			args.data.areas.push({
 				bottom: 5,
-				right: 5, //+ i * 30,
-				//width: 40,
-				//height: 40,
+				right: 5,
 				action: "None",
 				html: `<img width="45" height="45" class="none" src="${getBaseUrl()}/users/${id!}/profile-picture" style="object-fit: 'fit'; border: 5px solid #fff; overflow: hidden; border-radius: 50%;" />`
-				//image: `https://picsum.photos/24/24?random=${2}`,
-				//image: `${getBaseUrl()}/users/${id!}/profile-picture`,
-				//style: " .filled{ object-fit: 'contain'; }  ",
 			});
 		}
     };
@@ -279,6 +236,7 @@ const AvailabilityPage: React.FC = () => {
 						eventMoveHandling='Disabled'
 						viewType='Week' 
 						startDate={startDate}
+						cellHeight={42}
 						onTimeRangeSelected={onTimeRangeSelected}
 						controlRef={setCalendar}
 						events={events}

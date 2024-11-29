@@ -80,6 +80,7 @@ export interface Appointment {
     customerId: number;
     providerId: number;
     subServiceId: number;
+    subServiceName: string | undefined;
 }
 
 export class EditedSubService {
@@ -148,13 +149,14 @@ export class SubServiceError {
     price: string = "";
 }
 
-export interface AppointmentEvent {
+export interface AppointmentEvent extends DayPilot.EventData {
     start: DayPilot.Date;
     end: DayPilot.Date;
-    id: String;
-    providerId: string;
-    customerId: string;
-    serviceId: string;
+    id: string | number;
+    providerId: number;
+    customerId: number;
+    subServiceId: number;
+    host: boolean;
 }
 
 /*export enum AvailableEventType {
@@ -196,4 +198,9 @@ export enum SortByTactic{
     POPULARITY = 0,
     PRICE_AVG = 1,
     PRICE_LOWEST = 2
+}
+
+export interface BookableTime {
+    date: Dayjs;
+    time: Dayjs;
 }

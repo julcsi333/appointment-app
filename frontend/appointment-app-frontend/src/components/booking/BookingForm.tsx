@@ -4,7 +4,8 @@ import ServiceSelector from './ServiceSelector';
 import DatePicker from './DatePicker';
 import StepperProgressBar from './StepperProgressBar';
 import StepperButtons from './StepperButtons';
-import { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import { useAuth0 } from "@auth0/auth0-react";
 import { bookAppointment } from '../api/appointment-api-call';
 import { MainService, Provider, SubService } from '../api/model';
@@ -76,13 +77,13 @@ const BookingForm: React.FC<BookingFormProps> = ({ token, provider, user_id, ena
     const handleNext = () => {
         setActiveStep(activeStep + 1);
         if(activeStep !== 2) {
-            setEnableNextButton(false)
+            setEnableNextButton(false);
         }
     };
-    
+    dayjs.extend(utc);
     const handleSubmit = async () => {
         const token = await getAccessTokenSilently();
-        bookAppointment({id: null, providerId: provider.id, customerId: user_id!, date: selectedTime!, subServiceId: selectedService!.id}, token)
+        bookAppointment({id: null, providerId: provider.id, customerId: user_id!, date: dayjs.utc(selectedTime!.format('YYYY-MM-DDTHH:mm:ss')), subServiceId: selectedService!.id}, token)
         // Send booking information to backend
         console.log('Booking submitted:', {
             providerId: provider.id,

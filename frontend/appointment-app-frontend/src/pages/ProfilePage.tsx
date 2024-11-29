@@ -1,13 +1,14 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import GlobalToolbar from '../components/common/GlobalToolbar';
 import { useAuth0 } from '@auth0/auth0-react';
-import { getUserByExternalId, updateUser } from '../components/api/user-api-call';
+import { getUser, getUserByExternalId, updateUser } from '../components/api/user-api-call';
 import { User } from '../components/api/model';
 import { Box, Container, Paper, styled, TextField, Typography, Checkbox } from '@mui/material';
 import EditProfileButton from '../components/profile/editProfileButton';
 import ProfileAvatar from '../components/common/ProfileAvatar';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
+import { useParams } from 'react-router-dom';
 
 // Style the paper component to make it look like a card
 const ProfilePaper = styled(Paper)(({ theme }) => ({
@@ -17,12 +18,14 @@ const ProfilePaper = styled(Paper)(({ theme }) => ({
 }));
 
 export const ProfilePage: React.FC = () => {
+	const { id } = useParams<{ id: string | undefined }>();
 	const {
         user,
         getAccessTokenSilently,
     } = useAuth0();
     const [currentUserData, setCurrentUserData] = useState<User | null>(null);
     const [editedUserData, setEditedUserData] = useState<User | null>(null);
+    const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
     const [editing, setEditing] = useState<boolean>(false);
     const [token, setToken] = useState<string>("");
 
@@ -58,12 +61,18 @@ export const ProfilePage: React.FC = () => {
 	useEffect(() => {
         const fetchData = async () => {
             try {
-                
-                const token = await getAccessTokenSilently();
-                const userData = await getUserByExternalId(user!.sub!, token);
+                const t = await getAccessTokenSilently();
+                const userData = await getUserByExternalId(user!.sub!, t);
+                setLoggedInUser(userData);
                 setToken(token);
-                setCurrentUserData(userData);
-                setEditedUserData(userData);
+                if (id === undefined || Number(id) === userData.id) {
+                  setCurrentUserData(userData);
+                  setEditedUserData(userData);
+                } else {
+                  const profileUserData = await getUser(id, t)
+                  setCurrentUserData(profileUserData);
+                  setEditedUserData(profileUserData);
+                }
             } catch (error) {
                 console.error('Error:', error);
             }
@@ -74,7 +83,7 @@ export const ProfilePage: React.FC = () => {
         return () => {
 
         };
-    }, [getAccessTokenSilently, user]);
+    }, [getAccessTokenSilently, id, token, user]);
 
 
   const [errors, setErrors] = useState({
@@ -198,7 +207,9 @@ export const ProfilePage: React.FC = () => {
               </Box>
           )}
           <Box sx={{mt:2}}>
-            <EditProfileButton editing={editing} handleEditClick={handleEditingClick} handleSaveClick={handleSaveClick} handleCancelClick={handleCancelClick}/>
+            {(id === undefined || Number(id) === loggedInUser?.id) && (
+              <EditProfileButton editing={editing} handleEditClick={handleEditingClick} handleSaveClick={handleSaveClick} handleCancelClick={handleCancelClick}/>
+            )}
           </Box>
         </ProfilePaper>
       </Container>

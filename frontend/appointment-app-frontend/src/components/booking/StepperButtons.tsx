@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Tooltip } from '@mui/material';
 
 interface StepperButtonsProps {
     activeStep: number;
@@ -14,19 +14,31 @@ const StepperButtons : React.FC<StepperButtonsProps> = ({ activeStep, onBack, on
     return (
         <Box>
             {activeStep !== 0 && (
-            <Button sx={{mr:2, ml:2}} variant="contained" onClick={onBack}>
-                Back
-            </Button>
+                <Button sx={{mr:2, ml:2}} variant="contained" onClick={onBack}>
+                    Back
+                </Button>
             )}
             {activeStep !== 2 && (
-            <Button sx={{mr:2, ml:2}} variant="contained" onClick={onNext} disabled={!enableNextButton}>
-                Next
-            </Button>
+                <Button sx={{mr:2, ml:2}} variant="contained" onClick={onNext} disabled={!enableNextButton}>
+                    Next
+                </Button>
             )}
             {activeStep === 2 && (
-            <Button sx={{mr:2, ml:2}} variant="contained" onClick={onSubmit} disabled={!enableSubmitButton}>
-                Submit
-            </Button>
+                <>
+                    {enableSubmitButton ? (
+                        <Button sx={{mr:2, ml:2}} variant="contained" onClick={onSubmit} disabled={!enableSubmitButton}>
+                            Submit
+                        </Button>
+                    ):(
+                        <Tooltip title="You must complete your profile to book an appointment!">
+                            <span>
+                                <Button sx={{mr:2, ml:2}} variant="contained" disabled>
+                                    Submit
+                                </Button>
+                            </span>
+                        </Tooltip>
+                    )}
+                </>
             )}
         </Box>
     );

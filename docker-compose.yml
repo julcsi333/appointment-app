@@ -22,6 +22,8 @@ services:
       - SPRING_MYSQL_DATASOURCE_URL=jdbc:mysql://db:3306/docker_mysql
       - SPRING_MYSQL_DATASOURCE_USERNAME=root
       - SPRING_MYSQL_DATASOURCE_PASSWORD=appointment_app_backend
+    volumes:
+      - backend_uploads:/app/uploads
   db:
     image: mysql:8.0
     ports:
@@ -30,7 +32,8 @@ services:
       - MYSQL_ROOT_PASSWORD=appointment_app_backend
       - MYSQL_DATABASE=docker_mysql
     volumes:
-      - mysql_data:/var/lib/mysql  # Mount the volume
+      - mysql_data:/var/lib/mysql
 
 volumes:
-  mysql_data:  # Declare the named volume
+  mysql_data:
+  backend_uploads:

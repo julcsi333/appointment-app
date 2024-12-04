@@ -22,6 +22,7 @@ export const ProfilePage: React.FC = () => {
 	const {
         user,
         getAccessTokenSilently,
+        isAuthenticated
     } = useAuth0();
     const [currentUserData, setCurrentUserData] = useState<User | null>(null);
     const [editedUserData, setEditedUserData] = useState<User | null>(null);
@@ -61,17 +62,19 @@ export const ProfilePage: React.FC = () => {
 	useEffect(() => {
         const fetchData = async () => {
             try {
-                const t = await getAccessTokenSilently();
-                const userData = await getUserByExternalId(user!.sub!, t);
-                setLoggedInUser(userData);
-                setToken(token);
-                if (id === undefined || Number(id) === userData.id) {
-                  setCurrentUserData(userData);
-                  setEditedUserData(userData);
-                } else {
-                  const profileUserData = await getUser(id, t)
-                  setCurrentUserData(profileUserData);
-                  setEditedUserData(profileUserData);
+                if (isAuthenticated) {
+                  const t = await getAccessTokenSilently();
+                  const userData = await getUserByExternalId(user!.sub!, t);
+                  setLoggedInUser(userData);
+                  setToken(t);
+                  if (id === undefined || Number(id) === userData.id) {
+                    setCurrentUserData(userData);
+                    setEditedUserData(userData);
+                  } else {
+                    const profileUserData = await getUser(id, t)
+                    setCurrentUserData(profileUserData);
+                    setEditedUserData(profileUserData);
+                  }
                 }
             } catch (error) {
                 console.error('Error:', error);

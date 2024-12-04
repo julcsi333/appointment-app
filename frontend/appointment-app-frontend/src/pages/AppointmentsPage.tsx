@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Card, FormControlLabel, Switch, Typography } from '@mui/material';
 import { useAuth0 } from '@auth0/auth0-react';
 import GlobalToolbar from '../components/common/GlobalToolbar';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -39,8 +39,12 @@ const AppointmentsPage: React.FC = () => {
     const [token, setToken] = useState<string>("");
     const [currentUser, setCurrentUser] = useState<User>();
     const [provider, setProvider] = useState<boolean>();
+    const [showHostedAppointments, setShowHostedAppointments] = useState<boolean>(true);
+    const [showPersonalAppointments, setShowPersonalAppointments] = useState<boolean>(true);
 	const [startDate, setStartDate] = useState<DayPilot.Date | undefined>(undefined);
 	const [calendar, setCalendar] = useState<DayPilot.Calendar | null>(null);
+	const [hostedAppointments, setHostedAppointments] = useState<AppointmentEvent[]>([]);
+	const [personalAppointments, setPersonalAppointments] = useState<AppointmentEvent[]>([]);
 	const [events, setEvents] = useState<AppointmentEvent[]>([]);
     const {
 		isAuthenticated,
@@ -60,10 +64,12 @@ const AppointmentsPage: React.FC = () => {
 
 
 					const appointments = createEventsFromAppointments(await getAppointments(u.id), false)
+					setPersonalAppointments(appointments)
 					let hostedAppointments: AppointmentEvent[] = []
 					if (p !== null) {
 						setProvider(true)
 						hostedAppointments = createEventsFromAppointments(await getHostedAppointments(u.id), true)
+						setHostedAppointments(hostedAppointments)
 					}
 					setEvents([...appointments, ...hostedAppointments])
 				}
@@ -108,8 +114,9 @@ const AppointmentsPage: React.FC = () => {
 					action: "None",
 					toolTip: "Cancel appointment",
 					onClick: async args => {
-						await deleteAppointment(args.source.data.id, !args.source.data.host, token)
 						calendar!!.events.remove(args.source);
+						await deleteAppointment(args.source.data.id, !args.source.data.host, token)
+
 					}
 				}
 			];
@@ -153,7 +160,7 @@ const AppointmentsPage: React.FC = () => {
 	}
 
 	const editEvent = async (e: AppointmentEvent) => {
-		if (!e.host) {
+		if (!provider || !e.host) {
 			return;
 		}
 		var formParams = [
@@ -182,18 +189,79 @@ const AppointmentsPage: React.FC = () => {
 		//calendar.events.update(e);
 	};
 
+	const handleHostedAppointmentsToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
+		if (showHostedAppointments) {
+			setShowHostedAppointments(false)
+			if (showPersonalAppointments) {
+				setEvents(personalAppointments)
+			} else {
+				setEvents([])
+			}
+		} else {
+			setShowHostedAppointments(true)
+			if (showPersonalAppointments) {
+				setEvents([...personalAppointments, ...hostedAppointments])
+			} else {
+				setEvents(hostedAppointments)
+			}
+		}
+	}
+
+	const handlePersonalAppointmentsToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
+		if (showPersonalAppointments) {
+			setShowPersonalAppointments(false)
+			if (showHostedAppointments) {
+				setEvents(hostedAppointments)
+			} else {
+				setEvents([])
+			}
+		} else {
+			setShowPersonalAppointments(true)
+			if (showHostedAppointments) {
+				setEvents([...personalAppointments, ...hostedAppointments])
+			} else {
+				setEvents(personalAppointments)
+			}
+		}
+	}
+	
+
 	return (
 		<div>
 			<GlobalToolbar />
 				<Typography sx={{ p:2}} textAlign='center' variant='h4'>My Appointments</Typography>
-			<Box sx={{ p: 2, display:'flex' }}>
-				<Box sx={{ml:5, mr:5}}>
+			<Box sx={{ p: 2, display:'flex'}}>
+				<Box sx={{ml:5, mr:5,  display:'flex', flexDirection:'column', alignItems:'center'}}>
 					<DayPilotNavigator 
 						selectMode='Week' 
 						selectionDay={startDate}
 						onTimeRangeSelected={(args) => setStartDate(args.day)}
 						weekStarts={1}
 					/>
+					{provider && (
+						<Card sx={{mt:2, p:2, minWidth:'27vh'}}>
+							<FormControlLabel
+							control={
+							<Switch
+								checked={showHostedAppointments}
+								onChange={handleHostedAppointmentsToggle}
+								color="primary"
+							/>
+							}
+							label="Show hosted appointments"
+							/>
+							<FormControlLabel
+							control={
+							<Switch
+								checked={showPersonalAppointments}
+								onChange={handlePersonalAppointmentsToggle}
+								color="primary"
+							/>
+							}
+							label="Show personal appointments"
+							/>
+						</Card>
+					)}
 				</Box>
 				<Box sx={{flexGrow:1}}>
 					<DayPilotCalendar 

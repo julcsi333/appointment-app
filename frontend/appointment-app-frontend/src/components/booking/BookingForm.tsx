@@ -10,6 +10,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { bookAppointment } from '../api/appointment-api-call';
 import { MainService, Provider, SubService } from '../api/model';
 import { getServicesByProviderId, getSubServicesByMainServiceId } from '../api/services-api-call';
+import { useNavigate } from 'react-router-dom';
 
 interface BookingFormProps {
     token: string;
@@ -19,6 +20,7 @@ interface BookingFormProps {
 }
 
 const BookingForm: React.FC<BookingFormProps> = ({ token, provider, user_id, enableSubmit }) => {
+    const navigate = useNavigate();
     const [activeStep, setActiveStep] = useState<number>(0);
     const [selectedService, setSelectedService] = useState<MainService | undefined>();
     const [selectedSubService, setSelectedSubService] = useState<SubService | undefined>();
@@ -83,14 +85,9 @@ const BookingForm: React.FC<BookingFormProps> = ({ token, provider, user_id, ena
     dayjs.extend(utc);
     const handleSubmit = async () => {
         const token = await getAccessTokenSilently();
-        bookAppointment({id: null, providerId: provider.id, customerId: user_id!, date: dayjs.utc(selectedTime!.format('YYYY-MM-DDTHH:mm:ss')), subServiceId: selectedService!.id}, token)
+        bookAppointment({id: null, providerId: provider.id, customerId: user_id!, date: dayjs.utc(selectedTime!.format('YYYY-MM-DDTHH:mm:ss')), subServiceId: selectedSubService!.id}, token)
         // Send booking information to backend
-        console.log('Booking submitted:', {
-            providerId: provider.id,
-            selectedService,
-            selectedTime,
-            accessToken: token,
-        });
+        navigate('/')
     };
 
     return (

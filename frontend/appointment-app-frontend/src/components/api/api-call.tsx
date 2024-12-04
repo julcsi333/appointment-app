@@ -44,6 +44,8 @@ export const secureApiPostCall = async (url: string, body: string, token: string
 
 export const secureApiPutCall = async (url: string, body: string, token: string): Promise<AxiosResponse<any, any>> => {
     try {
+        console.log(body)
+        console.log(token)
         return await axios.put(
             url,
             body,

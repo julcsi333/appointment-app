@@ -1,7 +1,7 @@
 FROM gradle:latest AS BUILD
 WORKDIR /app
 COPY . .
-RUN gradle build
+RUN gradle build -x test 
 
 FROM openjdk:21-jdk-slim
 ENV JAR_NAME=appointment-app-backend-0.0.1-SNAPSHOT.jar

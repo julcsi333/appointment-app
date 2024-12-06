@@ -1,10 +1,15 @@
 package hu.bme.jj.appointmentapp.backend
 
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.AppointmentRepository
+import hu.bme.jj.appointmentapp.backend.db.sql.repository.ProviderRepository
+import hu.bme.jj.appointmentapp.backend.db.sql.repository.SubServiceRepository
+import hu.bme.jj.appointmentapp.backend.db.sql.repository.UserRepository
 import hu.bme.jj.appointmentapp.backend.model.EmailMessage
 import hu.bme.jj.appointmentapp.backend.services.appointment.AppointmentService
 import hu.bme.jj.appointmentapp.backend.services.email.EmailMessageFactory
 import hu.bme.jj.appointmentapp.backend.services.email.EmailService
+import hu.bme.jj.appointmentapp.backend.services.email.IEmailMessageFactory
+import hu.bme.jj.appointmentapp.backend.services.email.IEmailService
 import jakarta.persistence.EntityNotFoundException
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
@@ -28,13 +33,20 @@ class AppointmentTests {
 	private lateinit var mockAppointmentRepository: AppointmentRepository
 
 	@MockBean
-	private lateinit var mockEmailService: EmailService
+	private lateinit var mockEmailService: IEmailService
 
 	@MockBean
-	private lateinit var mockEmailMessageFactory: EmailMessageFactory
+	private lateinit var mockEmailMessageFactory: IEmailMessageFactory
 
 	@Autowired
 	private lateinit var appointmentService: AppointmentService
+
+	@MockBean
+	private lateinit var providerRepository: ProviderRepository
+	@MockBean
+	private lateinit var userRepository: UserRepository
+	@MockBean
+	private lateinit var subServiceRepository: SubServiceRepository
 
 	@Test
 	fun `should call emailService with correct parameters when appointment is canceled`() {

@@ -1,28 +1,37 @@
 package hu.bme.jj.appointmentapp.backend.db.sql
 
+import hu.bme.jj.appointmentapp.backend.db.sql.model.Auth0UserMapping
 import hu.bme.jj.appointmentapp.backend.db.sql.model.GlobalService
+import hu.bme.jj.appointmentapp.backend.db.sql.model.MainService
+import hu.bme.jj.appointmentapp.backend.db.sql.model.Provider
+import hu.bme.jj.appointmentapp.backend.db.sql.model.ProviderAvailability
+import hu.bme.jj.appointmentapp.backend.db.sql.model.SubService
+import hu.bme.jj.appointmentapp.backend.db.sql.model.UserData
 import hu.bme.jj.appointmentapp.backend.db.sql.repository.*
-import hu.bme.jj.appointmentapp.backend.model.EmailMessage
-import hu.bme.jj.appointmentapp.backend.services.email.EmailService
 import hu.bme.jj.appointmentapp.backend.services.email.IEmailService
 import jakarta.annotation.PostConstruct
 import org.springframework.stereotype.Component
+import java.sql.Date
+import java.sql.Time
+import java.time.LocalDate
 
 
 @Component
 class DevDBInitializer(
     private val providerRepository: ProviderRepository,
+    private val providerAvailabilityRepository: ProviderAvailabilityRepository,
     private val globalServiceRepository: GlobalServiceRepository,
     private val serviceRepository: ServiceRepository,
+    private val subServiceRepository: SubServiceRepository,
     private val userRepository: UserRepository,
     private val auth0UserMappingRepository: Auth0UserMappingRepository,
-    private val emailService: IEmailService,
 ) {
 
     @PostConstruct
     fun init() {
         // Add sample data to GlobalServiceRepository
         if (globalServiceRepository.findAll().isEmpty()) {
+            // Add global services
             val globalServices = listOf(
                 GlobalService(name = "Hairdressing", description = "Cut or style hair in order to change or maintain a person's image"),
                 GlobalService(name = "Manicure", description = "Cosmetic beauty treatment for the fingernails and hands"),
@@ -31,47 +40,68 @@ class DevDBInitializer(
             globalServices.forEach {
                 globalServiceRepository.save(it)
             }
-        }
-
-        /*
-        // Add sample data to ProviderRepository
-        val providers = listOf(
-            Provider(name = "Jaime Duffy", phoneNumber = "0611123456", businessAddress = "Pécs, Széchenyi tér"),
-            Provider(name = "Kelly Montoya", phoneNumber = "0611234567", businessAddress = "Pécs, Zsolnay múzeum"),
-            Provider(name = "Peter Goodwin", phoneNumber = "0611345678", businessAddress = "Pécs, Zsolnay tér")
-        )
-
-        val random = Random(42)
-        providers.forEach {
-            val numServices = random.nextInt(1, 4)
-            val shuffledServices = services.shuffled()
-            val assignedServices = shuffledServices.take(numServices)
-            it.services.addAll(assignedServices)
-            providerRepository.save(it)
-            val auth0Id = when (it.name) {
-                "Jaime Duffy" -> "auth0|664b68a52eadd3e573e1c9c2"
-                "Kelly Montoya" -> "auth0|664b691947c62d7f61b3049a"
-                "Peter Goodwin" -> "auth0|664b697d2eadd3e573e1ca89"
-                else -> TODO()
+            // Add mock users
+            val mockUsers = listOf(
+                UserData(id = 1, name = "Max Berger", phoneNumber = "01234556677", email = "max.berger@testmail.com"),
+                UserData(id = 2, name = "Eloise Jones", phoneNumber = "01234556677", email = "eloise.jones@testmail.com"),
+                UserData(id = 3, name = "Clare Gentry", phoneNumber = "01234556677", email = "clare.gentry@testmail.com"),
+            ).let {
+                userRepository.saveAll(it)
             }
-            auth0UserMappingRepository.save(Auth0UserMapping(null, auth0Id, it))
-        }
 
-        val customers = listOf(
-            UserData(name = "Max Berger", phoneNumber = "0600123456"),
-            UserData(name = "John Doe", phoneNumber = "0600234567"),
-            UserData(name = "Jane Doe", phoneNumber = "0600345678")
-        )
+            // Add auth0 user mapping to users
+            auth0UserMappingRepository.save(Auth0UserMapping(localUser = mockUsers[0], auth0UserId = "auth0|664b6ad9f5c56fa0ab120990"))
+            auth0UserMappingRepository.save(Auth0UserMapping(localUser = mockUsers[1], auth0UserId = "auth0|6749fadfd4dd142fd6387ae8"))
+            auth0UserMappingRepository.save(Auth0UserMapping(localUser = mockUsers[2], auth0UserId = "auth0|6750258540af06fbdfba0f0c"))
+            // Add mock providers
+            val mockProviders = listOf(
+                providerRepository.save(Provider(bio = "I have 10+ years experience in hairdressing.", businessAddress = "Budapest, ...", user = mockUsers[0])),
+                providerRepository.save(Provider(bio = "I have 5+ years experience in manicure.", businessAddress = "***", user = mockUsers[1]))
+            )
+            mockProviders[0].also { p ->
+                // Add services to provider
+                val service = serviceRepository.save(MainService(provider = p, globalService = globalServices[0], description = "Below you can see my hairdressing services. The prices may wary based on hair length and hair type. If you bring your own dye, I can give you a discount on coloring."))
+                val subServices = listOf(
+                    SubService(duration = 30, name = "Haircut", price = 23.0f, mainService = service ),
+                    SubService(duration = 45, name = "Hair coloring (with own dye)", price = 26.0f, mainService = service ),
+                    SubService(duration = 45, name = "Hair coloring", price = 30.0f, mainService = service ),
+                    SubService(duration = 60, name = "Hair bleaching", price = 30.0f, mainService = service ),
+                    SubService(duration = 30, name = "Hair styling", price = 26.0f, mainService = service )
+                )
+                subServices.forEach {
+                    subServiceRepository.save(it)
+                }
 
-        customers.forEach {
-            userRepository.save(it)
-            val auth0Id = when (it.name) {
-                "Max Berger" -> "auth0|664b6ad9f5c56fa0ab120990"
-                "John Doe" -> "auth0|664b6afff5c56fa0ab1209b1"
-                "Jane Doe" -> "auth0|664b6b19425d6c86e6656038"
-                else -> TODO()
+                // Add availability to provider
+                var date = LocalDate.now()
+                for (i in 0..100) {
+                    date = date.plusDays(1)
+                    providerAvailabilityRepository.save(
+                        ProviderAvailability(provider = p, date = Date.valueOf(date), startTime = Time.valueOf("10:00:00"), endTime = Time.valueOf("17:00:00"), providerAvailabilityRule = null)
+                    )
+                }
             }
-            auth0UserMappingRepository.save(Auth0UserMapping(null, auth0Id, it))
-        }*/
+            mockProviders[1].also { p ->
+                // Add services to provider
+                val service = serviceRepository.save(MainService(provider = p, globalService = globalServices[1], description = ""))
+                listOf(
+                    SubService(duration = 30, name = "Basic manicure", price = 23.0f, mainService = service ),
+                    SubService(duration = 60, name = "Gel nails", price = 26.0f, mainService = service ),
+                    SubService(duration = 30, name = "French nails", price = 30.0f, mainService = service ),
+                    SubService(duration = 60, name = "Gel french nails", price = 30.0f, mainService = service ),
+                    SubService(duration = 60, name = "Gel nails with difficult design", price = 26.0f, mainService = service )
+                ).let {
+                    subServiceRepository.saveAll(it)
+                }
+
+                // Add availability to provider
+                var date = LocalDate.now()
+                for (i in 0..100) {
+                    date = date.plusDays(1)
+                    providerAvailabilityRepository.save(ProviderAvailability(provider = p, date = Date.valueOf(date), startTime = Time.valueOf("8:00:00"), endTime = Time.valueOf("11:00:00"), providerAvailabilityRule = null))
+                    providerAvailabilityRepository.save(ProviderAvailability(provider = p, date = Date.valueOf(date), startTime = Time.valueOf("13:00:00"), endTime = Time.valueOf("18:00:00"), providerAvailabilityRule = null))
+                }
+            }
+        }
     }
 }
